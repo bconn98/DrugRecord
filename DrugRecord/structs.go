@@ -1,5 +1,7 @@
 package main
 
+import "strconv"
+
 /**
 File: structs.go
 Description: All the structs needed to implement the C2 record
@@ -21,7 +23,10 @@ Description: Makes a drug struct with the month, day, year
 @param day The day
 @param year The year
  */
- func MakeDate(month int, day int, year int) Date {
+ func MakeDate(monthS string, dayS string, yearS string) Date {
+	 month, _ := strconv.Atoi(monthS)
+	 day, _ := strconv.Atoi(dayS)
+	 year, _ := strconv.Atoi(yearS)
  	return Date{month, day, year}
  }
 

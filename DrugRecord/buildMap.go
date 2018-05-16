@@ -81,10 +81,7 @@ func makeOrderMap(fileName string, drugs map[string]Drug) map[string][]Order {
 		//Get the drug
 		drug := drugs[words[0]]
 		//Get the date of the order
-		month, _ := strconv.Atoi(words[1])
-		day, _ := strconv.Atoi(words[2])
-		year, _ := strconv.Atoi(words[3])
-		date := MakeDate(month, day, year)
+		date := MakeDate(words[1], words[2], words[3])
 		//Get the quantity of the order
 		qty, _ := strconv.Atoi(words[4])
 
@@ -96,19 +93,13 @@ func makeOrderMap(fileName string, drugs map[string]Drug) map[string][]Order {
 			order = MakeOrder(purchase)
 		} else if len(words) == 8 {
 			//Get the log date of the order
-			month, _ = strconv.Atoi(words[7])
-			day, _ = strconv.Atoi(words[8])
-			year, _ = strconv.Atoi(words[9])
-			lDate := MakeDate(month, day, year)
+			lDate := MakeDate(words[7], words[8], words[9])
 
 			audit := MakeAudit(drug, qty, words[5], date, lDate)
 			order = MakeOrder(audit)
 		} else if len(words) == 10 {
 			//Get the log date of the order
-			month, _ = strconv.Atoi(words[7])
-			day, _ = strconv.Atoi(words[8])
-			year, _ = strconv.Atoi(words[9])
-			lDate := MakeDate(month, day, year)
+			lDate := MakeDate(words[7], words[8], words[9])
 
 			prescription := MakePrescritption(drug, date, qty, words[5], words[6], lDate)
 			order = MakeOrder(prescription)
