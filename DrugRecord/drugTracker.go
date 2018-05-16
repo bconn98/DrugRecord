@@ -7,6 +7,7 @@ import (
 func main() {
 	orderfile := "DrugRecord/test.txt"
 	drugfile := "DrugRecord/Drugs.txt"
-	orders := BuildMap(orderfile, drugfile)
+	orders, _ := BuildMap(orderfile, drugfile)
 	fmt.Println(orders)
+
 }
