@@ -1,0 +1,13 @@
+body {
+    background: #6495ed
+}
+
+h1 {
+    color: crimson;
+    text-align: center;
+    margin: 0;
+}
+
+#logo {
+    padding: 5px;
+}
