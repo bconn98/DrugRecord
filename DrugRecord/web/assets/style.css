@@ -1,4 +1,4 @@
-body {
+#page {
     background: #6495ed
 }
 
@@ -9,5 +9,21 @@ h1 {
 }
 
 #logo {
-    padding: 5px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#navigation {
+    height: 20px;
+    background-color: slategrey;
+    text-align: center;
+}
+
+#register {
+    text-align: right;
+}
+
+#login {
+    text-align: left;
 }
