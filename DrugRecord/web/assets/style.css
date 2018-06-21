@@ -1,4 +1,4 @@
-#page {
+body {
     background: #6495ed
 }
 
@@ -21,9 +21,9 @@ h1 {
 }
 
 #register {
-    text-align: right;
+    float: right;
 }
 
 #login {
-    text-align: left;
+    float: left;
 }

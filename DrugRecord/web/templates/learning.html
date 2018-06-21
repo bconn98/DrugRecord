@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <title>Medicine Shoppe C2 Form</title>
 </head>
-<body id = "page">
+<body>
     <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
     <img id = "logo" src = "/assets/logo.png" alt="" />
     <h1> Medicine Shoppe C2 Form </h1>
     <div id = "navigation">
-        <div id = "login">
-            <a href= "/login"> Login </a>
+        {{ if . }}
+            <div id = "signout"> <a href= "/signout"> Sign Out </a> </div>
+        {{else}}
+            <div id = "login"> <a href= "/login"> Login </a> </div>
             <div id = "register"><a href= "/register"> Register </a></div>
-        </div>
-
-    </div>
-    <div id = "Help">
-        This page is going to be used as the homepage to the
-        new Medicine Shoppe C2 form
+            <h3 id = "Help">
+                Login to see gain access to the database.
+            </h3>
+        {{end}}
     </div>
 
 </body>
