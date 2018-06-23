@@ -8,35 +8,57 @@ import (
 	"strconv"
 )
 
+/**
+File: buildMap
+Description: Creates a map of drugs and a map of orders from text files
+@author Bryan Conn
+@date 5/16/18
+ */
+
+ /**
+ Function: makeDrugMap
+ Description: Populates a map with drug structs
+ @param fileName The file name containing drug information
+  */
 func makeDrugMap(fileName string) map[string]Drug {
+	//Open file and make sure there are no errors
 	drugFile, err := os.Open(fileName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	drugs := make(map[string]Drug)
-
-	scanner := bufio.NewScanner(drugFile)
-
-	scanner.Split( bufio.ScanLines )
-	check := scanner.Scan()
 	emptyDrug := Drug{}
+
+	//Scanner to read the file line by line
+	scanner := bufio.NewScanner(drugFile)
+	scanner.Split( bufio.ScanLines )
+
+	//Read each line and parse it into a drug
+	check := scanner.Scan()
 	for ;check != false; check = scanner.Scan() {
 		line := scanner.Text()
 		words := strings.Fields(line)
 		qty, _ := strconv.Atoi(words[2])
-		if drugs[words[0]] == emptyDrug {
-			drug := makeDrug(words[0], words[1], qty)
-			drugs[words[0]] = drug
+		if drugs[words[1]] == emptyDrug {
+			drug := MakeDrug(words[0], words[1], qty)
+			drugs[words[1]] = drug
 		} else {
-			drugs[words[0]] = makeDrug(words[0], words[1], drugs[words[0]].Quantity + qty)
+			drugs[words[1]].UpdateQty(qty)
 		}
 	}
 	drugFile.Close()
 	return drugs
 }
 
+/**
+Function: makeOrderMap
+Description: Populates a map with order structs
+@param fileName The name of the file containing past order information
+@param drugs The map of drugs in the system
+ */
 func makeOrderMap(fileName string, drugs map[string]Drug) map[string][]Order {
+	//Open file and check for erros
 	orderFile, err := os.Open(fileName)
 	if err != nil {
 		log.Fatal(err)
@@ -44,47 +66,61 @@ func makeOrderMap(fileName string, drugs map[string]Drug) map[string][]Order {
 
 	orders := make(map[string][]Order)
 
+	//Scanner to read the file line by line
 	scanner := bufio.NewScanner(orderFile)
 	scanner.Split( bufio.ScanLines )
 
-	check := scanner.Scan()
-
 	/*
 	Order all files
-	Name Date Qty ...
+	NDC Date Qty ...
 	 */
+	check := scanner.Scan()
 	for ;check != false; check = scanner.Scan() {
 		line := scanner.Text()
 		words := strings.Fields(line)
+		//Get the drug
 		drug := drugs[words[0]]
-		month, _ := strconv.Atoi(words[1])
-		day, _ := strconv.Atoi(words[2])
-		year, _ := strconv.Atoi(words[3])
+		//Get the date of the order
+		date := MakeDate(words[1], words[2], words[3])
+		//Get the quantity of the order
 		qty, _ := strconv.Atoi(words[4])
-		date := Date{month, day, year}
+
+		//Makes a purchase, audit, or prescription and adds it to
+		//the list for the given drug
 		var order Order
 		if len(words) == 5 {
-			purchase := makePurchase(drug, date, qty)
-			order = makeOrder(Prescription{}, purchase)
-		} else if len(words) == 12 {
-			month, _ = strconv.Atoi(words[9])
-			day, _ = strconv.Atoi(words[10])
-			year, _ = strconv.Atoi(words[11])
-			aQty, _ := strconv.Atoi(words[7])
-			audit := words[8]
-			lDate := Date{month, day, year}
+			purchase := MakePurchase(drug, date, qty)
+			drug = purchase.PurchasedDrug
+			order = MakeOrder(purchase)
+		} else {
+			//Get the log date of the order
+			lDate := MakeDate(words[6], words[7], words[8])
 
-			prescription := makePrescritption(drug, date, qty, words[5], words[6], aQty, lDate)
-			order = makeOrder(prescription, Purchase{})
+			if len(words) == 9 {
+				audit := MakeAudit(drug, qty, words[5], date, lDate)
+				drug = audit.ADrug
+				order = MakeOrder(audit)
+			} else if len(words) == 10 {
+				prescription := MakePrescritption(drug, date, qty, words[5], words[9], lDate)
+				drug = prescription.OrderDrug
+				order = MakeOrder(prescription)
+			}
 		}
+		//Access order with order.ThisOrder
+		drugs[words[0]] = drug
 		orders[words[0]] = append(orders[words[0]], order)
 	}
 	orderFile.Close()
 	return orders
 }
 
-func BuildMap(orderFileName, drugsFileName string) map[string][]Order{
+/**
+Function: BuildMap
+Description: Builds the drug and order map
+@param orderFileName The file containing orders
+@param drugsFileName The file containing drugs
+ */
+func BuildMap(orderFileName, drugsFileName string) (map[string][]Order, map[string]Drug){
 	drugs := makeDrugMap(drugsFileName)
-
-	return makeOrderMap(orderFileName, drugs)
+	return makeOrderMap(orderFileName, drugs), drugs
 }

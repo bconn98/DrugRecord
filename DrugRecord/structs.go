@@ -1,6 +1,6 @@
 package main
 
-import "go/types"
+import "strconv"
 
 /**
 File: structs.go
@@ -17,6 +17,20 @@ type Date struct {
 }
 
 /**
+Function: MakeDate
+Description: Makes a drug struct with the month, day, year
+@param month The month
+@param day The day
+@param year The year
+ */
+ func MakeDate(monthS string, dayS string, yearS string) Date {
+	 month, _ := strconv.Atoi(monthS)
+	 day, _ := strconv.Atoi(dayS)
+	 year, _ := strconv.Atoi(yearS)
+ 	return Date{month, day, year}
+ }
+
+/**
 Prescription struct contains the drug of the order, the pharmacist that filled the order,
 the script id, the quantity of the order, the date the order was filled, the date the
 order was logged
@@ -29,7 +43,7 @@ type Prescription struct {
 }
 
 /**
-Function: makePrescription
+Function: MakePrescription
 Description: Makes a Prescription struct
 @param drug The drug being ordered
 @param oDate The date the order was filled
@@ -38,7 +52,8 @@ Description: Makes a Prescription struct
 @param script The script id
 @param lDate The date the order was logged
  */
-func makePrescritption(drug Drug, oDate Date, oQty int, pharm string, script string, lDate Date) Prescription {
+func MakePrescritption(drug Drug, oDate Date, oQty int, pharm string, script string, lDate Date) Prescription {
+	drug = drug.UpdateQty(-oQty)
 	return Prescription{drug, pharm, script, oQty,
 		oDate, lDate}
 }
@@ -48,21 +63,22 @@ Audit struct contains an audited quantity, the pharmacist who performed the audi
 the date the audit was performed and the date the audit was logged
  */
 type Audit struct {
-	AuditQuantity int
+	ADrug Drug
 	Pharmacist string
+	AuditQuantity int
 	AuditDate, LogDate Date
 }
 
 /**
-Function: makeAudit
+Function: MakeAudit
 Description: Makes an audit struct
 @param qty The quantity recorded in the audit
 @param pharm The initials of the pharmacist who performed the audit
 @param oDate The the audit was performed
 @param lDate The date logged
  */
-func makeAudit(qty int, pharm string, oDate Date, lDate Date) Audit {
-	return Audit{qty, pharm, oDate, lDate}
+func MakeAudit(drug Drug, qty int, pharm string, oDate Date, lDate Date) Audit {
+	return Audit{drug, pharm, qty, oDate, lDate}
 }
 
 /**
@@ -75,13 +91,14 @@ type Purchase struct {
 }
 
 /**
-Function: makePurchase
+Function: MakePurchase
 Description: Makes a Purchase struct
 @param drug The drug that was bought
 @param date The date the purchase was added to the supply
 @param qty The quantity bought
  */
-func makePurchase(drug Drug, date Date, qty int) Purchase {
+func MakePurchase(drug Drug, date Date, qty int) Purchase {
+	drug = drug.UpdateQty(qty)
 	return Purchase{drug, date, qty}
 }
 
@@ -100,22 +117,31 @@ Description: Given: a drug name, ndc, and quantity, creates a drug structure
 @param ndc The ndc specific to the drug
 @param qty The current quantity of the drug
  */
-func makeDrug(name string, ndc string, qty int) Drug {
+func MakeDrug(name string, ndc string, qty int) Drug {
 	return Drug{name, ndc,qty}
 }
+
+/**
+Function: UpdateQty
+Description: Updates the quantity of the drug
+ */
+ func (drug Drug) UpdateQty(qty int) Drug {
+ 	qty = drug.Quantity + qty
+ 	return MakeDrug(drug.Id, drug.NDC, qty)
+ }
 
 /**
 Order struct contains either an audit, prescription, or purchase
  */
 type Order struct {
-	ThisOrder types.Object
+	ThisOrder interface{}
 }
 
 /**
-Function: makeOrder
+Function: MakeOrder
 Description: Creates an order using an audit, prescription, or purchase
 @param thisOrder Either an audit, prescription, or purchase struct
  */
-func makeOrder(thisOrder types.Object) Order {
+func MakeOrder(thisOrder interface{}) Order {
 	return Order{thisOrder}
 }
