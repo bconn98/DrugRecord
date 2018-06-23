@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Login Page</title>
+    <link rel="stylesheet" type="text/css" href="/assets/loginStyle.css"/>
 </head>
 <body>
-    <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
     <img id = "logo" src = "/assets/logo.png" alt="" />
     <h1>Login</h1>
-    <form action="/" method="POST">
-        Username: <input type="text" uName = "Username:" />
-        Password: <input type="password" password = "Password:" />
-        <br/>
+    </br>
+    <div id = "home"> <a href= "/"> Return Home </a> </div>
+    </br>
+    <form action="/login" method="POST">
+        Username: <input type="text" name = "uName" />
+        Password: <input type="password" name = "password" />
+        <br/><br/>
         <button type="submit">Login</button>
     </form>
-
+    {{if .}}
+        <h3> {{.}}</h3>
+    {{end}}
 </body>
 </html>

@@ -6,5 +6,5 @@ import (
 )
 
 func GetHomeHandler(w http.ResponseWriter, r *http.Request) {
-	utils.ExecuteTemplate(w, "learning.html", nil)
+	utils.ExecuteTemplate(w, "home.html", nil)
 }

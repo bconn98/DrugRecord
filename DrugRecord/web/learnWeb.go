@@ -12,6 +12,7 @@ func main() {
 	r.HandleFunc("/register", handlers.GetRegisterHandler).Methods("GET")
 	r.HandleFunc("/signout", handlers.GetSignoutHandler).Methods("GET")
 	r.HandleFunc("/login", handlers.PostLoginHandler).Methods("POST")
+	r.HandleFunc("/register", handlers.PostRegisterHandler).Methods("POST")
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("./assets"))))
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.Handle("/", r)
