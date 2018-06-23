@@ -53,6 +53,7 @@ Description: Makes a Prescription struct
 @param lDate The date the order was logged
  */
 func MakePrescritption(drug Drug, oDate Date, oQty int, pharm string, script string, lDate Date) Prescription {
+	drug = drug.UpdateQty(-oQty)
 	return Prescription{drug, pharm, script, oQty,
 		oDate, lDate}
 }
@@ -63,8 +64,8 @@ the date the audit was performed and the date the audit was logged
  */
 type Audit struct {
 	ADrug Drug
-	AuditQuantity int
 	Pharmacist string
+	AuditQuantity int
 	AuditDate, LogDate Date
 }
 
@@ -77,7 +78,7 @@ Description: Makes an audit struct
 @param lDate The date logged
  */
 func MakeAudit(drug Drug, qty int, pharm string, oDate Date, lDate Date) Audit {
-	return Audit{drug, qty, pharm, oDate, lDate}
+	return Audit{drug, pharm, qty, oDate, lDate}
 }
 
 /**
@@ -97,6 +98,7 @@ Description: Makes a Purchase struct
 @param qty The quantity bought
  */
 func MakePurchase(drug Drug, date Date, qty int) Purchase {
+	drug = drug.UpdateQty(qty)
 	return Purchase{drug, date, qty}
 }
 
@@ -123,8 +125,9 @@ func MakeDrug(name string, ndc string, qty int) Drug {
 Function: UpdateQty
 Description: Updates the quantity of the drug
  */
- func (drug Drug) UpdateQty(qty int) {
- 	drug.Quantity = drug.Quantity + 1
+ func (drug Drug) UpdateQty(qty int) Drug {
+ 	qty = drug.Quantity + qty
+ 	return MakeDrug(drug.Id, drug.NDC, qty)
  }
 
 /**

@@ -90,21 +90,24 @@ func makeOrderMap(fileName string, drugs map[string]Drug) map[string][]Order {
 		var order Order
 		if len(words) == 5 {
 			purchase := MakePurchase(drug, date, qty)
+			drug = purchase.PurchasedDrug
 			order = MakeOrder(purchase)
-		} else if len(words) == 8 {
+		} else {
 			//Get the log date of the order
-			lDate := MakeDate(words[7], words[8], words[9])
+			lDate := MakeDate(words[6], words[7], words[8])
 
-			audit := MakeAudit(drug, qty, words[5], date, lDate)
-			order = MakeOrder(audit)
-		} else if len(words) == 10 {
-			//Get the log date of the order
-			lDate := MakeDate(words[7], words[8], words[9])
-
-			prescription := MakePrescritption(drug, date, qty, words[5], words[6], lDate)
-			order = MakeOrder(prescription)
+			if len(words) == 9 {
+				audit := MakeAudit(drug, qty, words[5], date, lDate)
+				drug = audit.ADrug
+				order = MakeOrder(audit)
+			} else if len(words) == 10 {
+				prescription := MakePrescritption(drug, date, qty, words[5], words[9], lDate)
+				drug = prescription.OrderDrug
+				order = MakeOrder(prescription)
+			}
 		}
 		//Access order with order.ThisOrder
+		drugs[words[0]] = drug
 		orders[words[0]] = append(orders[words[0]], order)
 	}
 	orderFile.Close()
