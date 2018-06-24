@@ -52,7 +52,7 @@ Description: Makes a Prescription struct
 @param script The script id
 @param lDate The date the order was logged
  */
-func MakePrescritption(drug Drug, oDate Date, oQty int, pharm string, script string, lDate Date) Prescription {
+func MakePrescription(drug Drug, oDate Date, oQty int, pharm string, script string, lDate Date) Prescription {
 	drug = drug.UpdateQty(-oQty)
 	return Prescription{drug, pharm, script, oQty,
 		oDate, lDate}
