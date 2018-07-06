@@ -2,7 +2,9 @@ package handlers
 
 import (
 	. "net/http"
+	. "../../mainUtils"
 	. "../utils"
+	"../../SQLDB"
 )
 
 func PostLoginHandler(w ResponseWriter, r *Request) {
@@ -16,7 +18,8 @@ func PostLoginHandler(w ResponseWriter, r *Request) {
 	}
 	password := r.PostForm.Get("password")
 	if CheckPassword(user, password) {
-		ExecuteTemplate(w, "home.html", r)
+		users := SQLDB.GetUsers()
+		ExecuteTemplate(w,"database.html", users)
 		return
 	}
 	ExecuteTemplate(w, "login.html", "Password doesn't match our records!")

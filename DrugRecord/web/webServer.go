@@ -11,12 +11,11 @@ func main() {
 	r.HandleFunc("/login", handlers.GetLoginHandler).Methods("GET")
 	r.HandleFunc("/register", handlers.GetRegisterHandler).Methods("GET")
 	r.HandleFunc("/signout", handlers.GetSignoutHandler).Methods("GET")
+	r.HandleFunc("/database", handlers.GetDatabaseHandler).Methods("GET")
 	r.HandleFunc("/login", handlers.PostLoginHandler).Methods("POST")
 	r.HandleFunc("/register", handlers.PostRegisterHandler).Methods("POST")
-	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("./assets"))))
+	http.Handle("/web/assets/", http.StripPrefix("/web/assets", http.FileServer(http.Dir("./web/assets"))))
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.Handle("/", r)
 	http.ListenAndServe(":8080", nil)
 }
-
-

@@ -1,8 +1,8 @@
-package utils
+package mainUtils
 
 type User struct {
-	userName string
-	passVal int
+	UserName string
+	PassVal int
 }
 
 var users = make(map[string]User)
@@ -21,11 +21,11 @@ func FindUser(name string) (User){
 }
 
 func (user User) GetUserName() (string) {
-	return user.userName
+	return user.UserName
 }
 
 func CheckPassword(user User, password string) (bool){
-	 return user.passVal == computePassVal(password)
+	 return user.PassVal == computePassVal(password)
 }
 
 func computePassVal(password string) (int) {

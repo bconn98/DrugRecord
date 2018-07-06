@@ -3,6 +3,7 @@ package handlers
 import (
 	. "net/http"
 	. "../utils"
+	. "../../mainUtils"
 	"github.com/gorilla/sessions"
 )
 
