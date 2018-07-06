@@ -1,10 +1,9 @@
-package SQLDB
+package mainUtils
 
 import (
 	_ "github.com/lib/pq"
 	"database/sql"
 	"log"
-	"../mainUtils"
 )
 
 func issue(err error) {
@@ -17,7 +16,7 @@ var connStr = "postgres://postgres:Zoo123@localhost/DrugRecord?sslmode=disable"
 var db, err = sql.Open("postgres", connStr)
 
 
-func GetUsers() ([]mainUtils.User){
+func GetUsers() ([]User){
 	var (
 		userName string
 		passVal int
@@ -27,12 +26,12 @@ func GetUsers() ([]mainUtils.User){
 	rows, err := db.Query("SELECT * FROM userDB;")
 	issue(err)
 
-	var users []mainUtils.User
+	var users []User
 	defer rows.Close()
 	for rows.Next() {
 		err := rows.Scan(&userName, &passVal)
 		issue(err)
-		user := mainUtils.User{userName, passVal}
+		user := User{userName, passVal}
 		users = append(users, user)
 	}
 	err = rows.Err()
@@ -41,8 +40,7 @@ func GetUsers() ([]mainUtils.User){
 	return users
 }
 
-func AddUser(username string, password string) {
-	query, err := db.Prepare("INSERT INTO userDB (userName, passVal) VALUES (\"" + username + "\", " + password + ");")
+func AddUser(username string, passVal int) {
+	_, err := db.Query("INSERT INTO userDB (userName, passVal) VALUES ($1, $2);", username, passVal)
 	issue(err)
-	query.Exec()
 }

@@ -1,0 +1,4 @@
+Zyrtec NDC1 1000
+Ibuprofen NDC2 100
+Singular NDC3 203
+Vitamin NDC4 43

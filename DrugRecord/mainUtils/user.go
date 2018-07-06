@@ -1,21 +1,59 @@
 package mainUtils
 
+import "strings"
+
+
 type User struct {
 	UserName string
 	PassVal int
 }
 
-var users = make(map[string]User)
+const (
+	UE = 0// Empty Username
+	US = 1// Username contains spaces
+	PE = 2// Empty Password
+	PS = 3 // Password contains spaces
+	TN = 4 // Taken Name
+	GOOD = 5 // No issues
+)
 
-func MakeUser(name string, password string) {
+func MakeUser(username string, password string) (int) {
+	validNum := validateInfo(username, password)
+	if validNum != GOOD {
+		return validNum
+	}
 	passVal := computePassVal(password)
-	user := User{name, passVal}
-	users[name] = user
+	test := User{}
+	if FindUser(username) != test {
+		return TN
+	}
+	AddUser(username, passVal)
+	return GOOD
+}
+
+func validateInfo(username string, password string) (int) {
+	if username == "" {
+				return UE
+	} else if strings.Contains(username, " ") {
+
+		return US
+	} else if password == "" {
+
+		return PE
+	} else if strings.Contains(password, " ") {
+
+		return PS
+	} else {
+		return GOOD
+	}
 }
 
 func FindUser(name string) (User){
-	if user, ok := users[name]; ok {
-		return user
+	users := GetUsers()
+	for _, user := range users {
+		if user.GetUserName() == name {
+			return user
+		}
 	}
 	return User{}
 }

@@ -3,10 +3,10 @@ package handlers
 import (
 	"net/http"
 	"../utils"
-	"../../SQLDB"
+	"../../mainUtils"
 )
 
 func GetDatabaseHandler(w http.ResponseWriter, r *http.Request) {
-	users := SQLDB.GetUsers()
+	users := mainUtils.GetUsers()
 	utils.ExecuteTemplate(w,"database.html", users)
 }
