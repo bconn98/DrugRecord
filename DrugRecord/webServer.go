@@ -2,7 +2,7 @@ package main
 import (
 	"net/http"
 	"github.com/gorilla/mux"
-	"./handlers"
+	"./web/handlers"
 )
 
 func main() {
