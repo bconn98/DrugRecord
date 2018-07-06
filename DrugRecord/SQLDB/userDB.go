@@ -42,7 +42,7 @@ func GetUsers() ([]mainUtils.User){
 }
 
 func AddUser(username string, password string) {
-	query, err := db.Prepare("INSERT INTO userDB VALUES (\"" + username + "\", " + password + ");")
+	query, err := db.Prepare("INSERT INTO userDB (userName, passVal) VALUES (\"" + username + "\", " + password + ");")
 	issue(err)
 	query.Exec()
 }
