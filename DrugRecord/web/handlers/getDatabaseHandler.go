@@ -7,6 +7,6 @@ import (
 )
 
 func GetDatabaseHandler(w http.ResponseWriter, r *http.Request) {
-	users := mainUtils.GetUsers()
+	users := mainUtils.FindUDC("")
 	utils.ExecuteTemplate(w,"database.html", users)
 }

@@ -1,4 +1,4 @@
-package goDB
+package mainUtils
 
 /**
 File: structs_test

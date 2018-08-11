@@ -1,4 +1,4 @@
-package goDB
+package mainUtils
 
 import "strconv"
 

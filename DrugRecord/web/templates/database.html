@@ -3,22 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Medicine Shoppe C2 Form</title>
+    <link rel="stylesheet" type="text/css" href="/web/assets/databaseStyle.css"/>
 </head>
 <body>
-<link rel="stylesheet" type="text/css" href="/web/assets/databaseStyle.css"/>
-<img id = "logo" src = "/web/assets/logo.png" alt="" />
-<h1> Medicine Shoppe C2 Form </h1>
-</br>
-<div id = "navigation">
-    <div id = "signout"> <a href= "/signout"> Sign Out </a> </div>
-</div>
-<div>
-    <table>
-        <tr id = "header"><th>Username</th><th>Passval</th></tr>
-    {{range .}}
-        <tr>{{range rangeStruct .}} <td>{{.}}</td>{{end}}</tr>
-    {{end}}
-    </table>
-</div>
+    <img id = "logo" src = "/web/assets/logo.png" alt="" />
+    <h1> Medicine Shoppe C2 Form </h1>
+    </br>
+    <div id = "navigation">
+        <div id = "signout"> <a href= "/signout"> Sign Out </a> </div>
+    </div>
+    <div>
+        </br>
+        <form id = "test" action="/database" method="POST">
+            UDC: <input type="text" name = "UDC" />
+            <br/><br/>
+            <button type="submit">Submit</button>
+        </form>
+        </br>
+        <table>
+            <tr id = "header"><th>Row</th><th>UDC</th></tr>
+        {{range .}}
+            <tr>{{range rangeStruct .}}<td>{{.}}</td>{{end}}</tr>
+        {{end}}
+        </table>
+    </div>
 </body>
 </html>

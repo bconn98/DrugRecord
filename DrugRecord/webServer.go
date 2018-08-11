@@ -12,6 +12,7 @@ func main() {
 	r.HandleFunc("/register", handlers.GetRegisterHandler).Methods("GET")
 	r.HandleFunc("/signout", handlers.GetSignoutHandler).Methods("GET")
 	r.HandleFunc("/database", handlers.GetDatabaseHandler).Methods("GET")
+	r.HandleFunc("/database", handlers.PostDatabaseHandler).Methods("POST")
 	r.HandleFunc("/login", handlers.PostLoginHandler).Methods("POST")
 	r.HandleFunc("/register", handlers.PostRegisterHandler).Methods("POST")
 	http.Handle("/web/assets/", http.StripPrefix("/web/assets", http.FileServer(http.Dir("./web/assets"))))
