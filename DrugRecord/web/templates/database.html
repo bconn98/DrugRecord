@@ -12,9 +12,22 @@
     <div id = "navigation">
         <div id = "signout"> <a href= "/signout"> Sign Out </a> </div>
     </div>
+    <div id = "buttons">
+        </br>
+        <script type="text/javascript">
+            // Popup window code
+            function newPopup(url) {
+                popupWindow = window.open(
+                        url,'popUpWindow','height=450,width=400,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+            }
+        </script>
+        <button type = "button" onclick="JavaScript:newPopup('/prescription')">New Prescription</button>
+        <button type = "button" onclick="JavaScript:newPopup('/audit')">New Audit</button>
+        <button type = "button" onclick="JavaScript:newPopup('/purchase')">New Purchase</button>
+    </div>
     <div>
         </br>
-        <form id = "test" action="/database" method="POST">
+        <form id = "search" action="/database" method="POST">
             UDC: <input type="text" name = "UDC" />
             <br/><br/>
             <button type="submit">Submit</button>

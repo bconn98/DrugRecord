@@ -17,7 +17,7 @@ table {
     text-align: left;
 }
 
-#test {
+#search {
     text-align: center;
 }
 
@@ -30,6 +30,10 @@ table {
 #navigation {
     height: 20px;
     background-color: slategrey;
+    text-align: center;
+}
+
+#buttons {
     text-align: center;
 }
 
