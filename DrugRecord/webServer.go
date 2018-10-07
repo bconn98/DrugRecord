@@ -19,6 +19,8 @@ func main() {
 	r.HandleFunc("/login", handlers.PostLoginHandler).Methods("POST")
 	r.HandleFunc("/register", handlers.PostRegisterHandler).Methods("POST")
 	r.HandleFunc("/audit", handlers.PostAuditHandler).Methods("POST")
+	r.HandleFunc("/purchase", handlers.PostPurchaseHandler).Methods("POST")
+	r.HandleFunc("/prescription", handlers.PostPrescriptionHandler).Methods("POST")
 	http.Handle("/web/assets/", http.StripPrefix("/web/assets", http.FileServer(http.Dir("./web/assets"))))
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.Handle("/", r)

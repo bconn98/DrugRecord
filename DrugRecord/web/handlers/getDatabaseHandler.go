@@ -7,6 +7,6 @@ import (
 )
 
 func GetDatabaseHandler(w http.ResponseWriter, r *http.Request) {
-	users := mainUtils.FindUDC("")
+	users := mainUtils.FindNDC("12345-6789-12")
 	utils.ExecuteTemplate(w,"database.html", users)
 }

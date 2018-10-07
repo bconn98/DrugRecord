@@ -28,13 +28,13 @@
     <div>
         </br>
         <form id = "search" action="/database" method="POST">
-            UDC: <input type="text" name = "UDC" />
+            NDC: <input type="text" name = "ndc" />
             <br/><br/>
             <button type="submit">Submit</button>
         </form>
         </br>
         <table>
-            <tr id = "header"><th>Row</th><th>UDC</th></tr>
+            <tr id = "header"><th>Row</th><th>NDC</th></tr>
         {{range .}}
             <tr>{{range rangeStruct .}}<td>{{.}}</td>{{end}}</tr>
         {{end}}

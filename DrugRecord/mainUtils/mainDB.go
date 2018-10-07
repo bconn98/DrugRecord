@@ -3,22 +3,22 @@ package mainUtils
 import (
 	_ "github.com/lib/pq"
 	"strconv"
-	"fmt"
 )
 
-func FindUDC(udc string) ([]string) {
-	var UDC string
+func FindNDC(ndc string) ([]Order) {
+	var NDC string
+	var id int
 	issue(err)
 
-	rows, err := db.Query("SELECT udc FROM mainDB WHERE udc = $1;", udc)
+	rows, err := db.Query("SELECT id, ndc FROM orderdb WHERE ndc = $1;", ndc)
 	issue(err)
 
 	defer rows.Close()
-	var orders []string
+	var orders []Order
 	for rows.Next() {
-		err := rows.Scan(&UDC)
+		err := rows.Scan(&id, &NDC)
 		issue(err)
-		orders = append(orders, UDC)
+		orders = append(orders, MakeOrder(id))
 	}
 	err = rows.Err()
 	issue(err)
@@ -26,31 +26,32 @@ func FindUDC(udc string) ([]string) {
 	return orders
 }
 
-func AddAudit(udc string, pharmacist string, monthS string, dayS string,
-	yearS string, amonthS string, adayS string, ayearS string, qtyS string){
-	ldate := insertDate(monthS, dayS, yearS)
-	adate := insertDate(amonthS, adayS, ayearS)
-	qty, _ := strconv.Atoi(qtyS)
-	_, err = db.Query("INSERT INTO maindb (udc, pharmacist, aqty, adate, ldate) VALUES ($1, $2, $3, $4, $5);",
-		udc, pharmacist, qty, adate, ldate)
-}
-
-func insertDate(monthS string, dayS string, yearS string) (Date){
-	var d1 Date
+func AddAudit(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string){
 	month, _ := strconv.Atoi(monthS)
 	day, _ := strconv.Atoi(dayS)
 	year, _ := strconv.Atoi(yearS)
-	testString := fmt.Sprintf("DO $$ BEGIN DECLARE d1 \"date\"; d1 := (%d, %d, %d); RETURNING d1; END $$",
-		month, day, year)
-	err := db.QueryRow(testString).Scan(&d1)
-	issue(err)
-	return d1
+	qty, _ := strconv.Atoi(qtyS)
+	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script, audit, purchase, id) " +
+		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8, $9, $10);", ndc, pharmacist, qty, year, month,
+		day, false, true, false, 2)
 }
 
-func AddPrescription(){
-
+func AddPrescription(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string){
+	month, _ := strconv.Atoi(monthS)
+	day, _ := strconv.Atoi(dayS)
+	year, _ := strconv.Atoi(yearS)
+	qty, _ := strconv.Atoi(qtyS)
+	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script, audit, purchase, id) " +
+		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8, $9, $10);", ndc, pharmacist, qty, year, month,
+		day, true, false, false, 3)
 }
 
-func AddPurchase(){
-
+func AddPurchase(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string){
+	month, _ := strconv.Atoi(monthS)
+	day, _ := strconv.Atoi(dayS)
+	year, _ := strconv.Atoi(yearS)
+	qty, _ := strconv.Atoi(qtyS)
+	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script, audit, purchase, id) " +
+		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8, $9, $10);", ndc, pharmacist, qty, year, month,
+		day, false, false, true, 4)
 }
