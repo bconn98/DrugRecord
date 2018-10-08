@@ -1,3 +1,9 @@
+/**
+File: postPrescriptionHandler
+Description: Sends the prescription information
+@author Bryan Conn
+@date 10/7/18
+ */
 package handlers
 
 import (
@@ -5,6 +11,11 @@ import (
 	"../../mainUtils"
 )
 
+/**
+Function: PostPrescriptionHandler
+Description: Sends the prescription information to be added to the database and executes the
+database template to refresh
+*/
 func PostPrescriptionHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	udc := r.PostForm.Get("udc")

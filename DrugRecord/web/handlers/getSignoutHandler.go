@@ -1,3 +1,9 @@
+/**
+File: getSignoutHandler
+Description: Gets new signout page
+@author Bryan Conn
+@date 10/7/18
+ */
 package handlers
 
 import (
@@ -5,6 +11,10 @@ import (
 	"../utils"
 )
 
+/**
+Function: GetSignoutHandler
+Description: Executes the signout template
+*/
 func GetSignoutHandler(w http.ResponseWriter, r *http.Request) {
 	utils.ExecuteTemplate(w, "home.html", nil)
 }

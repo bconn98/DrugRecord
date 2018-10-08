@@ -1,3 +1,9 @@
+/**
+File: webServer
+Description: Runs a database
+@author Bryan Conn
+@date 10/7/2018
+ */
 package main
 import (
 	"net/http"
@@ -5,6 +11,10 @@ import (
 	"./web/handlers"
 )
 
+/**
+Function: main
+Description: Creates a new web server at port 8080 and connects all of the handler functions
+ */
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handlers.GetHomeHandler).Methods("GET")

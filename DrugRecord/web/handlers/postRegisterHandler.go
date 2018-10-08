@@ -1,3 +1,9 @@
+/**
+File: postRegisterHandler
+Description: Sends the audit information
+@author Bryan Conn
+@date 10/7/18
+ */
 package handlers
 
 import (
@@ -6,6 +12,11 @@ import (
 	. "../../mainUtils"
 )
 
+/**
+Function: PostRegisterHandler
+Description: Sends the new users information to be validated and redirects differently
+depending on that validity.
+*/
 func PostRegisterHandler(w ResponseWriter, r *Request) {
 	r.ParseForm()
 	username := r.PostForm.Get("uName")

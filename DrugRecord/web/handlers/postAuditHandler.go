@@ -1,3 +1,9 @@
+/**
+File: postAuditHandler
+Description: Sends the audit information
+@author Bryan Conn
+@date 10/7/18
+ */
 package handlers
 
 import (
@@ -5,6 +11,11 @@ import (
 	"../../mainUtils"
 )
 
+/**
+Function: PostAuditHandler
+Description: Sends the audit information to add it to the database and executes the
+database template to refresh the page
+*/
 func PostAuditHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	udc := r.PostForm.Get("udc")

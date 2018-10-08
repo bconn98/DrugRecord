@@ -145,3 +145,11 @@ Description: Creates an order using an audit, prescription, or purchase
 func MakeOrder(thisOrder interface{}) Order {
 	return Order{thisOrder}
 }
+
+/**
+User struct contains a username and a password value
+ */
+type User struct {
+	UserName string
+	PassVal int
+}
