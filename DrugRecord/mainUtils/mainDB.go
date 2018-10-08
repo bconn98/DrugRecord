@@ -72,7 +72,28 @@ func addType(ndc string, pharmacist string, monthS string, dayS string, yearS st
 	qty, _ := strconv.Atoi(qtyS)
 	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script, audit, purchase, id) " +
 		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8, $9, $10);", ndc, pharmacist, qty, year, month,
-		day, script, audit, purchase, 2)
+		day, script, audit, purchase, 14)
+}
+
+/**
+Function: alterQty
+Description: Alters a drugs quantity using its NDC to find it
+@param ndc The ndc value of the drug in question
+@param qtyS The quantity of the alteration
+ */
+func alterQty(ndc string, qtyS string) {
+	var rowQ int
+	qty, _ := strconv.Atoi(qtyS)
+	rows, err := db.Query("SELECT qty from drugdb where ndc = $1", ndc)
+	issue(err)
+	rows.Next()
+	err = rows.Scan(&rowQ)
+	if err != nil {
+		_, err = db.Query("insert into drugdb (ndc, qty) values ($1, $2)", ndc, qty)
+		return
+	}
+	newQ := rowQ - qty
+	_, err = db.Query("UPDATE drugdb set qty = $1 where ndc = $2", newQ, ndc)
 }
 
 /**
@@ -87,6 +108,7 @@ Description: Adds a prescription type order to the orderdb
  */
 func AddPrescription(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string){
 	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, 0)
+	alterQty(ndc, qtyS)
 }
 
 /**
@@ -115,4 +137,5 @@ Description: Adds a purchase type order to the orderdb
  */
 func AddPurchase(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string) {
 	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, 2)
+	alterQty(ndc, "-" + qtyS)
 }

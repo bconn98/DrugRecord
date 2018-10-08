@@ -9,6 +9,7 @@ package handlers
 import (
 	"net/http"
 	"../../mainUtils"
+	"../utils"
 )
 
 /**
@@ -25,5 +26,5 @@ func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
 	year := r.PostForm.Get("year")
 	qty := r.PostForm.Get("qty")
 	mainUtils.AddPurchase(udc, pharmacist, month, day, year, qty)
-	GetDatabaseHandler(w, r)
+	utils.ExecuteTemplate(w, "closeWindow.html", nil)
 }
