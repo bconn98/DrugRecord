@@ -9,6 +9,7 @@ package mainUtils
 import (
 	_ "github.com/lib/pq"
 	"strconv"
+	"time"
 )
 
 /**
@@ -19,19 +20,22 @@ Description: Given a NDC, finds and returns all corresponding rows
  */
 func FindNDC(ndc string) ([]Order) {
 	var NDC string
-	var id int
+	var pharm string
+	var script string
+	var date time.Time
+	var qty int
 	issue(err)
 
-	rows, err := db.Query("SELECT id, ndc FROM orderdb WHERE ndc = $1;", ndc)
+	rows, err := db.Query("SELECT ndc, pharmacist, date, qty, script FROM orderdb WHERE ndc = $1;", ndc)
 	issue(err)
 
 	defer rows.Close()
 	//Find a way to easily have all the data
 	var orders []Order
 	for rows.Next() {
-		err := rows.Scan(&id, &NDC)
+		err := rows.Scan(&NDC, &pharm, &date, &qty, &script)
 		issue(err)
-		orders = append(orders, MakeOrder(id))
+		orders = append(orders, MakeOrder(pharm, script, qty, date))
 	}
 	err = rows.Err()
 	issue(err)
@@ -50,29 +54,17 @@ Description: Creates a new row in the orderdb with passed in attributes
 @param qtyS The quantity of the order
 @param typ An int value to determine the type of the order
  */
-func addType(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string, typ int) {
-	var script, audit, purchase bool
-	switch typ  {
-		case 0:
-			script = true
-			audit = false
-			purchase = false
-		case 1:
-			script = false
-			audit = true
-			purchase = false
-		case 2:
-			script = false
-			audit = false
-			purchase = true
-	}
+func addType(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string, script string) {
+	var id int
 	month, _ := strconv.Atoi(monthS)
 	day, _ := strconv.Atoi(dayS)
 	year, _ := strconv.Atoi(yearS)
 	qty, _ := strconv.Atoi(qtyS)
-	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script, audit, purchase, id) " +
-		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8, $9, $10);", ndc, pharmacist, qty, year, month,
-		day, script, audit, purchase, 14)
+	row := db.QueryRow("select max(id) from orderdb")
+	row.Scan(&id)
+	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script, id) " +
+		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8);", ndc, pharmacist, qty, year, month,
+		day, script, id + 1)
 }
 
 /**
@@ -105,9 +97,10 @@ Description: Adds a prescription type order to the orderdb
 @param dayS The day the prescription was made
 @param yearS The year the prescription was made
 @param qtyS The quantity of the prescription
+@param script The prescription number
  */
-func AddPrescription(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string){
-	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, 0)
+func AddPrescription(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string, script string){
+	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, script)
 	alterQty(ndc, qtyS)
 }
 
@@ -122,7 +115,7 @@ Description: Adds a audit type order to the orderdb
 @param qtyS The quantity of the audit
  */
 func AddAudit(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string){
-	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, 1)
+	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, "Audit")
 }
 
 /**
@@ -136,6 +129,6 @@ Description: Adds a purchase type order to the orderdb
 @param qtyS The quantity of the purchase
  */
 func AddPurchase(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string) {
-	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, 2)
+	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, "Purchase")
 	alterQty(ndc, "-" + qtyS)
 }

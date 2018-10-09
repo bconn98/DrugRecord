@@ -1,6 +1,9 @@
 package mainUtils
 
-import "strconv"
+import (
+	"time"
+	"strconv"
+)
 
 /**
 File: structs.go
@@ -13,7 +16,9 @@ Description: All the structs needed to implement the C2 record
 Date struct holds a month day and year
  */
 type Date struct {
-	Month, Day, Year int
+	Day int
+	Month time.Month
+	Year int
 }
 
 /**
@@ -22,51 +27,46 @@ Description: Makes a drug struct with the month, day, year
 @param month The month
 @param day The day
 @param year The year
+@return A Date object
  */
- func MakeDate(monthS string, dayS string, yearS string) Date {
-	 month, _ := strconv.Atoi(monthS)
-	 day, _ := strconv.Atoi(dayS)
-	 year, _ := strconv.Atoi(yearS)
- 	return Date{month, day, year}
+ func MakeDate(month time.Month, day int, year int) Date {
+ 	return Date{day, month, year}
  }
 
 /**
-Prescription struct contains the drug of the order, the pharmacist that filled the order,
-the script id, the quantity of the order, the date the order was filled, the date the
-order was logged
+Prescription struct contains the ndc of  drug of the order, the pharmacist that filled
+the order, the script id, the quantity of the order, the date the order was filled
  */
 type Prescription struct {
-	OrderDrug Drug
+	ndc string
 	Pharmacist, Script string
 	OrderQuantity int
-	OrderDate, LogDate Date
+	date time.Time
 }
 
 /**
 Function: MakePrescription
 Description: Makes a Prescription struct
-@param drug The drug being ordered
-@param oDate The date the order was filled
-@param oQty The quantity of the order
+@param ndc The ndc of the drug being ordered
+@param qty The quantity of the order
 @param pharm The initials of the pharmacist
 @param script The script id
-@param lDate The date the order was logged
+@param date The date of the order
+@return A prescription object
  */
-func MakePrescription(drug Drug, oDate Date, oQty int, pharm string, script string, lDate Date) Prescription {
-	drug = drug.UpdateQty(-oQty)
-	return Prescription{drug, pharm, script, oQty,
-		oDate, lDate}
+func MakePrescription(ndc string, pharm string, script string, qty int, date time.Time) Prescription {
+	return Prescription{ndc, pharm, script, qty, date}
 }
 
 /**
 Audit struct contains an audited quantity, the pharmacist who performed the audit,
-the date the audit was performed and the date the audit was logged
+the date the audit was performed and the ndc of the auditted drug
  */
 type Audit struct {
-	ADrug Drug
+	ndc string
 	Pharmacist string
 	AuditQuantity int
-	AuditDate, LogDate Date
+	date time.Time
 }
 
 /**
@@ -74,32 +74,36 @@ Function: MakeAudit
 Description: Makes an audit struct
 @param qty The quantity recorded in the audit
 @param pharm The initials of the pharmacist who performed the audit
-@param oDate The the audit was performed
-@param lDate The date logged
+@param date The the audit was performed
+@param ndc The ndc of the drug
+@return An Audit object
  */
-func MakeAudit(drug Drug, qty int, pharm string, oDate Date, lDate Date) Audit {
-	return Audit{drug, pharm, qty, oDate, lDate}
+func MakeAudit(ndc string, pharm string, qty int, date time.Time) Audit {
+	return Audit{ndc, pharm, qty, date}
 }
 
 /**
-Purchase struct contains a drug, purchase date, and purchased quantity
+Purchase struct contains the ndc of a drug, purchase date, and purchased quantity,
+and the pharmacist that counted the drug
  */
 type Purchase struct {
-	PurchasedDrug Drug
-	PurchaseDate Date
+	ndc string
+	pharm string
 	Qty int
+	date time.Time
 }
 
 /**
 Function: MakePurchase
 Description: Makes a Purchase struct
-@param drug The drug that was bought
+@param ndc The ndc of the drug that was bought
 @param date The date the purchase was added to the supply
 @param qty The quantity bought
+@param pharm The pharmacist that counted the drug
+@return A Purchase object
  */
-func MakePurchase(drug Drug, date Date, qty int) Purchase {
-	drug = drug.UpdateQty(qty)
-	return Purchase{drug, date, qty}
+func MakePurchase(ndc string, pharm string, qty int, date time.Time) Purchase {
+	return Purchase{ndc, pharm, qty, date}
 }
 
 /**
@@ -131,19 +135,29 @@ Description: Updates the quantity of the drug
  }
 
 /**
-Order struct contains either an audit, prescription, or purchase
+Order struct contains the pharmacist on the order, the script/type of the order
+the quantity and the date of the order
  */
 type Order struct {
-	ThisOrder interface{}
+	Pharm string
+	Script string
+	Qty int
+	Date string
 }
 
 /**
 Function: MakeOrder
 Description: Creates an order using an audit, prescription, or purchase
-@param thisOrder Either an audit, prescription, or purchase struct
+@param pharm The pharmacist on the order
+@param script The script/type of the order
+@param qty The quantity of the order
+@param date The date of the order
+@return An Order Object
  */
-func MakeOrder(thisOrder interface{}) Order {
-	return Order{thisOrder}
+func MakeOrder(pharm string, script string,  qty int, date time.Time) Order {
+	var dateS string
+	dateS = date.Month().String() + " " + strconv.Itoa(date.Day()) + " " + strconv.Itoa(date.Year())
+	return Order{pharm, script, qty, dateS}
 }
 
 /**

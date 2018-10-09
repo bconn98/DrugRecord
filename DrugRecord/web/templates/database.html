@@ -21,9 +21,9 @@
                         url,'popUpWindow','height=450,width=400,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
             }
         </script>
-        <button type = "button" onclick="JavaScript:newPopup('/prescription')">New Prescription</button>
-        <button type = "button" onclick="JavaScript:newPopup('/audit')">New Audit</button>
-        <button type = "button" onclick="JavaScript:newPopup('/purchase')">New Purchase</button>
+        <button type = "button" onclick="newPopup('/prescription')">New Prescription</button>
+        <button type = "button" onclick="newPopup('/audit')">New Audit</button>
+        <button type = "button" onclick="newPopup('/purchase')">New Purchase</button>
     </div>
     <div>
         </br>
@@ -34,9 +34,9 @@
         </form>
         </br>
         <table>
-            <tr id = "header"><th>Row</th><th>NDC</th></tr>
+            <tr id = "header"><th>Info</th><th>Pharmacist</th><th>Script/Type</th><th>Quantity</th><th>Date</th></tr>
         {{range .}}
-            <tr>{{range rangeStruct .}}<td>{{.}}</td>{{end}}</tr>
+            <tr><td><button id = "info" type="button"  onclick="newPopup('/audit')" >INFO</button></td>{{range rangeStruct .}}<td>{{.}}</td>{{end}}</tr>
         {{end}}
         </table>
     </div>
