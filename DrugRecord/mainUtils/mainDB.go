@@ -26,7 +26,7 @@ func FindNDC(ndc string) ([]Order) {
 	var qty int
 	issue(err)
 
-	rows, err := db.Query("SELECT ndc, pharmacist, date, qty, script FROM orderdb WHERE ndc = $1;", ndc)
+	rows, err := db.Query("SELECT ndc, pharmacist, date, qty, script FROM orderdb WHERE ndc = $1 order by date desc;", ndc)
 	issue(err)
 
 	defer rows.Close()
@@ -55,16 +55,13 @@ Description: Creates a new row in the orderdb with passed in attributes
 @param typ An int value to determine the type of the order
  */
 func addType(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string, script string) {
-	var id int
 	month, _ := strconv.Atoi(monthS)
 	day, _ := strconv.Atoi(dayS)
 	year, _ := strconv.Atoi(yearS)
 	qty, _ := strconv.Atoi(qtyS)
-	row := db.QueryRow("select max(id) from orderdb")
-	row.Scan(&id)
-	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script, id) " +
-		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8);", ndc, pharmacist, qty, year, month,
-		day, script, id + 1)
+	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script) " +
+		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7);", ndc, pharmacist, qty, year, month,
+		day, script)
 }
 
 /**

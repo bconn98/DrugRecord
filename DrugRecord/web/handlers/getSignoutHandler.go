@@ -16,5 +16,6 @@ Function: GetSignoutHandler
 Description: Executes the signout template
 */
 func GetSignoutHandler(w http.ResponseWriter, r *http.Request) {
+	SetBad()
 	utils.ExecuteTemplate(w, "home.html", nil)
 }

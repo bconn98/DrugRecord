@@ -30,7 +30,7 @@ func PostLoginHandler(w ResponseWriter, r *Request) {
 		ExecuteTemplate(w, "login.html", "Password doesn't match our records!")
 		return
 	}
-	users := GetUsers()
-	ExecuteTemplate(w,"database.html", users)
+	SetGood()
+	Redirect(w, r, "database", 302)
 	return
 }

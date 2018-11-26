@@ -9,7 +9,6 @@ package handlers
 import (
 	"net/http"
 	"../../mainUtils"
-	"../utils"
 )
 
 /**
@@ -19,12 +18,12 @@ and executes the database template to refresh
 */
 func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	udc := r.PostForm.Get("udc")
+	ndc := r.PostForm.Get("ndc")
 	pharmacist := r.PostForm.Get("pharmacist")
 	month := r.PostForm.Get("month")
 	day := r.PostForm.Get("day")
 	year := r.PostForm.Get("year")
 	qty := r.PostForm.Get("qty")
-	mainUtils.AddPurchase(udc, pharmacist, month, day, year, qty)
-	utils.ExecuteTemplate(w, "closeWindow.html", nil)
+	mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty)
+	GetCloseHandler(w, r)
 }

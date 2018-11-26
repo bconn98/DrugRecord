@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Info</title>
+</head>
+<table>
+    <tr id = "header"><th>NDC</th><th>Log Date</th><th>Date</th></tr>
+{{range .}}
+    <tr>{{range rangeStruct .}}<td>{{.}}</td>{{end}}</tr>
+{{end}}
+</table>
+</body>
+</html>

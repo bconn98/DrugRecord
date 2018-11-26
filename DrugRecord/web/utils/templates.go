@@ -51,6 +51,5 @@ func RangeStructer(args ...interface{}) []interface{} {
 	for i := 0; i < v.NumField(); i++ {
 		out[i] = v.Field(i).Interface()
 	}
-
 	return out
 }

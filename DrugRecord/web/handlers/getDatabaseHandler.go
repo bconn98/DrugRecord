@@ -9,14 +9,27 @@ package handlers
 import (
 	"net/http"
 	"../utils"
-	"../../mainUtils"
 )
+
+var good = false
 
 /**
 Function: GetDatabaseHandler
 Description: Executes the database template with the output data
 */
 func GetDatabaseHandler(w http.ResponseWriter, r *http.Request) {
-	output := mainUtils.FindNDC("12345-6789-12")
-	utils.ExecuteTemplate(w,"database.html", output)
+	r.ParseForm()
+	if !good {
+		utils.ExecuteTemplate(w, "home.html", "You are not signed in")
+		return
+	}
+	utils.ExecuteTemplate(w,"database.html", nil)
+}
+
+func SetGood() {
+	good = true
+}
+
+func SetBad() {
+	good = false
 }

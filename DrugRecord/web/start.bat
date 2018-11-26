@@ -1,4 +1,4 @@
-cd GolandProjects/DrugRecord/DrugRecord/web
+cd GolandProjects/DrugRecord/DrugRecord/
 go build
 start chrome.exe "http://localhost:8080"
-web
+start ../web.exe

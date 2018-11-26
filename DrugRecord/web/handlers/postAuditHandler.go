@@ -9,7 +9,6 @@ package handlers
 import (
 	"net/http"
 	"../../mainUtils"
-	"../utils"
 )
 
 /**
@@ -19,12 +18,12 @@ database template to refresh the page
 */
 func PostAuditHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	udc := r.PostForm.Get("udc")
+	ndc := r.PostForm.Get("ndc")
 	pharmacist := r.PostForm.Get("pharmacist")
 	amonth := r.PostForm.Get("amonth")
 	aday := r.PostForm.Get("aday")
 	ayear := r.PostForm.Get("ayear")
 	qty := r.PostForm.Get("qty")
-	mainUtils.AddAudit(udc, pharmacist, amonth, aday, ayear, qty)
-	utils.ExecuteTemplate(w, "closeWindow.html", nil)
+	mainUtils.AddAudit(ndc, pharmacist, amonth, aday, ayear, qty)
+	GetCloseHandler(w, r)
 }
