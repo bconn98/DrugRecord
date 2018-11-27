@@ -19,7 +19,13 @@ in the database template
 */
 func PostDatabaseHandler(w ResponseWriter, r *Request) {
 	r.ParseForm()
+	var str string
 	ndc := r.PostForm.Get("ndc")
+
+	if CheckNDC(ndc, str) != "" {
+		ExecuteTemplate(w, "database.html", nil)
+		return
+	}
 	orders := FindNDC(ndc)
 	ExecuteTemplate(w,"database.html", orders)
 	return
