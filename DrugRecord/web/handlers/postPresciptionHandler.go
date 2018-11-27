@@ -9,6 +9,7 @@ package handlers
 import (
 	"net/http"
 	"../../mainUtils"
+	"../utils"
 )
 
 /**
@@ -18,13 +19,23 @@ database template to refresh
 */
 func PostPrescriptionHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
+	var str string
 	ndc := r.PostForm.Get("ndc")
+	str = utils.CheckNDC(ndc, str)
 	pharmacist := r.PostForm.Get("pharmacist")
+	str = utils.CheckPharm(pharmacist, str)
 	script := r.PostForm.Get("script")
+	str = utils.CheckNum(script, str)
 	month := r.PostForm.Get("month")
 	day := r.PostForm.Get("day")
 	year := r.PostForm.Get("year")
+	str = utils.CheckDate(month, day, year, str)
 	qty := r.PostForm.Get("qty")
+	str = utils.CheckQty(qty, str)
+	if str != "" {
+		utils.ExecuteTemplate(w, "prescription.html", str)
+		return
+	}
 	mainUtils.AddPrescription(ndc, pharmacist, month, day, year, qty, script)
 	GetCloseHandler(w, r)
 }
