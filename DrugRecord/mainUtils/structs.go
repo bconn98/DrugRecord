@@ -140,7 +140,7 @@ the quantity and the date of the order
  */
 type Order struct {
 	Pharm string
-	Script string
+	Script, Typ string
 	Qty int
 	Date string
 }
@@ -154,10 +154,10 @@ Description: Creates an order using an audit, prescription, or purchase
 @param date The date of the order
 @return An Order Object
  */
-func MakeOrder(pharm string, script string,  qty int, date time.Time) Order {
+func MakeOrder(pharm string, script string, typ string, qty int, date time.Time) Order {
 	var dateS string
 	dateS = date.Month().String() + " " + strconv.Itoa(date.Day()) + " " + strconv.Itoa(date.Year())
-	return Order{pharm, script, qty, dateS}
+	return Order{pharm, script, typ, qty, dateS}
 }
 
 /**

@@ -24,7 +24,8 @@ form {
 }
 
 #home {
-    height: 20px;
+    height: 30px;
+    font-size: 25px;
     background-color: slategrey;
     text-align: center;
 }

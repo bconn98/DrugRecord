@@ -1,6 +1,6 @@
 /**
 File: postPurchaseHandler
-Description: Sends the audit information
+Description: Sends the purchase information
 @author Bryan Conn
 @date 10/7/18
  */
@@ -36,6 +36,16 @@ func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
 		utils.ExecuteTemplate(w, "purchase.html", str)
 		return
 	}
-	mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty)
-	GetCloseHandler(w, r)
+	// Checks if the drug exists yet
+	check := mainUtils.NewCheck(ndc)
+	// If the drug does exist
+	if check {
+		mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, order)
+		GetCloseHandler(w, r)
+		return
+	} else {
+		mainUtils.AddDrug(ndc, month, day, year)
+		utils.ExecuteTemplate(w, "newDrug.html", nil)
+		mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, order)
+	}
 }

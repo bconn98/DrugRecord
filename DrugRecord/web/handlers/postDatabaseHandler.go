@@ -7,10 +7,17 @@ Description: Sends the database information
 package handlers
 
 import (
-	. "net/http"
-	. "../utils"
 	. "../../mainUtils"
+	. "../utils"
+	. "net/http"
+	"strconv"
 )
+
+type data struct {
+	Name, Ndc, Form, Size, Date string
+	ItemNum string
+	Orders []Order
+}
 
 /**
 Function: PostDatabaseHandler
@@ -26,7 +33,9 @@ func PostDatabaseHandler(w ResponseWriter, r *Request) {
 		ExecuteTemplate(w, "database.html", nil)
 		return
 	}
-	orders := FindNDC(ndc)
-	ExecuteTemplate(w,"database.html", orders)
+	name, ndc, form, itemNum, size, date, orders := FindNDC(ndc)
+	dateS := date.Month().String() + " " + strconv.Itoa(date.Day()) + " " + strconv.Itoa(date.Year())
+	dataD := data{name, ndc, form, size, dateS, itemNum, orders}
+	ExecuteTemplate(w,"database.html", dataD)
 	return
 }

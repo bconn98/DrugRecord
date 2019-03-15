@@ -18,29 +18,35 @@ Description: Given a NDC, finds and returns all corresponding rows
 @param ndc The NDC to match
 @return An array of orders with the given NDC
  */
-func FindNDC(ndc string) ([]Order) {
+func FindNDC(ndc string) (string, string, string, string, string, time.Time, []Order) {
 	var NDC string
 	var pharm string
 	var script string
 	var date time.Time
 	var qty int
-	issue(err)
-
-	rows, err := db.Query("SELECT ndc, pharmacist, date, qty, script FROM orderdb WHERE ndc = $1 order by date desc;", ndc)
+	var typ string
+	var name string
+	var form string
+	var itemNum string
+	var size string
+	var orders []Order
+	rows, err := db.Query("SELECT ndc, pharmacist, date, qty, script, type FROM orderdb WHERE ndc = $1 order by date desc;", ndc)
 	issue(err)
 
 	defer rows.Close()
-	//Find a way to easily have all the data
-	var orders []Order
+
 	for rows.Next() {
-		err := rows.Scan(&NDC, &pharm, &date, &qty, &script)
+		err := rows.Scan(&NDC, &pharm, &date, &qty, &script, &typ)
 		issue(err)
-		orders = append(orders, MakeOrder(pharm, script, qty, date))
+		orders = append(orders, MakeOrder(pharm, script, typ, qty, date))
 	}
 	err = rows.Err()
 	issue(err)
+	row, err := db.Query("Select name, ndc, form, item_num, size, date from drugdb where ndc = $1", ndc)
+	row.Next()
+	err = row.Scan(&name, &NDC, &form, &itemNum, &size, &date)
 
-	return orders
+	return name, NDC, form, itemNum, size, date, orders
 }
 
 /**
@@ -52,16 +58,18 @@ Description: Creates a new row in the orderdb with passed in attributes
 @param dayS The day the order was made
 @param yearS The year the order was made
 @param qtyS The quantity of the order
-@param typ An int value to determine the type of the order
+@param script The order#/Script# or blank
+@param orderType The type of the order
  */
-func addType(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string, script string) {
+func addType(ndc string, pharmacist string, monthS string, dayS string, yearS string,
+	qtyS string, script string, orderType string) {
 	month, _ := strconv.Atoi(monthS)
 	day, _ := strconv.Atoi(dayS)
 	year, _ := strconv.Atoi(yearS)
 	qty, _ := strconv.Atoi(qtyS)
-	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script) " +
-		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7);", ndc, pharmacist, qty, year, month,
-		day, script)
+	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script, type) " +
+		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8);", ndc, pharmacist, qty, year, month,
+		day, script, orderType)
 }
 
 /**
@@ -97,7 +105,7 @@ Description: Adds a prescription type order to the orderdb
 @param script The prescription number
  */
 func AddPrescription(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string, script string){
-	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, script)
+	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, script, "Prescription")
 	alterQty(ndc, qtyS)
 }
 
@@ -112,7 +120,7 @@ Description: Adds a audit type order to the orderdb
 @param qtyS The quantity of the audit
  */
 func AddAudit(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string){
-	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, "Audit")
+	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, "", "Audit")
 }
 
 /**
@@ -125,7 +133,57 @@ Description: Adds a purchase type order to the orderdb
 @param yearS The year the purchase was made
 @param qtyS The quantity of the purchase
  */
-func AddPurchase(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string) {
-	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, "Purchase")
+func AddPurchase(ndc string, pharmacist string, monthS string, dayS string,
+	yearS string, qtyS string, order string) {
+	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, order,"Purchase")
 	alterQty(ndc, "-" + qtyS)
+}
+/**
+Function: NewCheck
+Description: See if the drug is in the database yet
+@param ndc The NDC of the drug to check
+@return If the drug is in the database
+ */
+func NewCheck(ndc string) bool {
+	var count int
+	row, err := db.Query("Select count(ndc) from drugdb where ndc = $1", ndc)
+	issue(err)
+	row.Next()
+	row.Scan(&count)
+	if count < 1 {
+		return false
+	} else {
+		return true
+	}
+}
+
+/**
+Function: AddDrug
+Description: Adds the drug to the database without the defaults
+@param ndc The ndc
+@param monthS The month as a string
+@param dayS The day as a string
+@param yearS The year as a string
+ */
+func AddDrug(ndc string, monthS string, dayS string, yearS string) {
+	month, _ := strconv.Atoi(monthS)
+	day, _ := strconv.Atoi(dayS)
+	year, _ := strconv.Atoi(yearS)
+	_, err = db.Query("Insert into drugdb (ndc, date) values ($1, make_date($2, $3, $4))",
+		ndc, year, month, day)
+	issue(err)
+}
+
+/**
+Function: UpdateDrug
+Description: Adds the correct default values to a drug
+@param size The size of the packet
+@param form The form of the drug
+@param itemNum The item number of the drug
+@param name The name of the drug
+@param ndc The ndc of the drug
+ */
+func UpdateDrug(size string, form string, itemNum int, name string, ndc string) {
+	_, _ = db.Query("Update drugdb set size = $1, form = $2, item_num = $3, name = $4 where ndc = $5",
+		size, form, itemNum, name, ndc)
 }

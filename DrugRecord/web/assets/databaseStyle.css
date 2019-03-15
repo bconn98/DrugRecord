@@ -1,5 +1,5 @@
 body {
-    background: #6495ed
+    background: #6495ed;
 }
 
 h1 {
@@ -10,16 +10,17 @@ h1 {
 
 table {
     border-collapse: collapse;
-    width: 100%;
+    width: 80%;
     color: black;
     font-family: monospace;
     font-size: 25px;
-    text-align: left;
+    text-align: center;
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
-#search {
-    text-align: center;
-}
+tr:nth-child(even) {background: #808080}
+tr:nth-child(odd) {background: #FFFFFF}
 
 #logo {
     display: block;
@@ -28,9 +29,10 @@ table {
 }
 
 #navigation {
-    height: 20px;
+    height: 30px;
     background-color: slategrey;
     text-align: center;
+    align-items:center;
 }
 
 #buttons {
@@ -42,7 +44,24 @@ table {
     color: black;
 }
 
-#info {
-    height: 75px;
-    width: 75px;
+#content {
+    text-align: center;
+}
+
+#signout {
+    font-size: 25px;
+    text-align: center;
+    align-items: center;
+}
+
+#ToExcel {
+    float: left;
+    -ms-transform: translateY(35%);
+    transform: translateY(35%);
+}
+
+#FromExcel {
+    float: right;
+    -ms-transform: translateY(-100%);
+    transform: translateY(-100%);
 }
