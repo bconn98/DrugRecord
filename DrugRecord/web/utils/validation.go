@@ -16,28 +16,13 @@ length and has dashes in the right spots.
 @param str The current error string
 @return The current error string
 */
-func CheckNDC(ndc string, str string) string {
-	if len(ndc) != 13 {
+func CheckNDC(ndc string, str string) ( string, string ) {
+	if len(ndc) != 11 && len(ndc) != 13 {
 		str = "NDC is not the correct length"
 	} else if ndc[5] != '-' || ndc[10] != '-' {
-		str = "NDC not properly formatted"
+		ndc = ndc[:5] + "-" + ndc[5:9] + "-" + ndc[9:]
 	}
-	return str
-}
-
-/**
-Function: CheckPharm
-Description: Checks to see if the pharmacist initials are all
-there, all 3
-@param pharm The pharmacists initials
-@param str The current error string
-@return The current error string
- */
-func CheckPharm(pharm string, str string) string {
-	if len(pharm) != 3 {
-		str = "Incorrect initial length"
-	}
-	return str
+	return ndc, str
 }
 
 /**
@@ -83,7 +68,7 @@ Description: Checks if the quantity is greater than 0
  */
 func CheckQty(qty string, str string) string {
 	qt, _ := strconv.Atoi(qty)
-	if qt <= 0 {
+	if qt < 0 {
 		str = "Quantity must be greater than 0"
 	}
 	return str
@@ -100,10 +85,24 @@ func CheckNum(number string, str string) string {
 	_, err := strconv.Atoi(number)
 	if err != nil {
 		if number == "" {
-			str = "No number was entered for the form"
+			str = "You missed a number field!"
 		} else {
 			str = number + " is not a valid number"
 		}
+	}
+	return str
+}
+
+/**
+Function: CheckString
+Description: Checks if the entered value was a non empty string
+@param input The supposed string
+@param str The current error string
+@return The current error string
+ */
+func CheckString( input string, str string ) string {
+	if input == ""{
+		str = "You missed a text field!"
 	}
 	return str
 }
