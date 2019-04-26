@@ -7,9 +7,9 @@ Description: Sends the new drug information
 package handlers
 
 import (
-	"net/http"
 	"../../mainUtils"
-	"strconv"
+	"net/http"
+	. "../utils"
 )
 
 /**
@@ -19,13 +19,20 @@ and executes the database template to refresh
 */
 func PostNewDrugHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
+	var str string
 	ndc := r.PostForm.Get("ndc")
+	ndc, str = CheckNDC( ndc, str)
 	name := r.PostForm.Get("name")
+	str = CheckString(name, str)
 	form := r.PostForm.Get("form")
 	itemS := r.PostForm.Get("itemnum")
-	itemNum, _ := strconv.Atoi(itemS)
 	pkgSize := r.PostForm.Get("pkgsize")
-	mainUtils.UpdateDrug(pkgSize, form, itemNum, name, ndc)
+
+	if str != "" {
+		ExecuteTemplate(w, "newDrug.html", str)
+		return
+	}
+	mainUtils.UpdateDrug(pkgSize, form, itemS, name, ndc)
 	GetCloseHandler(w, r)
 	return
 }

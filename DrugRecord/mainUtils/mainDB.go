@@ -16,9 +16,9 @@ import (
 Function: FindNDC
 Description: Given a NDC, finds and returns all corresponding rows
 @param ndc The NDC to match
-@return An array of orders with the given NDC
+@return An array of orders with the given NDC, vital drug information
  */
-func FindNDC(ndc string) (string, string, string, string, string, time.Time, []Order) {
+func FindNDC(ndc string) (string, string, string, string, string, time.Time, int, []Order) {
 	var NDC string
 	var pharm string
 	var script string
@@ -29,6 +29,7 @@ func FindNDC(ndc string) (string, string, string, string, string, time.Time, []O
 	var form string
 	var itemNum string
 	var size string
+	var drugQty int
 	var orders []Order
 	rows, err := db.Query("SELECT ndc, pharmacist, date, qty, script, type FROM orderdb WHERE ndc = $1 order by date desc;", ndc)
 	issue(err)
@@ -42,11 +43,11 @@ func FindNDC(ndc string) (string, string, string, string, string, time.Time, []O
 	}
 	err = rows.Err()
 	issue(err)
-	row, err := db.Query("Select name, ndc, form, item_num, size, date from drugdb where ndc = $1", ndc)
+	row, err := db.Query("Select name, ndc, form, item_num, size, date, qty from drugdb where ndc = $1", ndc)
 	row.Next()
-	err = row.Scan(&name, &NDC, &form, &itemNum, &size, &date)
+	err = row.Scan(&name, &NDC, &form, &itemNum, &size, &date, &drugQty)
 
-	return name, NDC, form, itemNum, size, date, orders
+	return name, NDC, form, itemNum, size, date, drugQty, orders
 }
 
 /**
@@ -66,10 +67,12 @@ func addType(ndc string, pharmacist string, monthS string, dayS string, yearS st
 	month, _ := strconv.Atoi(monthS)
 	day, _ := strconv.Atoi(dayS)
 	year, _ := strconv.Atoi(yearS)
-	qty, _ := strconv.Atoi(qtyS)
+	qty, _ := strconv.ParseFloat(qtyS, 64)
+
 	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script, type) " +
 		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8);", ndc, pharmacist, qty, year, month,
 		day, script, orderType)
+
 }
 
 /**
@@ -94,6 +97,24 @@ func alterQty(ndc string, qtyS string) {
 }
 
 /**
+Function: setDrugQty
+Description: Sets the drug quantity to the new value
+@param ndc The ndc value of the drug in question
+@param qtyS The new qty of the drug
+@return The difference in change
+ */
+func setDrugQty(ndc string, qtyS string) int {
+	var rowQ int
+	rows, err := db.Query("SELECT qty from drugdb where ndc = $1", ndc)
+	issue(err)
+	rows.Next()
+	err = rows.Scan(&rowQ)
+	qty, _ := strconv.Atoi(qtyS)
+	_, err = db.Query("UPDATE drugdb set qty = $1 where ndc = $2", qty, ndc)
+	return rowQ - qty
+}
+
+/**
 Function: AddPrescription
 Description: Adds a prescription type order to the orderdb
 @param ndc The NDC of the drug of interest
@@ -103,10 +124,18 @@ Description: Adds a prescription type order to the orderdb
 @param yearS The year the prescription was made
 @param qtyS The quantity of the prescription
 @param script The prescription number
+@param actualS The actual count if entered
  */
-func AddPrescription(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string, script string){
+func AddPrescription(ndc string, pharmacist string, monthS string, dayS string,
+		yearS string, qtyS string, script string, actualS string){
 	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, script, "Prescription")
 	alterQty(ndc, qtyS)
+
+	if ( actualS != "" ) {
+		diff := setDrugQty(ndc, actualS)
+		addType(ndc, pharmacist, monthS, dayS, yearS, strconv.Itoa(diff), script, "Actual Count")
+	}
+
 }
 
 /**
@@ -118,9 +147,17 @@ Description: Adds a audit type order to the orderdb
 @param dayS The day the audit was made
 @param yearS The year the audit was made
 @param qtyS The quantity of the audit
+@param actualS The actual count if entered
  */
-func AddAudit(ndc string, pharmacist string, monthS string, dayS string, yearS string, qtyS string){
+func AddAudit(ndc string, pharmacist string, monthS string,
+	dayS string, yearS string, qtyS string, actualS string){
 	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, "", "Audit")
+
+	if ( actualS != "" ) {
+		diff := setDrugQty(ndc, actualS)
+		addType(ndc, pharmacist, monthS, dayS, yearS, strconv.Itoa(diff), "", "Actual Count")
+	}
+
 }
 
 /**
@@ -132,11 +169,18 @@ Description: Adds a purchase type order to the orderdb
 @param dayS The day the purchase was made
 @param yearS The year the purchase was made
 @param qtyS The quantity of the purchase
+@param actualS The actual count if entered
  */
 func AddPurchase(ndc string, pharmacist string, monthS string, dayS string,
-	yearS string, qtyS string, order string) {
+	yearS string, qtyS string, order string, actualS string) {
 	addType(ndc, pharmacist, monthS, dayS, yearS, qtyS, order,"Purchase")
 	alterQty(ndc, "-" + qtyS)
+
+	if ( actualS != "" ) {
+		diff := setDrugQty(ndc, actualS)
+		addType(ndc, pharmacist, monthS, dayS, yearS, strconv.Itoa(diff), order, "Actual Count")
+	}
+
 }
 /**
 Function: NewCheck
@@ -183,7 +227,7 @@ Description: Adds the correct default values to a drug
 @param name The name of the drug
 @param ndc The ndc of the drug
  */
-func UpdateDrug(size string, form string, itemNum int, name string, ndc string) {
+func UpdateDrug(size string, form string, itemNum string, name string, ndc string) {
 	_, _ = db.Query("Update drugdb set size = $1, form = $2, item_num = $3, name = $4 where ndc = $5",
 		size, form, itemNum, name, ndc)
 }

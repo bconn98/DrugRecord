@@ -16,6 +16,7 @@ import (
 type data struct {
 	Name, Ndc, Form, Size, Date string
 	ItemNum string
+	Qty int
 	Orders []Order
 }
 
@@ -28,14 +29,15 @@ func PostDatabaseHandler(w ResponseWriter, r *Request) {
 	r.ParseForm()
 	var str string
 	ndc := r.PostForm.Get("ndc")
+	ndc, str = CheckNDC( ndc, str )
 
-	if CheckNDC(ndc, str) != "" {
+	if str != "" {
 		ExecuteTemplate(w, "database.html", nil)
 		return
 	}
-	name, ndc, form, itemNum, size, date, orders := FindNDC(ndc)
+	name, ndc, form, itemNum, size, date, qty, orders := FindNDC(ndc)
 	dateS := date.Month().String() + " " + strconv.Itoa(date.Day()) + " " + strconv.Itoa(date.Year())
-	dataD := data{name, ndc, form, size, dateS, itemNum, orders}
+	dataD := data{name, ndc, form, size, dateS, itemNum, qty, orders}
 	ExecuteTemplate(w,"database.html", dataD)
 	return
 }

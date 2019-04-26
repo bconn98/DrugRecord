@@ -21,7 +21,7 @@ func PostAuditHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	var str string
 	ndc := r.PostForm.Get("ndc")
-	str = utils.CheckNDC(ndc, str)
+	ndc, str = utils.CheckNDC(ndc, str)
 	pharmacist := r.PostForm.Get("pharmacist")
 	amonth := r.PostForm.Get("amonth")
 	aday := r.PostForm.Get("aday")
@@ -29,10 +29,12 @@ func PostAuditHandler(w http.ResponseWriter, r *http.Request) {
 	str = utils.CheckDate(amonth, aday, ayear, str)
 	qty := r.PostForm.Get("qty")
 	str = utils.CheckQty(qty, str)
+	actual := r.PostForm.Get("realCount")
+	str = utils.CheckQty(actual, str)
 	if str != "" {
 		utils.ExecuteTemplate(w, "audit.html", str)
 		return
 	}
-	mainUtils.AddAudit(ndc, pharmacist, amonth, aday, ayear, qty)
+	mainUtils.AddAudit(ndc, pharmacist, amonth, aday, ayear, qty, actual)
 	GetCloseHandler(w, r)
 }

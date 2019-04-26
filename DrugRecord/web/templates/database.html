@@ -6,20 +6,12 @@
     <link rel="stylesheet" type="text/css" href="/web/assets/databaseStyle.css"/>
 </head>
 <body>
-    <div id = "logoDiv" >
-        <img id = "logo" src = "/web/assets/logo.png" alt="" />
-        <h1> Medicine Shoppe C2 Form </h1>
-    </div>
+    <img id = "logo" src = "/web/assets/logo.png" alt="" />
+    <h1> Medicine Shoppe C2 Form </h1>
     </br>
-    <div id = "navigation">
-        <div id = "ToExcel">
-            <button type = "button" onclick="">Transfer Database To Excel</button>
-        </div>
+    <!-- <div id = "navigation">
         <div id = "signout"> <a href= "/signout"> Sign out</a> </div>
-        <div id = "FromExcel" >
-            <button type = "button" onclick="">Transfer Excel To Database</button>
-        </div>
-    </div>
+    </div> Put this back in with the login feature -->
     <div id = "buttons">
         </br>
         <script type="text/javascript">
@@ -43,12 +35,19 @@
         </br>
         <h3>Drug: {{.Name}}  &emsp;&ensp; NDC: {{.Ndc}} &emsp;&ensp; Package Size: {{.Size}}</h3>
         <h4>Form: {{.Form}}  &emsp;&ensp; Item Number: {{.ItemNum}} &emsp;&ensp; Initial Date: {{.Date}}</h4>
+        <h2> Current Quantity: {{.Qty}}</h2>
     </div>
     <div>
-        <table>
-            <tr id = "header"><th>Pharmacist</th><th>Script</th><th>Type</th><th>Quantity</th><th>Date</th></tr>
+        <script>
+            setTimeout( function () {
+                // alert("Test");
+                $(document).load("/database.html");
+            }, 2000);
+        </script>
+        <table id = "table">
+            <tr id = "header"><th>Pharmacist</th><th>Script#/Invoice#</th><th>Type</th><th>Quantity</th><th>Date</th></tr>
         {{range .Orders}}
-            <tr>{{range rangeStruct .}}<td>{{.}}</td>{{end}}</tr>
+                <tr  id="{{.Typ}}"><td>{{.Pharm}}</td><td>{{.Script}}</td><td>{{.Typ}}</td><td>{{.Qty}}</td><td>{{.Date}}</td></tr>
         {{end}}
         </table>
     </div>

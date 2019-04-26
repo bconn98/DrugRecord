@@ -21,9 +21,8 @@ func PostPrescriptionHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	var str string
 	ndc := r.PostForm.Get("ndc")
-	str = utils.CheckNDC(ndc, str)
+	ndc, str = utils.CheckNDC(ndc, str)
 	pharmacist := r.PostForm.Get("pharmacist")
-	str = utils.CheckPharm(pharmacist, str)
 	script := r.PostForm.Get("script")
 	str = utils.CheckNum(script, str)
 	month := r.PostForm.Get("month")
@@ -32,10 +31,12 @@ func PostPrescriptionHandler(w http.ResponseWriter, r *http.Request) {
 	str = utils.CheckDate(month, day, year, str)
 	qty := r.PostForm.Get("qty")
 	str = utils.CheckQty(qty, str)
+	actual := r.PostForm.Get("realCount")
+	str = utils.CheckQty(actual, str)
 	if str != "" {
 		utils.ExecuteTemplate(w, "prescription.html", str)
 		return
 	}
-	mainUtils.AddPrescription(ndc, pharmacist, month, day, year, qty, script)
+	mainUtils.AddPrescription(ndc, pharmacist, month, day, year, qty, script, actual)
 	GetCloseHandler(w, r)
 }

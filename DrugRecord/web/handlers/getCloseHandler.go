@@ -7,15 +7,15 @@ Description: Gets new audit page
 package handlers
 
 import (
+	. "../utils"
 	"net/http"
-	"../utils"
 )
 
 /**
-Function: GetAuditHandler
-Description: Executes the audit template
+Function: GetCloseHandler
+Description: Executes the close template
 */
 func GetCloseHandler(w http.ResponseWriter, r *http.Request) {
-	utils.ExecuteTemplate(w, "closeWindow.html", nil)
+	ExecuteTemplate(w, "closeWindow.html", nil)
 	GetDatabaseHandler(w, r)
 }

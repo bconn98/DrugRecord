@@ -16,5 +16,5 @@ Function: GetNewDrugHandler
 Description: Executes the new drug template
 */
 func GetNewDrugHandler(w http.ResponseWriter, r *http.Request) {
-utils.ExecuteTemplate(w, "newDrug.html", nil)
+	utils.ExecuteTemplate(w, "newDrug.html", nil)
 }

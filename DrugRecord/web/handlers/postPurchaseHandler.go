@@ -21,9 +21,8 @@ func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	var str string
 	ndc := r.PostForm.Get("ndc")
-	str = utils.CheckNDC(ndc, str)
+	ndc, str = utils.CheckNDC(ndc, str)
 	pharmacist := r.PostForm.Get("pharmacist")
-	str = utils.CheckPharm(pharmacist, str)
 	order := r.PostForm.Get("order")
 	str = utils.CheckNum(order, str)
 	month := r.PostForm.Get("month")
@@ -32,6 +31,8 @@ func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
 	str = utils.CheckDate(month, day, year, str)
 	qty := r.PostForm.Get("qty")
 	str = utils.CheckQty(qty, str)
+	actual := r.PostForm.Get("realCount")
+	str = utils.CheckQty(actual, str)
 	if str != "" {
 		utils.ExecuteTemplate(w, "purchase.html", str)
 		return
@@ -40,12 +41,12 @@ func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
 	check := mainUtils.NewCheck(ndc)
 	// If the drug does exist
 	if check {
-		mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, order)
+		mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, order, actual)
 		GetCloseHandler(w, r)
 		return
 	} else {
 		mainUtils.AddDrug(ndc, month, day, year)
 		utils.ExecuteTemplate(w, "newDrug.html", nil)
-		mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, order)
+		mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, order, actual)
 	}
 }

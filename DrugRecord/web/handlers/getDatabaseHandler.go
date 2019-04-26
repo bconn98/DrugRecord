@@ -11,7 +11,7 @@ import (
 	"../utils"
 )
 
-var good = false
+var good = true	// This should be false when there is a sign in feature
 
 /**
 Function: GetDatabaseHandler
