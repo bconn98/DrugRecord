@@ -37,5 +37,5 @@ func main() {
 	http.Handle("/web/assets/", http.StripPrefix("/web/assets", http.FileServer(http.Dir("./web/assets"))))
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.Handle("/", r)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
