@@ -3,13 +3,13 @@ File: postPrescriptionHandler
 Description: Sends the prescription information
 @author Bryan Conn
 @date 10/7/18
- */
+*/
 package handlers
 
 import (
-	"net/http"
 	"../../mainUtils"
 	"../utils"
+	"net/http"
 )
 
 /**
@@ -37,6 +37,12 @@ func PostPrescriptionHandler(w http.ResponseWriter, r *http.Request) {
 		utils.ExecuteTemplate(w, "prescription.html", str)
 		return
 	}
-	mainUtils.AddPrescription(ndc, pharmacist, month, day, year, qty, script, actual)
+	check := mainUtils.AddPrescription(ndc, pharmacist, month, day, year, qty, script, actual)
+
+	if !check {
+		utils.ExecuteTemplate(w, "prescription.html", "Prescription already logged!")
+		return
+	}
+
 	GetCloseHandler(w, r)
 }

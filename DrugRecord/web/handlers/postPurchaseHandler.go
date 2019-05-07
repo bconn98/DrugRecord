@@ -3,13 +3,13 @@ File: postPurchaseHandler
 Description: Sends the purchase information
 @author Bryan Conn
 @date 10/7/18
- */
+*/
 package handlers
 
 import (
+	"../../mainUtils"
 	"../utils"
 	"net/http"
-	"../../mainUtils"
 )
 
 /**
@@ -41,7 +41,13 @@ func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
 	check := mainUtils.NewCheck(ndc)
 	// If the drug does exist
 	if check {
-		mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, order, actual)
+		logged := mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, order, actual)
+
+		if !logged {
+			utils.ExecuteTemplate(w, "purchase.html", "Purchase already logged!")
+			return
+		}
+
 		GetCloseHandler(w, r)
 		return
 	} else {

@@ -3,13 +3,13 @@ File: postAuditHandler
 Description: Sends the audit information
 @author Bryan Conn
 @date 10/7/18
- */
+*/
 package handlers
 
 import (
+	"../../mainUtils"
 	"../utils"
 	"net/http"
-	"../../mainUtils"
 )
 
 /**
@@ -35,6 +35,12 @@ func PostAuditHandler(w http.ResponseWriter, r *http.Request) {
 		utils.ExecuteTemplate(w, "audit.html", str)
 		return
 	}
-	mainUtils.AddAudit(ndc, pharmacist, amonth, aday, ayear, qty, actual)
+	check := mainUtils.AddAudit(ndc, pharmacist, amonth, aday, ayear, qty, actual)
+
+	if !check {
+		utils.ExecuteTemplate(w, "audit.html", "Audit already logged!")
+		return
+	}
+
 	GetCloseHandler(w, r)
 }
