@@ -18,18 +18,18 @@ Description: Given a NDC, finds and returns all corresponding rows
 @param ndc The NDC to match
 @return An array of orders with the given NDC, vital drug information
 */
-func FindNDC(ndc string) (string, string, string, string, string, time.Time, int, []Order) {
+func FindNDC(ndc string) (string, string, string, string, string, time.Time, float64, []Order) {
 	var NDC string
 	var pharm string
 	var script string
 	var date time.Time
-	var qty int
+	var qty float64
 	var typ string
 	var name string
 	var form string
 	var itemNum string
 	var size string
-	var drugQty int
+	var drugQty float64
 	var orders []Order
 	rows, err := db.Query("SELECT ndc, pharmacist, date, qty, script, type FROM orderdb WHERE ndc = $1 order by date desc;", ndc)
 	issue(err)
@@ -44,9 +44,10 @@ func FindNDC(ndc string) (string, string, string, string, string, time.Time, int
 	err = rows.Err()
 	issue(err)
 	row, err := db.Query("Select name, ndc, form, item_num, size, date, qty from drugdb where ndc = $1", ndc)
+	issue(err)
 	row.Next()
 	err = row.Scan(&name, &NDC, &form, &itemNum, &size, &date, &drugQty)
-
+	issue(err)
 	return name, NDC, form, itemNum, size, date, drugQty, orders
 }
 
@@ -69,11 +70,22 @@ func addType(ndc string, pharmacist string, monthS string, dayS string, yearS st
 	year, _ := strconv.Atoi(yearS)
 	qty, _ := strconv.ParseFloat(qtyS, 64)
 
-	row, _ := db.Query("Select count(script, date, qty) from orderdb where script = $1", script)
+	row, err := db.Query("Select count(script) from orderdb where script = $1 and " +
+		"date = make_date($2, $3, $4) and qty = $5 and ndc = $6;", script, year, month, day, qty, ndc)
+
+	if err != nil {
+		issue(err)
+	}
 
 	count := 0
-	row.Scan(&count)
-	if count == 0 {
+	row.Next()
+	err = row.Scan(&count)
+
+	if err != nil {
+		issue(err)
+	}
+
+	if count != 0 {
 		return false
 	}
 
@@ -91,8 +103,8 @@ Description: Alters a drugs quantity using its NDC to find it
 @param qtyS The quantity of the alteration
 */
 func alterQty(ndc string, qtyS string) {
-	var rowQ int
-	qty, _ := strconv.Atoi(qtyS)
+	var rowQ float64
+	qty, _ := strconv.ParseFloat(qtyS, 64)
 	rows, err := db.Query("SELECT qty from drugdb where ndc = $1", ndc)
 	issue(err)
 	rows.Next()

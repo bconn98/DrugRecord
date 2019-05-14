@@ -8,6 +8,7 @@ package handlers
 
 import (
 	"../../mainUtils"
+	"log"
 	"net/http"
 	. "../utils"
 )
@@ -18,7 +19,10 @@ Description: Sends the purchase information to be added to the database
 and executes the database template to refresh
 */
 func PostNewDrugHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
 	var str string
 	ndc := r.PostForm.Get("ndc")
 	ndc, str = CheckNDC( ndc, str)

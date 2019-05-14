@@ -40,7 +40,7 @@ the order, the script id, the quantity of the order, the date the order was fill
 type Prescription struct {
 	ndc string
 	Pharmacist, Script string
-	OrderQuantity int
+	OrderQuantity float64
 	date time.Time
 }
 
@@ -54,7 +54,7 @@ Description: Makes a Prescription struct
 @param date The date of the order
 @return A prescription object
  */
-func MakePrescription(ndc string, pharm string, script string, qty int, date time.Time) Prescription {
+func MakePrescription(ndc string, pharm string, script string, qty float64, date time.Time) Prescription {
 	return Prescription{ndc, pharm, script, qty, date}
 }
 
@@ -65,7 +65,7 @@ the date the audit was performed and the ndc of the auditted drug
 type Audit struct {
 	ndc string
 	Pharmacist string
-	AuditQuantity int
+	AuditQuantity float64
 	date time.Time
 }
 
@@ -78,7 +78,7 @@ Description: Makes an audit struct
 @param ndc The ndc of the drug
 @return An Audit object
  */
-func MakeAudit(ndc string, pharm string, qty int, date time.Time) Audit {
+func MakeAudit(ndc string, pharm string, qty float64, date time.Time) Audit {
 	return Audit{ndc, pharm, qty, date}
 }
 
@@ -89,7 +89,7 @@ and the pharmacist that counted the drug
 type Purchase struct {
 	ndc string
 	pharm string
-	Qty int
+	Qty float64
 	date time.Time
 }
 
@@ -102,7 +102,7 @@ Description: Makes a Purchase struct
 @param pharm The pharmacist that counted the drug
 @return A Purchase object
  */
-func MakePurchase(ndc string, pharm string, qty int, date time.Time) Purchase {
+func MakePurchase(ndc string, pharm string, qty float64, date time.Time) Purchase {
 	return Purchase{ndc, pharm, qty, date}
 }
 
@@ -111,7 +111,7 @@ Drug struct contains an id name, ndc code, and quantity
  */
 type Drug struct {
 	Id, NDC string
-	Quantity int
+	Quantity float64
 }
 
 /**
@@ -121,7 +121,7 @@ Description: Given: a drug name, ndc, and quantity, creates a drug structure
 @param ndc The ndc specific to the drug
 @param qty The current quantity of the drug
  */
-func MakeDrug(name string, ndc string, qty int) Drug {
+func MakeDrug(name string, ndc string, qty float64) Drug {
 	return Drug{name, ndc,qty}
 }
 
@@ -129,7 +129,7 @@ func MakeDrug(name string, ndc string, qty int) Drug {
 Function: UpdateQty
 Description: Updates the quantity of the drug
  */
- func (drug Drug) UpdateQty(qty int) Drug {
+ func (drug Drug) UpdateQty(qty float64) Drug {
  	qty = drug.Quantity + qty
  	return MakeDrug(drug.Id, drug.NDC, qty)
  }
@@ -141,7 +141,7 @@ the quantity and the date of the order
 type Order struct {
 	Pharm string
 	Script, Typ string
-	Qty int
+	Qty float64
 	Date string
 }
 
@@ -154,7 +154,7 @@ Description: Creates an order using an audit, prescription, or purchase
 @param date The date of the order
 @return An Order Object
  */
-func MakeOrder(pharm string, script string, typ string, qty int, date time.Time) Order {
+func MakeOrder(pharm string, script string, typ string, qty float64, date time.Time) Order {
 	var dateS string
 	dateS = date.Month().String() + " " + strconv.Itoa(date.Day()) + " " + strconv.Itoa(date.Year())
 	return Order{pharm, script, typ, qty, dateS}

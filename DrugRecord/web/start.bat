@@ -1,5 +1,5 @@
 @echo off
-REM cd C:/Users/brcon/GolandProjects/DrugRecord/DrugRecord/
-REM go build
+cd C:/Users/brcon/GolandProjects/DrugRecord/DrugRecord/
+go build
 start chrome.exe "http://localhost:80"
-start C:/Users/brcon/GolandProjects/DrugRecord/DrugRecord/DrugRecord.exe
+call  C:/Users/brcon/GolandProjects/DrugRecord/DrugRecord/DrugRecord.exe

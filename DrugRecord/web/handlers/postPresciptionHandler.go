@@ -9,6 +9,7 @@ package handlers
 import (
 	"../../mainUtils"
 	"../utils"
+	"log"
 	"net/http"
 )
 
@@ -18,7 +19,10 @@ Description: Sends the prescription information to be added to the database and 
 database template to refresh
 */
 func PostPrescriptionHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
 	var str string
 	ndc := r.PostForm.Get("ndc")
 	ndc, str = utils.CheckNDC(ndc, str)
@@ -30,7 +34,6 @@ func PostPrescriptionHandler(w http.ResponseWriter, r *http.Request) {
 	year := r.PostForm.Get("year")
 	str = utils.CheckDate(month, day, year, str)
 	qty := r.PostForm.Get("qty")
-	str = utils.CheckQty(qty, str)
 	actual := r.PostForm.Get("realCount")
 	str = utils.CheckQty(actual, str)
 	if str != "" {

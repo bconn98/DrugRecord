@@ -9,6 +9,7 @@ package handlers
 import (
 	"../../mainUtils"
 	"../utils"
+	"log"
 	"net/http"
 )
 
@@ -18,7 +19,10 @@ Description: Sends the audit information to add it to the database and executes 
 database template to refresh the page
 */
 func PostAuditHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
 	var str string
 	ndc := r.PostForm.Get("ndc")
 	ndc, str = utils.CheckNDC(ndc, str)
@@ -28,7 +32,6 @@ func PostAuditHandler(w http.ResponseWriter, r *http.Request) {
 	ayear := r.PostForm.Get("ayear")
 	str = utils.CheckDate(amonth, aday, ayear, str)
 	qty := r.PostForm.Get("qty")
-	str = utils.CheckQty(qty, str)
 	actual := r.PostForm.Get("realCount")
 	str = utils.CheckQty(actual, str)
 	if str != "" {

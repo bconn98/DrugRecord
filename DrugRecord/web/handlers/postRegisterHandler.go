@@ -7,6 +7,7 @@ Description: Sends the audit information
 package handlers
 
 import (
+	"log"
 	. "net/http"
 	. "../utils"
 	. "../../mainUtils"
@@ -18,7 +19,10 @@ Description: Sends the new users information to be validated and redirects diffe
 depending on that validity.
 */
 func PostRegisterHandler(w ResponseWriter, r *Request) {
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
 	username := r.PostForm.Get("uName")
 	password := r.PostForm.Get("password")
 

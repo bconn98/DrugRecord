@@ -9,6 +9,7 @@ package handlers
 import (
 	. "../../mainUtils"
 	. "../utils"
+	"log"
 	. "net/http"
 	"strconv"
 )
@@ -16,7 +17,7 @@ import (
 type data struct {
 	Name, Ndc, Form, Size, Date string
 	ItemNum string
-	Qty int
+	Qty float64
 	Orders []Order
 }
 
@@ -26,7 +27,10 @@ Description: Sends the information matching the entered NDC to be executed
 in the database template
 */
 func PostDatabaseHandler(w ResponseWriter, r *Request) {
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
 	var str string
 	ndc := r.PostForm.Get("ndc")
 	ndc, str = CheckNDC( ndc, str )

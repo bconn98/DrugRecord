@@ -7,6 +7,7 @@ Description: Sends the audit information
 package handlers
 
 import (
+	"log"
 	. "net/http"
 	. "../../mainUtils"
 	. "../utils"
@@ -17,7 +18,10 @@ Function: PostLoginHandler
 Description: Sends the login information for validation, redirects depending on the outcome
 */
 func PostLoginHandler(w ResponseWriter, r *Request) {
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
 	username := r.PostForm.Get("uName")
 	user := FindUser(username)
 	test := User{}

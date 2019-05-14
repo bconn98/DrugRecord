@@ -14,7 +14,10 @@ import (
 
 var templateFuncs = FuncMap{"rangeStruct": RangeStructer}
 var t = New( "t").Funcs(templateFuncs)
-var templates = Must(t.ParseGlob("./web/templates/*.html"))
+var templates = Must(t.ParseFiles("web/templates/audit.html",
+	"web/templates/closeWindow.html", "web/templates/database.html",
+	"web/templates/newDrug.html", "web/templates/prescription.html",
+	"web/templates/purchase.html"))
 
 /**
 Function: ExecuteTemplate

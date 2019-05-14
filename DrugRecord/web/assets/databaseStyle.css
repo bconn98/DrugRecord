@@ -22,7 +22,7 @@ table {
 tr:nth-child(even) {background: #FFFFFF}
 tr:nth-child(odd) {background: #808080}
 
-#Actual\ Count{
+#Audit{
     background: yellow;
 }
 

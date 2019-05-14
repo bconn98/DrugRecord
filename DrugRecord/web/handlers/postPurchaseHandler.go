@@ -9,6 +9,7 @@ package handlers
 import (
 	"../../mainUtils"
 	"../utils"
+	"log"
 	"net/http"
 )
 
@@ -18,19 +19,20 @@ Description: Sends the purchase information to be added to the database
 and executes the database template to refresh
 */
 func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
 	var str string
 	ndc := r.PostForm.Get("ndc")
 	ndc, str = utils.CheckNDC(ndc, str)
 	pharmacist := r.PostForm.Get("pharmacist")
-	order := r.PostForm.Get("order")
-	str = utils.CheckNum(order, str)
+	invoice := r.PostForm.Get("invoice")
 	month := r.PostForm.Get("month")
 	day := r.PostForm.Get("day")
 	year := r.PostForm.Get("year")
 	str = utils.CheckDate(month, day, year, str)
 	qty := r.PostForm.Get("qty")
-	str = utils.CheckQty(qty, str)
 	actual := r.PostForm.Get("realCount")
 	str = utils.CheckQty(actual, str)
 	if str != "" {
@@ -41,7 +43,7 @@ func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
 	check := mainUtils.NewCheck(ndc)
 	// If the drug does exist
 	if check {
-		logged := mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, order, actual)
+		logged := mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, invoice, actual)
 
 		if !logged {
 			utils.ExecuteTemplate(w, "purchase.html", "Purchase already logged!")
@@ -53,6 +55,6 @@ func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		mainUtils.AddDrug(ndc, month, day, year)
 		utils.ExecuteTemplate(w, "newDrug.html", nil)
-		mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, order, actual)
+		mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, invoice, actual)
 	}
 }
