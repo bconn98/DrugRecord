@@ -9,6 +9,7 @@ package mainUtils
 import (
 	_ "github.com/lib/pq"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -70,7 +71,7 @@ func addType(ndc string, pharmacist string, monthS string, dayS string, yearS st
 	year, _ := strconv.Atoi(yearS)
 	qty, _ := strconv.ParseFloat(qtyS, 64)
 
-	row, err := db.Query("Select count(script) from orderdb where script = $1 and " +
+	row, err := db.Query("Select count(script) from orderdb where script = $1 and "+
 		"date = make_date($2, $3, $4) and qty = $5 and ndc = $6;", script, year, month, day, qty, ndc)
 
 	if err != nil {
@@ -104,6 +105,11 @@ Description: Alters a drugs quantity using its NDC to find it
 */
 func alterQty(ndc string, qtyS string) {
 	var rowQ float64
+
+	if strings.Contains(qtyS, "--") {
+		qtyS = strings.Replace(qtyS, "--", "-", 1)
+	}
+
 	qty, _ := strconv.ParseFloat(qtyS, 64)
 	rows, err := db.Query("SELECT qty from drugdb where ndc = $1", ndc)
 	issue(err)

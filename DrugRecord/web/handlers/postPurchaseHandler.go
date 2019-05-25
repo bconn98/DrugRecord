@@ -39,6 +39,7 @@ func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
 		utils.ExecuteTemplate(w, "purchase.html", str)
 		return
 	}
+
 	// Checks if the drug exists yet
 	check := mainUtils.NewCheck(ndc)
 	// If the drug does exist

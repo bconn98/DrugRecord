@@ -28,7 +28,6 @@ func PostPrescriptionHandler(w http.ResponseWriter, r *http.Request) {
 	ndc, str = utils.CheckNDC(ndc, str)
 	pharmacist := r.PostForm.Get("pharmacist")
 	script := r.PostForm.Get("script")
-	str = utils.CheckNum(script, str)
 	month := r.PostForm.Get("month")
 	day := r.PostForm.Get("day")
 	year := r.PostForm.Get("year")
