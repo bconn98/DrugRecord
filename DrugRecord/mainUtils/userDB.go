@@ -24,7 +24,6 @@ func issue(err error) {
 }
 
 //Database password needs to be changed when released
-// TODO: Change back to drugrecord
 var connStr = "postgres://postgres:Zoo123@localhost/drugrecord?sslmode=disable"
 var db, err = sql.Open("postgres", connStr)
 
@@ -44,7 +43,12 @@ func GetUsers() []User {
 	issue(err)
 
 	var users []User
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
 	for rows.Next() {
 		err := rows.Scan(&userName, &passVal)
 		issue(err)

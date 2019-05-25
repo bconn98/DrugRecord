@@ -38,12 +38,6 @@
         <h2> Current Quantity: {{.Qty}}</h2>
     </div>
     <div>
-        <script>
-            setTimeout( function () {
-                // alert("Test");
-                $(document).load("/database.html");
-            }, 2000);
-        </script>
         <table id = "table">
             <tr id = "header"><th>Pharmacist</th><th>Script#/Invoice#</th><th>Type</th><th>Quantity</th><th>Date</th></tr>
         {{range .Orders}}

@@ -3,28 +3,31 @@ File: webServer
 Description: Runs a database
 @author Bryan Conn
 @date 10/7/2018
- */
+*/
 package main
+
 import (
-	"net/http"
-	"github.com/gorilla/mux"
 	"./web/handlers"
+	"github.com/gorilla/mux"
+	"log"
+	"net/http"
 )
 
 /**
 Function: main
 Description: Creates a new web server at port 8080 and connects all of the handler functions
- */
+*/
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handlers.GetDatabaseHandler).Methods("GET")
+	r.HandleFunc("/home", handlers.GetHomeHandler).Methods("GET")
 	r.HandleFunc("/purchase", handlers.GetPurchaseHandler).Methods("GET")
 	r.HandleFunc("/prescription", handlers.GetPrescriptionHandler).Methods("GET")
 	r.HandleFunc("/audit", handlers.GetAuditHandler).Methods("GET")
 	r.HandleFunc("/login", handlers.GetLoginHandler).Methods("GET")
 	r.HandleFunc("/newDrug", handlers.GetNewDrugHandler).Methods("GET")
-	//r.HandleFunc("/register", handlers.GetRegisterHandler).Methods("GET")
-	//r.HandleFunc("/signout", handlers.GetSignoutHandler).Methods("GET")
+	r.HandleFunc("/register", handlers.GetRegisterHandler).Methods("GET")
+	r.HandleFunc("/signout", handlers.GetSignOutHandler).Methods("GET")
 	r.HandleFunc("/closeWindow", handlers.GetCloseHandler).Methods("GET")
 	r.HandleFunc("/database", handlers.GetDatabaseHandler).Methods("GET")
 	r.HandleFunc("/newDrug", handlers.PostNewDrugHandler).Methods("POST")
@@ -37,5 +40,8 @@ func main() {
 	http.Handle("/web/assets/", http.StripPrefix("/web/assets", http.FileServer(http.Dir("./web/assets"))))
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.Handle("/", r)
-	http.ListenAndServe(":80", nil)
+	err := http.ListenAndServe(":80", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

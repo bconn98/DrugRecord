@@ -3,7 +3,7 @@ File: validation.go
 Description: Checks a multitude of different input for validity.
 @author Bryan Conn
 @date 11/26/2018
- */
+*/
 package utils
 
 import "strconv"
@@ -16,7 +16,7 @@ length and has dashes in the right spots.
 @param str The current error string
 @return The current error string
 */
-func CheckNDC(ndc string, str string) ( string, string ) {
+func CheckNDC(ndc string, str string) (string, string) {
 	if len(ndc) != 11 && len(ndc) != 13 {
 		str = "NDC is not the correct length"
 	} else if ndc[5] != '-' || ndc[10] != '-' {
@@ -34,7 +34,7 @@ correct length and ints
 @param year The year
 @param str The current error string
 @return The current error string
- */
+*/
 func CheckDate(month string, day string, year string, str string) string {
 	if len(month) != 2 && len(month) != 1 {
 		str = "Month must be in the format XX or X"
@@ -65,7 +65,7 @@ Description: Checks if the quantity is greater than 0
 @param qty The quantity entered
 @param str The current error string
 @return The current error string
- */
+*/
 func CheckQty(qty string, str string) string {
 	qt, _ := strconv.Atoi(qty)
 	if qt < 0 {
@@ -80,18 +80,18 @@ Description: Checks if the entered value was a number
 @param number The supposed number
 @param str The current error string
 @return The current error string
- */
-func CheckNum(number string, str string) string {
-	_, err := strconv.Atoi(number)
-	if err != nil {
-		if number == "" {
-			str = "You missed a number field!"
-		} else {
-			str = number + " is not a valid number"
-		}
-	}
-	return str
-}
+*/
+//func CheckNum(number string, str string) string {
+//	_, err := strconv.Atoi(number)
+//	if err != nil {
+//		if number == "" {
+//			str = "You missed a number field!"
+//		} else {
+//			str = number + " is not a valid number"
+//		}
+//	}
+//	return str
+//}
 
 /**
 Function: CheckString
@@ -99,9 +99,9 @@ Description: Checks if the entered value was a non empty string
 @param input The supposed string
 @param str The current error string
 @return The current error string
- */
-func CheckString( input string, str string ) string {
-	if input == ""{
+*/
+func CheckString(input string, str string) string {
+	if input == "" {
 		str = "You missed a text field!"
 	}
 	return str

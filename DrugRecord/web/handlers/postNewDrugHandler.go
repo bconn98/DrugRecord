@@ -3,14 +3,14 @@ File: postNewDrugHandler
 Description: Sends the new drug information
 @author Bryan Conn
 @date 1/4/2019
- */
+*/
 package handlers
 
 import (
 	"../../mainUtils"
+	. "../utils"
 	"log"
 	"net/http"
-	. "../utils"
 )
 
 /**
@@ -25,7 +25,7 @@ func PostNewDrugHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var str string
 	ndc := r.PostForm.Get("ndc")
-	ndc, str = CheckNDC( ndc, str)
+	ndc, str = CheckNDC(ndc, str)
 	name := r.PostForm.Get("name")
 	str = CheckString(name, str)
 	form := r.PostForm.Get("form")

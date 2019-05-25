@@ -2,8 +2,8 @@ package goDB
 
 import (
 	"fmt"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func test() {
@@ -14,7 +14,7 @@ func test() {
 	fmt.Println("Type \"Exit\" to quit")
 	var text string
 	fmt.Scan(&text)
-	for ; text != "Exit" ; fmt.Scan(&text) {
+	for ; text != "Exit"; fmt.Scan(&text) {
 		lst := strings.Split(text, ",")
 		var order Order
 		drug := drugs[lst[0]]

@@ -1,11 +1,12 @@
 package goDB
 
 import (
-	"os"
-	"log"
+	. "../mainUtils"
 	"bufio"
-	"strings"
+	"log"
+	"os"
 	"strconv"
+	"strings"
 )
 
 /**
@@ -13,13 +14,13 @@ File: buildMap
 Description: Creates a map of drugs and a map of orders from text files
 @author Bryan Conn
 @date 5/16/18
- */
+*/
 
- /**
- Function: makeDrugMap
- Description: Populates a map with drug structs
- @param fileName The file name containing drug information
-  */
+/**
+Function: makeDrugMap
+Description: Populates a map with drug structs
+@param fileName The file name containing drug information
+*/
 func makeDrugMap(fileName string) map[string]Drug {
 	//Open file and make sure there are no errors
 	drugFile, err := os.Open(fileName)
@@ -32,11 +33,11 @@ func makeDrugMap(fileName string) map[string]Drug {
 
 	//Scanner to read the file line by line
 	scanner := bufio.NewScanner(drugFile)
-	scanner.Split( bufio.ScanLines )
+	scanner.Split(bufio.ScanLines)
 
 	//Read each line and parse it into a drug
 	check := scanner.Scan()
-	for ;check != false; check = scanner.Scan() {
+	for ; check != false; check = scanner.Scan() {
 		line := scanner.Text()
 		words := strings.Fields(line)
 		qty, _ := strconv.Atoi(words[2])
@@ -56,7 +57,7 @@ Function: makeOrderMap
 Description: Populates a map with order structs
 @param fileName The name of the file containing past order information
 @param drugs The map of drugs in the system
- */
+*/
 func makeOrderMap(fileName string, drugs map[string]Drug) map[string][]Order {
 	//Open file and check for erros
 	orderFile, err := os.Open(fileName)
@@ -68,14 +69,14 @@ func makeOrderMap(fileName string, drugs map[string]Drug) map[string][]Order {
 
 	//Scanner to read the file line by line
 	scanner := bufio.NewScanner(orderFile)
-	scanner.Split( bufio.ScanLines )
+	scanner.Split(bufio.ScanLines)
 
 	/*
-	Order all files
-	NDC Date Qty ...
-	 */
+		Order all files
+		NDC Date Qty ...
+	*/
 	check := scanner.Scan()
-	for ;check != false; check = scanner.Scan() {
+	for ; check != false; check = scanner.Scan() {
 		line := scanner.Text()
 		words := strings.Fields(line)
 		//Get the drug
@@ -119,8 +120,8 @@ Function: BuildMap
 Description: Builds the drug and order map
 @param orderFileName The file containing orders
 @param drugsFileName The file containing drugs
- */
-func BuildMap(orderFileName, drugsFileName string) (map[string][]Order, map[string]Drug){
+*/
+func BuildMap(orderFileName, drugsFileName string) (map[string][]Order, map[string]Drug) {
 	drugs := makeDrugMap(drugsFileName)
 	return makeOrderMap(orderFileName, drugs), drugs
 }

@@ -8,6 +8,7 @@ package mainUtils
 
 import (
 	_ "github.com/lib/pq"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -35,7 +36,11 @@ func FindNDC(ndc string) (string, string, string, string, string, time.Time, flo
 	rows, err := db.Query("SELECT ndc, pharmacist, date, qty, script, type FROM orderdb WHERE ndc = $1 order by date desc;", ndc)
 	issue(err)
 
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	for rows.Next() {
 		err := rows.Scan(&NDC, &pharm, &date, &qty, &script, &typ)
@@ -237,7 +242,9 @@ func NewCheck(ndc string) bool {
 	row, err := db.Query("Select count(ndc) from drugdb where ndc = $1", ndc)
 	issue(err)
 	row.Next()
-	row.Scan(&count)
+	err = row.Scan(&count)
+	issue(err)
+
 	if count < 1 {
 		return false
 	} else {

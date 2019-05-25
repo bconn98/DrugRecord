@@ -3,14 +3,14 @@ File: postLoginHandler
 Description: Sends the audit information
 @author Bryan Conn
 @date 10/7/18
- */
+*/
 package handlers
 
 import (
-	"log"
-	. "net/http"
 	. "../../mainUtils"
 	. "../utils"
+	"log"
+	. "net/http"
 )
 
 /**
@@ -30,7 +30,7 @@ func PostLoginHandler(w ResponseWriter, r *Request) {
 		return
 	}
 	password := r.PostForm.Get("password")
-	if!CheckPassword(user, password) {
+	if !CheckPassword(user, password) {
 		ExecuteTemplate(w, "login.html", "Password doesn't match our records!")
 		return
 	}
