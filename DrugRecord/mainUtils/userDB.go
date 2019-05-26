@@ -34,8 +34,8 @@ Description: Grabs all of the users from the database
 */
 func GetUsers() []User {
 	var (
-		userName string
-		passVal  int
+		lcUserName string
+		lnPassVal  int
 	)
 	issue(err)
 
@@ -50,9 +50,9 @@ func GetUsers() []User {
 	}()
 
 	for rows.Next() {
-		err := rows.Scan(&userName, &passVal)
+		err := rows.Scan(&lcUserName, &lnPassVal)
 		issue(err)
-		user := User{userName, passVal}
+		user := User{lcUserName, lnPassVal}
 		users = append(users, user)
 	}
 	err = rows.Err()
@@ -64,10 +64,10 @@ func GetUsers() []User {
 /**
 Function: AddUser
 Description: Adds a user to the database
-@param username The username of the new user
-@param passVal The password value for the new user
+@param acUsername The username of the new user
+@param acPassVal The password value for the new user
 */
-func AddUser(username string, passVal int) {
-	_, err := db.Query("INSERT INTO userDB (userName, passVal) VALUES ($1, $2);", username, passVal)
+func AddUser(acUsername string, acPassVal int) {
+	_, err := db.Query("INSERT INTO userDB (userName, passVal) VALUES ($1, $2);", acUsername, acPassVal)
 	issue(err)
 }

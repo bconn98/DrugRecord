@@ -16,10 +16,10 @@ import (
 Function: GetPrescriptionHandler
 Description: Execute the prescription template
 */
-func GetPrescriptionHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func GetPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	utils.ExecuteTemplate(w, "prescription.html", nil)
+	utils.ExecuteTemplate(acWriter, "prescription.html", nil)
 }

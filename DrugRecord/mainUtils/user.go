@@ -23,40 +23,40 @@ const (
 /**
 Function: MakeUser
 Description: Creates a new user and adds them to the database
-@param username The username of the new user
-@param password The password used for the user
+@param acUsername The username of the new user
+@param acPassword The password used for the user
 @return The validity of the new user
 */
-func MakeUser(username string, password string) int {
-	validCheck := validateInfo(username, password)
-	if validCheck != GOOD {
-		return validCheck
+func MakeUser(acUsername string, acPassword string) int {
+	lcValidCheck := validateInfo(acUsername, acPassword)
+	if lcValidCheck != GOOD {
+		return lcValidCheck
 	}
-	passVal := computePassVal(password)
+	lnPassVal := computePassVal(acPassword)
 	//Check if the username exists
-	test := User{}
-	if FindUser(username) != test {
+	lsTestUser := User{}
+	if FindUser(acUsername) != lsTestUser {
 		return TN
 	}
-	AddUser(username, passVal)
+	AddUser(acUsername, lnPassVal)
 	return GOOD
 }
 
 /**
 Function: validateInfo
 Description: Validates if the username and password are empty or contain spaces
-@param username The username of the new user
-@param password The password of the new user
+@param acUsername The username of the new user
+@param acPassword The password of the new user
 @return If the new user's information is valid
 */
-func validateInfo(username string, password string) int {
-	if username == "" {
+func validateInfo(acUsername string, acPassword string) int {
+	if acUsername == "" {
 		return UE
-	} else if strings.Contains(username, " ") {
+	} else if strings.Contains(acUsername, " ") {
 		return US
-	} else if password == "" {
+	} else if acPassword == "" {
 		return PE
-	} else if strings.Contains(password, " ") {
+	} else if strings.Contains(acPassword, " ") {
 		return PS
 	} else {
 		return GOOD
@@ -66,14 +66,14 @@ func validateInfo(username string, password string) int {
 /**
 Function: FindUser
 Description: Looks for user in the database
-@param name The name of the user to be found
+@param acName The name of the user to be found
 @return The user if its found, if not a blank user
 */
-func FindUser(name string) User {
-	users := GetUsers()
-	for _, user := range users {
-		if user.GetUserName() == name {
-			return user
+func FindUser(acName string) User {
+	lsUsers := GetUsers()
+	for _, lsUser := range lsUsers {
+		if lsUser.GetUserName() == acName {
+			return lsUser
 		}
 	}
 	return User{}
@@ -84,33 +84,33 @@ Function: GetUserName
 Description: Returns the username of the user
 @return The name of the user
 */
-func (user User) GetUserName() string {
-	return user.UserName
+func (asUser User) GetUserName() string {
+	return asUser.UserName
 }
 
 /**
 Function: CheckPassword
 Description: Determines if the password matches the users password
-@param user The user that is being checked
-@param password The password that was entered
+@param asUser The user that is being checked
+@param acPassword The password that was entered
 @return If the password matches
 */
-func CheckPassword(user User, password string) bool {
-	return user.PassVal == computePassVal(password)
+func CheckPassword(asUser User, acPassword string) bool {
+	return asUser.PassVal == computePassVal(acPassword)
 }
 
 /**
 Function: computePassVal
 Description: Computes the value of given password using a unique formula (will be changed when released)
-@param password The password being computed
+@param acPassword The password being computed
 @return The value of the password as an int
 */
-func computePassVal(password string) int {
+func computePassVal(acPassword string) int {
 	var i int
 	val := 0
-	passwordLength := len(password)
+	passwordLength := len(acPassword)
 	for i = 0; i < passwordLength; i++ {
-		val += ((int(password[i])*31 + i) / 7) - 5
+		val += ((int(acPassword[i])*31 + i) / 7) - 5
 	}
 	return val
 }

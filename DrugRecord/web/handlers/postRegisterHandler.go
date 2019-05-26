@@ -18,32 +18,32 @@ Function: PostRegisterHandler
 Description: Sends the new users information to be validated and redirects differently
 depending on that validity.
 */
-func PostRegisterHandler(w ResponseWriter, r *Request) {
-	err := r.ParseForm()
+func PostRegisterHandler(acWriter ResponseWriter, acRequest *Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	username := r.PostForm.Get("uName")
-	password := r.PostForm.Get("password")
+	lcUsername := acRequest.PostForm.Get("uName")
+	lcPassword := acRequest.PostForm.Get("password")
 
-	validation := MakeUser(username, password)
-	switch validation {
+	leValidation := MakeUser(lcUsername, lcPassword)
+	switch leValidation {
 	case UE:
-		ExecuteTemplate(w, "register.html", "Username field cannot be left empty!")
+		ExecuteTemplate(acWriter, "register.html", "Username field cannot be left empty!")
 		return
 	case US:
-		ExecuteTemplate(w, "register.html", "Username field cannot contain spaces!")
+		ExecuteTemplate(acWriter, "register.html", "Username field cannot contain spaces!")
 		return
 	case PE:
-		ExecuteTemplate(w, "register.html", "Password field cannot be left empty!")
+		ExecuteTemplate(acWriter, "register.html", "Password field cannot be left empty!")
 		return
 	case PS:
-		ExecuteTemplate(w, "register.html", "Password field cannot contain spaces!")
+		ExecuteTemplate(acWriter, "register.html", "Password field cannot contain spaces!")
 		return
 	case TN:
-		ExecuteTemplate(w, "register.html", "This username is already in use, please try again!")
+		ExecuteTemplate(acWriter, "register.html", "This username is already in use, please try again!")
 		return
 	case GOOD:
-		Redirect(w, r, "/login", StatusFound)
+		Redirect(acWriter, acRequest, "/login", StatusFound)
 	}
 }

@@ -12,66 +12,66 @@ import "strconv"
 Function: checkNDC
 Description: Checks to make sure that the NDC is the correct
 length and has dashes in the right spots.
-@param ndc The NDC code
-@param str The current error string
+@param acNdc The NDC code
+@param acErrorString The current error string
 @return The current error string
 */
-func CheckNDC(ndc string, str string) (string, string) {
-	if len(ndc) != 11 && len(ndc) != 13 {
-		str = "NDC is not the correct length"
-	} else if ndc[5] != '-' || ndc[10] != '-' {
-		ndc = ndc[:5] + "-" + ndc[5:9] + "-" + ndc[9:]
+func CheckNDC(acNdc string, acErrorString string) (string, string) {
+	if len(acNdc) != 11 && len(acNdc) != 13 {
+		acErrorString = "NDC is not the correct length"
+	} else if acNdc[5] != '-' || acNdc[10] != '-' {
+		acNdc = acNdc[:5] + "-" + acNdc[5:9] + "-" + acNdc[9:]
 	}
-	return ndc, str
+	return acNdc, acErrorString
 }
 
 /**
 Function: CheckDate
 Description: Checks to make sure all parts of the date are the
 correct length and ints
-@param month The month
-@param day The day
-@param year The year
-@param str The current error string
+@param acMonth The month
+@param acDay The day
+@param acYear The year
+@param acErrorString The current error string
 @return The current error string
 */
-func CheckDate(month string, day string, year string, str string) string {
-	if len(month) != 2 && len(month) != 1 {
-		str = "Month must be in the format XX or X"
-	} else if len(day) != 2 && len(day) != 1 {
-		str = "Day must be in the format XX or X"
-	} else if len(year) != 4 {
-		str = "Year must be in the format XXXX"
+func CheckDate(acMonth string, acDay string, acYear string, acErrorString string) string {
+	if len(acMonth) != 2 && len(acMonth) != 1 {
+		acErrorString = "Month must be in the format XX or X"
+	} else if len(acDay) != 2 && len(acDay) != 1 {
+		acErrorString = "Day must be in the format XX or X"
+	} else if len(acYear) != 4 {
+		acErrorString = "Year must be in the format XXXX"
 	}
-	_, err := strconv.Atoi(month)
+	_, err := strconv.Atoi(acMonth)
 	if err != nil {
-		str = "The month entered was not a number"
+		acErrorString = "The month entered was not a number"
 	}
-	_, err = strconv.Atoi(day)
+	_, err = strconv.Atoi(acDay)
 	if err != nil {
-		str = "The day entered was not a number"
+		acErrorString = "The day entered was not a number"
 	}
-	_, err = strconv.Atoi(year)
+	_, err = strconv.Atoi(acYear)
 	if err != nil {
-		str = "The year entered was not a number"
+		acErrorString = "The year entered was not a number"
 	}
 
-	return str
+	return acErrorString
 }
 
 /**
 Function: CheckQty
 Description: Checks if the quantity is greater than 0
 @param qty The quantity entered
-@param str The current error string
+@param acErrorString The current error string
 @return The current error string
 */
-func CheckQty(qty string, str string) string {
-	qt, _ := strconv.Atoi(qty)
-	if qt < 0 {
-		str = "Quantity must be greater than 0"
+func CheckQty(acQty string, acErrorString string) string {
+	lnQty, _ := strconv.Atoi(acQty)
+	if lnQty < 0 {
+		acErrorString = "Quantity must be greater than 0"
 	}
-	return str
+	return acErrorString
 }
 
 /**
@@ -96,13 +96,13 @@ Description: Checks if the entered value was a number
 /**
 Function: CheckString
 Description: Checks if the entered value was a non empty string
-@param input The supposed string
+@param acInput The supposed string
 @param str The current error string
 @return The current error string
 */
-func CheckString(input string, str string) string {
-	if input == "" {
-		str = "You missed a text field!"
+func CheckString(acInput string, acErrorString string) string {
+	if acInput == "" {
+		acErrorString = "You missed a text field!"
 	}
-	return str
+	return acErrorString
 }

@@ -17,24 +17,24 @@ import (
 Function: PostLoginHandler
 Description: Sends the login information for validation, redirects depending on the outcome
 */
-func PostLoginHandler(w ResponseWriter, r *Request) {
-	err := r.ParseForm()
+func PostLoginHandler(acWriter ResponseWriter, acRequest *Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	username := r.PostForm.Get("uName")
-	user := FindUser(username)
-	test := User{}
-	if user == test {
-		ExecuteTemplate(w, "login.html", "Unknown Username!")
+	lcUsername := acRequest.PostForm.Get("uName")
+	lsUser := FindUser(lcUsername)
+	lsTestUser := User{}
+	if lsUser == lsTestUser {
+		ExecuteTemplate(acWriter, "login.html", "Unknown Username!")
 		return
 	}
-	password := r.PostForm.Get("password")
-	if !CheckPassword(user, password) {
-		ExecuteTemplate(w, "login.html", "Password doesn't match our records!")
+	lcPassword := acRequest.PostForm.Get("password")
+	if !CheckPassword(lsUser, lcPassword) {
+		ExecuteTemplate(acWriter, "login.html", "Password doesn't match our records!")
 		return
 	}
-	SetGood()
-	Redirect(w, r, "database", 302)
+	SetSignedIn()
+	Redirect(acWriter, acRequest, "database", 302)
 	return
 }

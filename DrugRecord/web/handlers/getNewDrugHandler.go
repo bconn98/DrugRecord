@@ -16,10 +16,10 @@ import (
 Function: GetNewDrugHandler
 Description: Executes the new drug template
 */
-func GetNewDrugHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func GetNewDrugHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	utils.ExecuteTemplate(w, "newDrug.html", nil)
+	utils.ExecuteTemplate(acWriter, "newDrug.html", nil)
 }

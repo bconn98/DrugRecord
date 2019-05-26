@@ -18,44 +18,45 @@ Function: PostPurchaseHelper
 Description: Sends the purchase information to be added to the database
 and executes the database template to refresh
 */
-func PostPurchaseHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	var str string
-	ndc := r.PostForm.Get("ndc")
-	ndc, str = utils.CheckNDC(ndc, str)
-	pharmacist := r.PostForm.Get("pharmacist")
-	invoice := r.PostForm.Get("invoice")
-	month := r.PostForm.Get("month")
-	day := r.PostForm.Get("day")
-	year := r.PostForm.Get("year")
-	str = utils.CheckDate(month, day, year, str)
-	qty := r.PostForm.Get("qty")
-	actual := r.PostForm.Get("realCount")
-	str = utils.CheckQty(actual, str)
-	if str != "" {
-		utils.ExecuteTemplate(w, "purchase.html", str)
+
+	var lcErrorString string
+	lcNdc := acRequest.PostForm.Get("ndc")
+	lcNdc, lcErrorString = utils.CheckNDC(lcNdc, lcErrorString)
+	lcPharmacist := acRequest.PostForm.Get("pharmacist")
+	lcInvoice := acRequest.PostForm.Get("invoice")
+	lcMonth := acRequest.PostForm.Get("month")
+	lcDay := acRequest.PostForm.Get("day")
+	lcYear := acRequest.PostForm.Get("year")
+	lcErrorString = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
+	lnQty := acRequest.PostForm.Get("qty")
+	lnActual := acRequest.PostForm.Get("realCount")
+	lcErrorString = utils.CheckQty(lnActual, lcErrorString)
+	if lcErrorString != "" {
+		utils.ExecuteTemplate(acWriter, "purchase.html", lcErrorString)
 		return
 	}
 
 	// Checks if the drug exists yet
-	check := mainUtils.NewCheck(ndc)
+	lbCheck := mainUtils.NewCheck(lcNdc)
 	// If the drug does exist
-	if check {
-		logged := mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, invoice, actual)
+	if lbCheck {
+		logged := mainUtils.AddPurchase(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcInvoice, lnActual)
 
 		if !logged {
-			utils.ExecuteTemplate(w, "purchase.html", "Purchase already logged!")
+			utils.ExecuteTemplate(acWriter, "purchase.html", "Purchase already logged!")
 			return
 		}
 
-		GetCloseHandler(w, r)
+		GetCloseHandler(acWriter, acRequest)
 		return
 	} else {
-		mainUtils.AddDrug(ndc, month, day, year)
-		utils.ExecuteTemplate(w, "newDrug.html", nil)
-		mainUtils.AddPurchase(ndc, pharmacist, month, day, year, qty, invoice, actual)
+		mainUtils.AddDrug(lcNdc, lcMonth, lcDay, lcYear)
+		utils.ExecuteTemplate(acWriter, "newDrug.html", nil)
+		mainUtils.AddPurchase(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcInvoice, lnActual)
 	}
 }

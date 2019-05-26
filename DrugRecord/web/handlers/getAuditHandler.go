@@ -16,10 +16,10 @@ import (
 Function: GetAuditHandler
 Description: Executes the audit template
 */
-func GetAuditHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func GetAuditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	utils.ExecuteTemplate(w, "audit.html", nil)
+	utils.ExecuteTemplate(acWriter, "audit.html", nil)
 }

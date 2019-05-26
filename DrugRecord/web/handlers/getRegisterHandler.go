@@ -16,10 +16,10 @@ import (
 Function: GetRegisterHandler
 Description: Execute the register template
 */
-func GetRegisterHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func GetRegisterHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	utils.ExecuteTemplate(w, "register.html", nil)
+	utils.ExecuteTemplate(acWriter, "register.html", nil)
 }

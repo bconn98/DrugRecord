@@ -18,32 +18,33 @@ Function: PostAuditHandler
 Description: Sends the audit information to add it to the database and executes the
 database template to refresh the page
 */
-func PostAuditHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func PostAuditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	var str string
-	ndc := r.PostForm.Get("ndc")
-	ndc, str = utils.CheckNDC(ndc, str)
-	pharmacist := r.PostForm.Get("pharmacist")
-	amonth := r.PostForm.Get("amonth")
-	aday := r.PostForm.Get("aday")
-	ayear := r.PostForm.Get("ayear")
-	str = utils.CheckDate(amonth, aday, ayear, str)
-	qty := r.PostForm.Get("qty")
-	actual := r.PostForm.Get("realCount")
-	str = utils.CheckQty(actual, str)
-	if str != "" {
-		utils.ExecuteTemplate(w, "audit.html", str)
+
+	var lcErrorString string
+	lcNdc := acRequest.PostForm.Get("ndc")
+	lcNdc, lcErrorString = utils.CheckNDC(lcNdc, lcErrorString)
+	lcPharmacist := acRequest.PostForm.Get("pharmacist")
+	lcAuditMonth := acRequest.PostForm.Get("amonth")
+	lcAuditDay := acRequest.PostForm.Get("aday")
+	lcAuditYear := acRequest.PostForm.Get("ayear")
+	lcErrorString = utils.CheckDate(lcAuditMonth, lcAuditDay, lcAuditYear, lcErrorString)
+	lnQty := acRequest.PostForm.Get("qty")
+	lnActual := acRequest.PostForm.Get("realCount")
+	lcErrorString = utils.CheckQty(lnActual, lcErrorString)
+	if lcErrorString != "" {
+		utils.ExecuteTemplate(acWriter, "audit.html", lcErrorString)
 		return
 	}
-	check := mainUtils.AddAudit(ndc, pharmacist, amonth, aday, ayear, qty, actual)
+	lbCheck := mainUtils.AddAudit(lcNdc, lcPharmacist, lcAuditMonth, lcAuditDay, lcAuditYear, lnQty, lnActual)
 
-	if !check {
-		utils.ExecuteTemplate(w, "audit.html", "Audit already logged!")
+	if !lbCheck {
+		utils.ExecuteTemplate(acWriter, "audit.html", "Audit already logged!")
 		return
 	}
 
-	GetCloseHandler(w, r)
+	GetCloseHandler(acWriter, acRequest)
 }

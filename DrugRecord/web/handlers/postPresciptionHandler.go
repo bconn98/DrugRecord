@@ -18,33 +18,34 @@ Function: PostPrescriptionHandler
 Description: Sends the prescription information to be added to the database and executes the
 database template to refresh
 */
-func PostPrescriptionHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	var str string
-	ndc := r.PostForm.Get("ndc")
-	ndc, str = utils.CheckNDC(ndc, str)
-	pharmacist := r.PostForm.Get("pharmacist")
-	script := r.PostForm.Get("script")
-	month := r.PostForm.Get("month")
-	day := r.PostForm.Get("day")
-	year := r.PostForm.Get("year")
-	str = utils.CheckDate(month, day, year, str)
-	qty := r.PostForm.Get("qty")
-	actual := r.PostForm.Get("realCount")
-	str = utils.CheckQty(actual, str)
-	if str != "" {
-		utils.ExecuteTemplate(w, "prescription.html", str)
+
+	var lcErrorString string
+	lcNdc := acRequest.PostForm.Get("ndc")
+	lcNdc, lcErrorString = utils.CheckNDC(lcNdc, lcErrorString)
+	lcPharmacist := acRequest.PostForm.Get("pharmacist")
+	lcScript := acRequest.PostForm.Get("script")
+	lcMonth := acRequest.PostForm.Get("month")
+	lcDay := acRequest.PostForm.Get("day")
+	lcYear := acRequest.PostForm.Get("year")
+	lcErrorString = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
+	lnQty := acRequest.PostForm.Get("qty")
+	lnActual := acRequest.PostForm.Get("realCount")
+	lcErrorString = utils.CheckQty(lnActual, lcErrorString)
+	if lcErrorString != "" {
+		utils.ExecuteTemplate(acWriter, "prescription.html", lcErrorString)
 		return
 	}
-	check := mainUtils.AddPrescription(ndc, pharmacist, month, day, year, qty, script, actual)
+	check := mainUtils.AddPrescription(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcScript, lnActual)
 
 	if !check {
-		utils.ExecuteTemplate(w, "prescription.html", "Prescription already logged!")
+		utils.ExecuteTemplate(acWriter, "prescription.html", "Prescription already logged!")
 		return
 	}
 
-	GetCloseHandler(w, r)
+	GetCloseHandler(acWriter, acRequest)
 }

@@ -16,10 +16,10 @@ import (
 Function: GetPurchaseHandler
 Description: Executes the purchase template
 */
-func GetPurchaseHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func GetPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	utils.ExecuteTemplate(w, "purchase.html", nil)
+	utils.ExecuteTemplate(acWriter, "purchase.html", nil)
 }

@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-var templates = Must(ParseFiles("web/templates/audit.html",
+var mcTemplates = Must(ParseFiles("web/templates/audit.html",
 	"web/templates/closeWindow.html", "web/templates/database.html",
 	"web/templates/newDrug.html", "web/templates/prescription.html",
 	"web/templates/purchase.html"))
@@ -19,13 +19,13 @@ var templates = Must(ParseFiles("web/templates/audit.html",
 /**
 Function: ExecuteTemplate
 Description: Executes a html template
-@param w The http writer
-@param tmpl The template name
-@param data The data for the template to use
+@param acWriter The http writer
+@param acTemplate The template name
+@param aiData The data for the template to use
 */
-func ExecuteTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
-	err := templates.ExecuteTemplate(w, tmpl, data)
+func ExecuteTemplate(acWriter http.ResponseWriter, acTemplate string, aiData interface{}) {
+	err := mcTemplates.ExecuteTemplate(acWriter, acTemplate, aiData)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(acWriter, err.Error(), http.StatusInternalServerError)
 	}
 }

@@ -16,10 +16,10 @@ import (
 Function: GetHomeHandler
 Description: Executes the home template
 */
-func GetHomeHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func GetHomeHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	utils.ExecuteTemplate(w, "home.html", nil)
+	utils.ExecuteTemplate(acWriter, "home.html", nil)
 }

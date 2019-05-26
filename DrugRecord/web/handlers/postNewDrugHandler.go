@@ -18,25 +18,25 @@ Function: PostNewDrugHelper
 Description: Sends the purchase information to be added to the database
 and executes the database template to refresh
 */
-func PostNewDrugHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func PostNewDrugHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	var str string
-	ndc := r.PostForm.Get("ndc")
-	ndc, str = CheckNDC(ndc, str)
-	name := r.PostForm.Get("name")
-	str = CheckString(name, str)
-	form := r.PostForm.Get("form")
-	itemS := r.PostForm.Get("itemnum")
-	pkgSize := r.PostForm.Get("pkgsize")
+	var lcErrorString string
+	lcNdc := acRequest.PostForm.Get("ndc")
+	lcNdc, lcErrorString = CheckNDC(lcNdc, lcErrorString)
+	lcName := acRequest.PostForm.Get("name")
+	lcErrorString = CheckString(lcName, lcErrorString)
+	lcForm := acRequest.PostForm.Get("form")
+	lcItem := acRequest.PostForm.Get("itemnum")
+	lcPkgSize := acRequest.PostForm.Get("pkgsize")
 
-	if str != "" {
-		ExecuteTemplate(w, "newDrug.html", str)
+	if lcErrorString != "" {
+		ExecuteTemplate(acWriter, "newDrug.html", lcErrorString)
 		return
 	}
-	mainUtils.UpdateDrug(pkgSize, form, itemS, name, ndc)
-	GetCloseHandler(w, r)
+	mainUtils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc)
+	GetCloseHandler(acWriter, acRequest)
 	return
 }

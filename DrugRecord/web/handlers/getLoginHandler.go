@@ -16,10 +16,10 @@ import (
 Function: GetLoginHandler
 Description: Executes the login template
 */
-func GetLoginHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func GetLoginHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	utils.ExecuteTemplate(w, "login.html", nil)
+	utils.ExecuteTemplate(acWriter, "login.html", nil)
 }

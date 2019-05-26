@@ -12,28 +12,28 @@ import (
 	"net/http"
 )
 
-var good = true // This should be false when there is a sign in feature
+var gbSignedIn = true // This should be false when there is a sign in feature
 
 /**
 Function: GetDatabaseHandler
 Description: Executes the database template with the output data
 */
-func GetDatabaseHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+func GetDatabaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	if !good {
-		utils.ExecuteTemplate(w, "home.html", "You are not signed in")
+	if !gbSignedIn {
+		utils.ExecuteTemplate(acWriter, "home.html", "You are not signed in")
 		return
 	}
-	utils.ExecuteTemplate(w, "database.html", nil)
+	utils.ExecuteTemplate(acWriter, "database.html", nil)
 }
 
-func SetGood() {
-	good = true
+func SetSignedIn() {
+	gbSignedIn = true
 }
 
-func SetBad() {
-	good = false
+func SetSignedOut() {
+	gbSignedIn = false
 }

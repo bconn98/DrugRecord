@@ -16,11 +16,11 @@ import (
 Function: GetSignOutHandler
 Description: Executes the signOut template
 */
-func GetSignOutHandler(w http.ResponseWriter, r *http.Request) {
-	SetBad()
-	err := r.ParseForm()
+func GetSignOutHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+	SetSignedOut()
+	err := acRequest.ParseForm()
 	if err != nil {
 		log.Fatal(err)
 	}
-	utils.ExecuteTemplate(w, "home.html", nil)
+	utils.ExecuteTemplate(acWriter, "home.html", nil)
 }
