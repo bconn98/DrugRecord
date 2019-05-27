@@ -8,12 +8,16 @@
 <body>
     <img id = "logo" src = "/web/assets/logo.png" alt="" />
     <h1>Login</h1>
-    </br>
+    <br>
     <div id = "home"> <a href= "/"> Return Home </a> </div>
-    </br>
+    <br>
     <form action="/login" method="POST">
-        Username: <input type="text" name = "uName" />
-        Password: <input type="password" name = "password" />
+        <label>
+            Username: <input type="text" name="uName"/>
+        </label>
+        <label>
+            Password: <input type="password" name = "password" />
+        </label>
         <br/><br/>
         <button type="submit">Login</button>
     </form>

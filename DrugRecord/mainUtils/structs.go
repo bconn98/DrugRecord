@@ -16,21 +16,21 @@ Description: All the structs needed to implement the C2 record
 Date struct holds a month day and year
 */
 type Date struct {
-	Day   int
-	Month time.Month
-	Year  int
+	MnDay   int
+	McMonth time.Month
+	MnYear  int
 }
 
 /**
 Function: MakeDate
 Description: Makes a drug struct with the month, day, year
-@param month The month
-@param day The day
-@param year The year
+@param acMonth The month
+@param acDay The day
+@param acYear The year
 @return A Date object
 */
-func MakeDate(month time.Month, day int, year int) Date {
-	return Date{day, month, year}
+func MakeDate(acMonth time.Month, acDay int, acYear int) Date {
+	return Date{acDay, acMonth, acYear}
 }
 
 /**
@@ -38,48 +38,48 @@ Prescription struct contains the ndc of  drug of the order, the pharmacist that 
 the order, the script id, the quantity of the order, the date the order was filled
 */
 type Prescription struct {
-	ndc                string
-	Pharmacist, Script string
-	OrderQuantity      float64
-	date               time.Time
+	mcNdc                string
+	mcPharmacist, Script string
+	mnOrderQuantity      float64
+	mcDate               time.Time
 }
 
 /**
 Function: MakePrescription
 Description: Makes a Prescription struct
-@param ndc The ndc of the drug being ordered
-@param qty The quantity of the order
-@param pharm The initials of the pharmacist
-@param script The script id
-@param date The date of the order
+@param acNdc The ndc of the drug being ordered
+@param anQty The quantity of the order
+@param asPharmacist The initials of the pharmacist
+@param acScript The script id
+@param acDate The date of the order
 @return A prescription object
 */
-func MakePrescription(ndc string, pharm string, script string, qty float64, date time.Time) Prescription {
-	return Prescription{ndc, pharm, script, qty, date}
+func MakePrescription(acNdc string, asPharmacist string, acScript string, anQty float64, acDate time.Time) Prescription {
+	return Prescription{acNdc, asPharmacist, acScript, anQty, acDate}
 }
 
 /**
 Audit struct contains an audited quantity, the pharmacist who performed the audit,
-the date the audit was performed and the ndc of the auditted drug
+the date the audit was performed and the ndc of the audited drug
 */
 type Audit struct {
-	ndc           string
-	Pharmacist    string
-	AuditQuantity float64
-	date          time.Time
+	mcNdc           string
+	mcPharmacist    string
+	mnAuditQuantity float64
+	mcDate          time.Time
 }
 
 /**
 Function: MakeAudit
 Description: Makes an audit struct
-@param qty The quantity recorded in the audit
-@param pharm The initials of the pharmacist who performed the audit
-@param date The the audit was performed
-@param ndc The ndc of the drug
+@param anAuditQuantity The quantity recorded in the audit
+@param acPharmacist The initials of the pharmacist who performed the audit
+@param acDate The the audit was performed
+@param acNdc The ndc of the drug
 @return An Audit object
 */
-func MakeAudit(ndc string, pharm string, qty float64, date time.Time) Audit {
-	return Audit{ndc, pharm, qty, date}
+func MakeAudit(acNdc string, acPharmacist string, anAuditQuantity float64, acDate time.Time) Audit {
+	return Audit{acNdc, acPharmacist, anAuditQuantity, acDate}
 }
 
 /**
@@ -87,51 +87,52 @@ Purchase struct contains the ndc of a drug, purchase date, and purchased quantit
 and the pharmacist that counted the drug
 */
 type Purchase struct {
-	ndc   string
-	pharm string
-	Qty   float64
-	date  time.Time
+	mnNdc        string
+	mcPharmacist string
+	mnQty        float64
+	mcDate       time.Time
 }
 
 /**
 Function: MakePurchase
 Description: Makes a Purchase struct
-@param ndc The ndc of the drug that was bought
-@param date The date the purchase was added to the supply
-@param qty The quantity bought
-@param pharm The pharmacist that counted the drug
+@param acNdc The ndc of the drug that was bought
+@param acDate The date the purchase was added to the supply
+@param anQty The quantity bought
+@param acPharmacist The pharmacist that counted the drug
 @return A Purchase object
 */
-func MakePurchase(ndc string, pharm string, qty float64, date time.Time) Purchase {
-	return Purchase{ndc, pharm, qty, date}
+func MakePurchase(acNdc string, acPharmacist string, anQty float64, acDate time.Time) Purchase {
+	return Purchase{acNdc, acPharmacist, anQty, acDate}
 }
 
 /**
 Drug struct contains an id name, ndc code, and quantity
 */
 type Drug struct {
-	Id, NDC  string
-	Quantity float64
+	McId, McNdc string
+	MnQuantity  float64
 }
 
 /**
 Function: makeDrug
 Description: Given: a drug name, ndc, and quantity, creates a drug structure
-@param name The name of the drug
-@param ndc The ndc specific to the drug
-@param qty The current quantity of the drug
+@param acName The name of the drug
+@param acNdc The ndc specific to the drug
+@param anQty The current quantity of the drug
 */
-func MakeDrug(name string, ndc string, qty float64) Drug {
-	return Drug{name, ndc, qty}
+func MakeDrug(acName string, acNdc string, anQty float64) Drug {
+	return Drug{acName, acNdc, anQty}
 }
 
 /**
 Function: UpdateQty
 Description: Updates the quantity of the drug
+@param anQty The quantity to change by
 */
-func (drug Drug) UpdateQty(qty float64) Drug {
-	qty = drug.Quantity + qty
-	return MakeDrug(drug.Id, drug.NDC, qty)
+func (drug Drug) UpdateQty(anQty float64) Drug {
+	anQty = drug.MnQuantity + anQty
+	return MakeDrug(drug.McId, drug.McNdc, anQty)
 }
 
 /**
@@ -139,25 +140,25 @@ Order struct contains the pharmacist on the order, the script/type of the order
 the quantity and the date of the order
 */
 type Order struct {
-	Pharm       string
-	Script, Typ string
-	Qty         float64
-	Date        string
+	acPharmacist, acDate string
+	acScript, acType     string
+	anQty                float64
 }
 
 /**
 Function: MakeOrder
 Description: Creates an order using an audit, prescription, or purchase
-@param pharm The pharmacist on the order
-@param script The script/type of the order
-@param qty The quantity of the order
-@param date The date of the order
+@param acPharmacist The pharmacist on the order
+@param acScript The script/type of the order
+@param anQty The quantity of the order
+@param acDate The date of the order
+@param acType The type of the order
 @return An Order Object
 */
-func MakeOrder(pharm string, script string, typ string, qty float64, date time.Time) Order {
-	var dateS string
-	dateS = date.Month().String() + " " + strconv.Itoa(date.Day()) + " " + strconv.Itoa(date.Year())
-	return Order{pharm, script, typ, qty, dateS}
+func MakeOrder(acPharmacist string, acScript string, acType string, anQty float64, acDate time.Time) Order {
+	var lcDate string
+	lcDate = acDate.Month().String() + " " + strconv.Itoa(acDate.Day()) + " " + strconv.Itoa(acDate.Year())
+	return Order{acPharmacist, lcDate, acScript, acType, anQty}
 }
 
 /**

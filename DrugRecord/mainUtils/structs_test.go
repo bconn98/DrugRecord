@@ -17,13 +17,13 @@ Function: TestMakePurchase
 Description: Checks if a purchase correctly adds to the drug quantity
 */
 func TestMakePurchase(t *testing.T) {
-	var ndc = "99999-9999-99"
-	var pharm = "BRC"
-	var qty = 10.0
-	d := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
-	testPurch := Purchase{ndc, pharm, qty, d}
-	makePurch := MakePurchase(ndc, pharm, qty, d)
-	if testPurch != makePurch {
+	var lcNdc = "99999-9999-99"
+	var lcPharmacist = "BRC"
+	var lnQty = 10.0
+	lcDate := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
+	testPurchase := Purchase{lcNdc, lcPharmacist, lnQty, lcDate}
+	makePurchase := MakePurchase(lcNdc, lcPharmacist, lnQty, lcDate)
+	if testPurchase != makePurchase {
 		t.Error("The purchases don't match!")
 	}
 }
@@ -33,17 +33,17 @@ Function: TestMakeAudit
 Description: Checks if the audit values match and if they don't match
 */
 func TestMakeAudit(t *testing.T) {
-	var ndc = "99999-9999-99"
-	var pharm = "BRC"
-	var qty = 110.0
-	var qty2 = 100.0
-	d := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
-	testAudit1 := Audit{ndc, pharm, qty, d}
-	makeAudit := MakeAudit(ndc, pharm, qty, d)
+	var lcNdc = "99999-9999-99"
+	var lcPharmacist = "BRC"
+	var lnQty = 110.0
+	var lnQty2 = 100.0
+	lcDate := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
+	testAudit1 := Audit{lcNdc, lcPharmacist, lnQty, lcDate}
+	makeAudit := MakeAudit(lcNdc, lcPharmacist, lnQty, lcDate)
 	if testAudit1 != makeAudit {
 		t.Error("The audits don't match!")
 	}
-	testAudit2 := Audit{ndc, pharm, qty2, d}
+	testAudit2 := Audit{lcNdc, lcPharmacist, lnQty2, lcDate}
 	if testAudit2 == makeAudit {
 		t.Error("The audits shouldn't match!")
 	}
@@ -66,9 +66,9 @@ Function: TestMakeDate
 Description: Checks if the make date function correctly changes strings into integers
 */
 func TestMakeDate(t *testing.T) {
-	d := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
+	lcDate := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
 	testDate1 := Date{23, 6, 2018}
-	testDate2 := MakeDate(d.Month(), d.Day(), d.Year())
+	testDate2 := MakeDate(lcDate.Month(), lcDate.Day(), lcDate.Year())
 	if testDate1 != testDate2 {
 		t.Error("The dates don't match!")
 	}
@@ -79,14 +79,15 @@ Function: TestMakeOrder
 Description: Makes sure that an order doesn't change any information in a purchase
 */
 func TestMakeOrder(t *testing.T) {
-	var ndc = "99999-9999-99"
-	var pharm = "BRC"
-	var typ = "PURCHASE"
-	var qty = 100.0
-	d := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
+	var lcNdc = "99999-9999-99"
+	var lcScript = "99999-9999-99"
+	var lcPharmacist = "BRC"
+	var lcType = "PURCHASE"
+	var lnQty = 100.0
+	lcDate := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
 
-	testOrder := Order{ndc, pharm, typ, qty, "June 23 2018"}
-	makeOrder := MakeOrder(ndc, pharm, typ, qty, d)
+	testOrder := Order{lcPharmacist, "June 23 2018", lcScript, lcType, lnQty}
+	makeOrder := MakeOrder(lcNdc, lcPharmacist, lcType, lnQty, lcDate)
 
 	if testOrder != makeOrder {
 		t.Error("The orders don't match!")
@@ -99,14 +100,14 @@ Description: Makes sure that the make function correctly decreases the quantity
 */
 func TestMakePrescription(t *testing.T) {
 	//Value is lower because I'm not calling the updateQty
-	var ndc = "999-9999-999"
-	var pharm = "BRC"
+	var lcNdc = "999-9999-999"
+	var lcPharmacist = "BRC"
 	var script = "999"
-	var qty = 50.0
-	d := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
-	testPrescrip := Prescription{ndc, pharm, script, qty, d}
-	makePrescrip := MakePrescription(ndc, pharm, script, qty, d)
-	if testPrescrip != makePrescrip {
+	var lnQty = 50.0
+	lcDate := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
+	testPrescription := Prescription{lcNdc, lcPharmacist, script, lnQty, lcDate}
+	makePrescription := MakePrescription(lcNdc, lcPharmacist, script, lnQty, lcDate)
+	if testPrescription != makePrescription {
 		t.Error("The prescriptions don't match!")
 	}
 }
@@ -118,7 +119,9 @@ Description: Makes sure that the quantity is correctly increased
 func TestDrug_UpdateQty(t *testing.T) {
 	testDrug1 := Drug{"Test", "999-9999-999", 110}
 	testDrug2 := Drug{"Test", "999-9999-999", 100}
+
 	testDrug2 = testDrug2.UpdateQty(10)
+
 	if testDrug1 != testDrug2 {
 		t.Error("The drug quantities don't match!")
 	}

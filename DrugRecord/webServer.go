@@ -27,7 +27,7 @@ func main() {
 	acRouter.HandleFunc("/login", handlers.GetLoginHandler).Methods("GET")
 	acRouter.HandleFunc("/newDrug", handlers.GetNewDrugHandler).Methods("GET")
 	acRouter.HandleFunc("/register", handlers.GetRegisterHandler).Methods("GET")
-	acRouter.HandleFunc("/signout", handlers.GetSignOutHandler).Methods("GET")
+	acRouter.HandleFunc("/SignOut", handlers.GetSignOutHandler).Methods("GET")
 	acRouter.HandleFunc("/closeWindow", handlers.GetCloseHandler).Methods("GET")
 	acRouter.HandleFunc("/database", handlers.GetDatabaseHandler).Methods("GET")
 	acRouter.HandleFunc("/newDrug", handlers.PostNewDrugHandler).Methods("POST")

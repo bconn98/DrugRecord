@@ -30,7 +30,7 @@ var db, err = sql.Open("postgres", connStr)
 /**
 Function: GetUsers
 Description: Grabs all of the users from the database
-@return An array of User structs
+@return An array of User structures
 */
 func GetUsers() []User {
 	var (

@@ -8,12 +8,12 @@
 <body>
     <img id = "logo" src = "/web/assets/logo.png" alt="" />
     <h1> Medicine Shoppe C2 Form </h1>
-    </br>
+    <br>
     <!-- <div id = "navigation">
-        <div id = "signout"> <a href= "/signout"> Sign out</a> </div>
+        <div id = "signout"> <a href= "/SignOut"> Sign out</a> </div>
     </div> Put this back in with the login feature -->
     <div id = "buttons">
-        </br>
+        <br>
         <script type="text/javascript">
             // Popup window code
             function newPopup(url) {
@@ -26,13 +26,15 @@
         <button type = "button" onclick="newPopup('/purchase')">New Purchase</button>
     </div>
     <div id = "content">
-        </br>
+        <br>
             <form id = "search" action="/database" method="POST">
-                NDC: <input type="text" name = "ndc" />
+                <label>
+                    NDC: <input type="text" name="ndc"/>
+                </label>
                 <br/><br/>
                 <button type="submit">Submit</button>
             </form>
-        </br>
+        <br>
         <h3>Drug: {{.Name}}  &emsp;&ensp; NDC: {{.Ndc}} &emsp;&ensp; Package Size: {{.Size}}</h3>
         <h4>Form: {{.Form}}  &emsp;&ensp; Item Number: {{.ItemNum}} &emsp;&ensp; Initial Date: {{.Date}}</h4>
         <h2> Current Quantity: {{.Qty}}</h2>

@@ -29,8 +29,8 @@ func PostNewDrugHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lcName := acRequest.PostForm.Get("name")
 	lcErrorString = CheckString(lcName, lcErrorString)
 	lcForm := acRequest.PostForm.Get("form")
-	lcItem := acRequest.PostForm.Get("itemnum")
-	lcPkgSize := acRequest.PostForm.Get("pkgsize")
+	lcItem := acRequest.PostForm.Get("item_num")
+	lcPkgSize := acRequest.PostForm.Get("pkgSize")
 
 	if lcErrorString != "" {
 		ExecuteTemplate(acWriter, "newDrug.html", lcErrorString)
