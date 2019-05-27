@@ -7,10 +7,11 @@ Description: Sends the purchase information
 package handlers
 
 import (
-	"../../mainUtils"
-	"../utils"
 	"log"
 	"net/http"
+
+	"../../mainUtils"
+	"../utils"
 )
 
 /**
@@ -29,9 +30,8 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 	lcNdc, lcErrorString = utils.CheckNDC(lcNdc, lcErrorString)
 	lcPharmacist := acRequest.PostForm.Get("pharmacist")
 	lcInvoice := acRequest.PostForm.Get("invoice")
-	lcMonth := acRequest.PostForm.Get("month")
-	lcDay := acRequest.PostForm.Get("day")
-	lcYear := acRequest.PostForm.Get("year")
+	lcPurchaseDate := acRequest.PostForm.Get("PurchaseDate")
+	lcMonth, lcDay, lcYear := utils.ParseDate(lcPurchaseDate)
 	lcErrorString = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
 	lnQty := acRequest.PostForm.Get("qty")
 	lnActual := acRequest.PostForm.Get("realCount")
@@ -45,9 +45,9 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 	lbCheck := mainUtils.NewCheck(lcNdc)
 	// If the drug does exist
 	if lbCheck {
-		logged := mainUtils.AddPurchase(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcInvoice, lnActual)
+		lbLogged := mainUtils.AddPurchase(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcInvoice, lnActual)
 
-		if !logged {
+		if !lbLogged {
 			utils.ExecuteTemplate(acWriter, "purchase.html", "Purchase already logged!")
 			return
 		}

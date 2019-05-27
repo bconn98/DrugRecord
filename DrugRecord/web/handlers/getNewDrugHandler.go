@@ -7,9 +7,10 @@ Description: Gets new drug page
 package handlers
 
 import (
-	"../utils"
 	"log"
 	"net/http"
+
+	"../utils"
 )
 
 /**

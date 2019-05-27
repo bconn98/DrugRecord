@@ -99,7 +99,7 @@ Function: TestMakePrescription
 Description: Makes sure that the make function correctly decreases the quantity
 */
 func TestMakePrescription(t *testing.T) {
-	//Value is lower because I'm not calling the updateQty
+	// Value is lower because I'm not calling the updateQty
 	var lcNdc = "999-9999-999"
 	var lcPharmacist = "BRC"
 	var script = "999"

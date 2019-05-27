@@ -7,11 +7,12 @@ Description: Sends the database information
 package handlers
 
 import (
-	. "../../mainUtils"
-	. "../utils"
 	"log"
 	. "net/http"
 	"strconv"
+
+	. "../../mainUtils"
+	. "../utils"
 )
 
 type data struct {

@@ -7,9 +7,10 @@ Description: Gets new login page
 package handlers
 
 import (
-	"../utils"
 	"log"
 	"net/http"
+
+	"../utils"
 )
 
 /**

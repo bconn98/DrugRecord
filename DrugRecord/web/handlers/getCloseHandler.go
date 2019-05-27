@@ -7,8 +7,9 @@ Description: Gets new audit page
 package handlers
 
 import (
-	. "../utils"
 	"net/http"
+
+	. "../utils"
 )
 
 /**

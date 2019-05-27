@@ -19,10 +19,15 @@ table {
     margin-right: 10%;
 }
 
-tr:nth-child(even) {background: #FFFFFF}
-tr:nth-child(odd) {background: #808080}
+tr:nth-child(even) {
+    background: #FFFFFF
+}
 
-#Audit{
+tr:nth-child(odd) {
+    background: #808080
+}
+
+#Audit {
     background: yellow;
 }
 
@@ -36,7 +41,7 @@ tr:nth-child(odd) {background: #808080}
     height: 30px;
     background-color: slategrey;
     text-align: center;
-    align-items:center;
+    align-items: center;
 }
 
 #buttons {
@@ -44,7 +49,7 @@ tr:nth-child(odd) {background: #808080}
 
     height: 60px;
     background-color: slategrey;
-    align-items:center;
+    align-items: center;
 
 }
 

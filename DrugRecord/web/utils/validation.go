@@ -81,7 +81,7 @@ Description: Checks if the entered value was a number
 @param str The current error string
 @return The current error string
 */
-//func CheckNum(number string, str string) string {
+// func CheckNum(number string, str string) string {
 //	_, err := strconv.Atoi(number)
 //	if err != nil {
 //		if number == "" {
@@ -91,7 +91,7 @@ Description: Checks if the entered value was a number
 //		}
 //	}
 //	return str
-//}
+// }
 
 /**
 Function: CheckString

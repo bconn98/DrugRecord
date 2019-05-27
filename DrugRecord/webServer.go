@@ -7,10 +7,12 @@ Description: Runs a database
 package main
 
 import (
-	"./web/handlers"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
+
+	"./web/handlers"
 )
 
 /**

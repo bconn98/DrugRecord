@@ -7,10 +7,11 @@ Description: Sends the audit information
 package handlers
 
 import (
-	"../../mainUtils"
-	"../utils"
 	"log"
 	"net/http"
+
+	"../../mainUtils"
+	"../utils"
 )
 
 /**
@@ -28,9 +29,8 @@ func PostAuditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lcNdc := acRequest.PostForm.Get("ndc")
 	lcNdc, lcErrorString = utils.CheckNDC(lcNdc, lcErrorString)
 	lcPharmacist := acRequest.PostForm.Get("pharmacist")
-	lcAuditMonth := acRequest.PostForm.Get("AuditMonth")
-	lcAuditDay := acRequest.PostForm.Get("AuditDay")
-	lcAuditYear := acRequest.PostForm.Get("AuditYear")
+	lcAuditDate := acRequest.PostForm.Get("AuditDate")
+	lcAuditMonth, lcAuditDay, lcAuditYear := utils.ParseDate(lcAuditDate)
 	lcErrorString = utils.CheckDate(lcAuditMonth, lcAuditDay, lcAuditYear, lcErrorString)
 	lnQty := acRequest.PostForm.Get("qty")
 	lnActual := acRequest.PostForm.Get("realCount")

@@ -33,7 +33,7 @@ func MakeUser(acUsername string, acPassword string) int {
 		return lcValidCheck
 	}
 	lnPassVal := computePassVal(acPassword)
-	//Check if the username exists
+	// Check if the username exists
 	lsTestUser := User{}
 	if FindUser(acUsername) != lsTestUser {
 		return TN

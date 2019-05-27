@@ -7,9 +7,10 @@ Description: Gets a new database page
 package handlers
 
 import (
-	"../utils"
 	"log"
 	"net/http"
+
+	"../utils"
 )
 
 var gbSignedIn = true // This should be false when there is a sign in feature

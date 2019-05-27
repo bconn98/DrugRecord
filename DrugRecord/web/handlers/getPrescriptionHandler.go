@@ -7,9 +7,10 @@ Description: Gets new prescription page
 package handlers
 
 import (
-	"../utils"
 	"log"
 	"net/http"
+
+	"../utils"
 )
 
 /**

@@ -7,10 +7,11 @@ Description: Sends the audit information
 package handlers
 
 import (
-	. "../../mainUtils"
-	. "../utils"
 	"log"
 	. "net/http"
+
+	. "../../mainUtils"
+	. "../utils"
 )
 
 /**

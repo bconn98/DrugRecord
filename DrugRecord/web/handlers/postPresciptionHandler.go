@@ -7,10 +7,11 @@ Description: Sends the prescription information
 package handlers
 
 import (
-	"../../mainUtils"
-	"../utils"
 	"log"
 	"net/http"
+
+	"../../mainUtils"
+	"../utils"
 )
 
 /**
@@ -29,9 +30,8 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 	lcNdc, lcErrorString = utils.CheckNDC(lcNdc, lcErrorString)
 	lcPharmacist := acRequest.PostForm.Get("pharmacist")
 	lcScript := acRequest.PostForm.Get("script")
-	lcMonth := acRequest.PostForm.Get("month")
-	lcDay := acRequest.PostForm.Get("day")
-	lcYear := acRequest.PostForm.Get("year")
+	lcOrderDate := acRequest.PostForm.Get("OrderDate")
+	lcMonth, lcDay, lcYear := utils.ParseDate(lcOrderDate)
 	lcErrorString = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
 	lnQty := acRequest.PostForm.Get("qty")
 	lnActual := acRequest.PostForm.Get("realCount")
@@ -40,12 +40,23 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 		utils.ExecuteTemplate(acWriter, "prescription.html", lcErrorString)
 		return
 	}
-	check := mainUtils.AddPrescription(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcScript, lnActual)
 
-	if !check {
-		utils.ExecuteTemplate(acWriter, "prescription.html", "Prescription already logged!")
+	lbCheck := mainUtils.NewCheck(lcNdc)
+	// If the drug does exist
+	if lbCheck {
+
+		lbLogged := mainUtils.AddPrescription(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcScript, lnActual)
+
+		if !lbLogged {
+			utils.ExecuteTemplate(acWriter, "prescription.html", "Prescription already logged!")
+			return
+		}
+
+		GetCloseHandler(acWriter, acRequest)
 		return
+	} else {
+		mainUtils.AddDrug(lcNdc, lcMonth, lcDay, lcYear)
+		utils.ExecuteTemplate(acWriter, "newDrug.html", nil)
+		mainUtils.AddPrescription(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcScript, lnActual)
 	}
-
-	GetCloseHandler(acWriter, acRequest)
 }

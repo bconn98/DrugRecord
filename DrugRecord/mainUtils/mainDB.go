@@ -7,11 +7,12 @@ Description: Does the all of the work with the order database
 package mainUtils
 
 import (
-	_ "github.com/lib/pq"
 	"log"
 	"strconv"
 	"strings"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 /**

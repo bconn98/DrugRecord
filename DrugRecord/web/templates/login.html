@@ -6,23 +6,23 @@
     <link rel="stylesheet" type="text/css" href="/web/assets/loginStyle.css"/>
 </head>
 <body>
-    <img id = "logo" src = "/web/assets/logo.png" alt="" />
-    <h1>Login</h1>
-    <br>
-    <div id = "home"> <a href= "/"> Return Home </a> </div>
-    <br>
-    <form action="/login" method="POST">
-        <label>
-            Username: <input type="text" name="uName"/>
-        </label>
-        <label>
-            Password: <input type="password" name = "password" />
-        </label>
-        <br/><br/>
-        <button type="submit">Login</button>
-    </form>
-    {{if .}}
-        <h3> {{.}}</h3>
-    {{end}}
+<img id="logo" src="/web/assets/logo.png" alt=""/>
+<h1>Login</h1>
+<br>
+<div id="home"><a href="/"> Return Home </a></div>
+<br>
+<form action="/login" method="POST">
+    <label>
+        Username: <input type="text" name="uName"/>
+    </label>
+    <label>
+        Password: <input type="password" name="password"/>
+    </label>
+    <br/><br/>
+    <button type="submit">Login</button>
+</form>
+{{if .}}
+    <h3> {{.}}</h3>
+{{end}}
 </body>
 </html>

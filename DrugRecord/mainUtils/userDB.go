@@ -8,8 +8,9 @@ package mainUtils
 
 import (
 	"database/sql"
-	_ "github.com/lib/pq"
 	"log"
+
+	_ "github.com/lib/pq"
 )
 
 /**
@@ -23,7 +24,7 @@ func issue(err error) {
 	}
 }
 
-//Database password needs to be changed when released
+// Database password needs to be changed when released
 var connStr = "postgres://postgres:Zoo123@localhost/drugrecord?sslmode=disable"
 var db, err = sql.Open("postgres", connStr)
 
