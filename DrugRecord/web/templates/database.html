@@ -49,12 +49,12 @@
             <th>Date</th>
         </tr>
         {{range .Orders}}
-            <tr id="{{.Typ}}">
-                <td>{{.Pharm}}</td>
-                <td>{{.Script}}</td>
-                <td>{{.Typ}}</td>
-                <td>{{.Qty}}</td>
-                <td>{{.Date}}</td>
+            <tr id="{{.AcType}}">
+                <td>{{.AcPharmacist}}</td>
+                <td>{{.AcScript}}</td>
+                <td>{{.AcType}}</td>
+                <td>{{.AnQty}}</td>
+                <td>{{.AcDate}}</td>
             </tr>
         {{end}}
     </table>

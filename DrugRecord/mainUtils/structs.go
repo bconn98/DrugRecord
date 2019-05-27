@@ -140,9 +140,9 @@ Order struct contains the pharmacist on the order, the script/type of the order
 the quantity and the date of the order
 */
 type Order struct {
-	acPharmacist, acDate string
-	acScript, acType     string
-	anQty                float64
+	AcPharmacist, AcDate string
+	AcScript, AcType     string
+	AnQty                float64
 }
 
 /**

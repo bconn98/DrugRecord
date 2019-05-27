@@ -75,29 +75,29 @@ func addType(acNdc string, acPharmacist string, acMonth string, anDay string, an
 	lnMonth, _ := strconv.Atoi(acMonth)
 	lnDay, _ := strconv.Atoi(anDay)
 	lnYear, _ := strconv.Atoi(anYear)
-	qty, _ := strconv.ParseFloat(anQty, 64)
+	lnQty, _ := strconv.ParseFloat(anQty, 64)
 
 	row, err := db.Query("Select count(script) from orderdb where script = $1 and "+
-		"date = make_date($2, $3, $4) and qty = $5 and ndc = $6;", acScript, lnYear, lnMonth, lnDay, qty, acNdc)
+		"date = make_date($2, $3, $4) and qty = $5 and ndc = $6;", acScript, lnYear, lnMonth, lnDay, lnQty, acNdc)
 
 	if err != nil {
 		issue(err)
 	}
 
-	count := 0
+	lnCount := 0
 	row.Next()
-	err = row.Scan(&count)
+	err = row.Scan(&lnCount)
 
 	if err != nil {
 		issue(err)
 	}
 
-	if count != 0 {
+	if lnCount != 0 {
 		return false
 	}
 
 	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script, type) "+
-		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8);", acNdc, acPharmacist, qty, lnYear, lnMonth,
+		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8);", acNdc, acPharmacist, lnQty, lnYear, lnMonth,
 		lnDay, acScript, acOrderType)
 
 	return true
