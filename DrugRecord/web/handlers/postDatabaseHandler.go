@@ -41,6 +41,12 @@ func PostDatabaseHandler(acWriter ResponseWriter, acRequest *Request) {
 		return
 	}
 	lcName, lcNdc, lcForm, lcItemNum, lcSize, lcDate, lnQty, lasOrders := FindNDC(lcNdc)
+
+	if lcName == "" && lcNdc == "" && lcForm == "" && lcItemNum == ""  {
+		ExecuteTemplate(acWriter, "database.html", nil)
+		return
+	}
+
 	lcDateString := lcDate.Month().String() + " " + strconv.Itoa(lcDate.Day()) + " " + strconv.Itoa(lcDate.Year())
 	lsData := data{lcName, lcNdc, lcForm, lcSize, lcDateString,
 		lcItemNum, lnQty, lasOrders}

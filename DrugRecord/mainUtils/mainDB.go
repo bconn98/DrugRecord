@@ -54,7 +54,9 @@ func FindNDC(acNdc string) (string, string, string, string, string, time.Time, f
 	issue(err)
 	row.Next()
 	err = row.Scan(&lcName, &lcForm, &lcItemNum, &lcSize, &lcDate, &lnDrugQty)
-	issue(err)
+	if err != nil {
+		return "", "", "", "", "", time.Time{}, 0, nil
+	}
 	return lcName, acNdc, lcForm, lcItemNum, lcSize, lcDate, lnDrugQty, lasOrders
 }
 
