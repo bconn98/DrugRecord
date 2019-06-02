@@ -30,14 +30,14 @@ func PostEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lcPharmacist := acRequest.PostForm.Get("pharmacist")
 	lcScript := acRequest.PostForm.Get("script")
 	lcType := acRequest.PostForm.Get("type")
-	lcAuditDate := acRequest.PostForm.Get("date")
-	lcAuditMonth, lcAuditDay, lcAuditYear := utils.ParseDate(lcAuditDate)
-	lcErrorString = utils.CheckDate(lcAuditMonth, lcAuditDay, lcAuditYear, lcErrorString)
+	lcDate := acRequest.PostForm.Get("date")
+	lcMonth, lcDay, lcYear := utils.ParseDate(lcDate)
+	lcErrorString, lcYear = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
 	if lcErrorString != "" {
 		utils.ExecuteTemplate(acWriter, "edit.html", lcErrorString)
 		return
 	}
-	lasOrders := mainUtils.GetOrder(lcNdc, lcPharmacist, lcAuditMonth, lcAuditDay, lcAuditYear, lcScript, lcType)
+	lasOrders := mainUtils.GetOrder(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lcScript, lcType)
 
 	if len(lasOrders) != 0 {
 		utils.ExecuteTemplate(acWriter, "editQty.html", lasOrders[0])

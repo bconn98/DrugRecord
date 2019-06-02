@@ -32,7 +32,7 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 	lcScript := acRequest.PostForm.Get("script")
 	lcOrderDate := acRequest.PostForm.Get("OrderDate")
 	lcMonth, lcDay, lcYear := utils.ParseDate(lcOrderDate)
-	lcErrorString = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
+	lcErrorString, lcYear = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
 	lnQty := acRequest.PostForm.Get("qty")
 	lnActual := acRequest.PostForm.Get("realCount")
 	lcErrorString = utils.CheckQty(lnActual, lcErrorString)

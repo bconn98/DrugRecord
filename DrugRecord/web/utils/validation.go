@@ -35,13 +35,13 @@ correct length and ints
 @param acErrorString The current error string
 @return The current error string
 */
-func CheckDate(acMonth string, acDay string, acYear string, acErrorString string) string {
+func CheckDate(acMonth string, acDay string, acYear string, acErrorString string) (string, string) {
 	if len(acMonth) != 2 && len(acMonth) != 1 {
 		acErrorString = "Month must be in the format XX or X"
 	} else if len(acDay) != 2 && len(acDay) != 1 {
 		acErrorString = "Day must be in the format XX or X"
-	} else if len(acYear) != 4 {
-		acErrorString = "Year must be in the format XXXX"
+	} else if len(acYear) != 4 && len(acYear) != 2 {
+		acErrorString = "Year must be in the format XXXX or XX"
 	}
 	_, err := strconv.Atoi(acMonth)
 	if err != nil {
@@ -51,12 +51,17 @@ func CheckDate(acMonth string, acDay string, acYear string, acErrorString string
 	if err != nil {
 		acErrorString = "The day entered was not a number"
 	}
+
+	if len(acYear) == 2 {
+		acYear = "20" + acYear
+	}
+
 	_, err = strconv.Atoi(acYear)
 	if err != nil {
 		acErrorString = "The year entered was not a number"
 	}
 
-	return acErrorString
+	return acErrorString, acYear
 }
 
 /**

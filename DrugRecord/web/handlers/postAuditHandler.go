@@ -31,7 +31,7 @@ func PostAuditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lcPharmacist := acRequest.PostForm.Get("pharmacist")
 	lcAuditDate := acRequest.PostForm.Get("AuditDate")
 	lcAuditMonth, lcAuditDay, lcAuditYear := utils.ParseDate(lcAuditDate)
-	lcErrorString = utils.CheckDate(lcAuditMonth, lcAuditDay, lcAuditYear, lcErrorString)
+	lcErrorString, lcAuditYear = utils.CheckDate(lcAuditMonth, lcAuditDay, lcAuditYear, lcErrorString)
 	lnQty := acRequest.PostForm.Get("qty")
 	lnActual := acRequest.PostForm.Get("realCount")
 	lcErrorString = utils.CheckQty(lnActual, lcErrorString)
