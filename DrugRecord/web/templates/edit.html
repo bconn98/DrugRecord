@@ -2,30 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Prescription</title>
+    <title>Edit</title>
 </head>
 <body>
-<form action="/prescription" method="POST">
+<form action="/edit" method="POST">
     <label>
         Pharmacist: <input type="text" name="pharmacist"><br><br>
     </label>
     <label>
-        Order Date: <input type="text" name="OrderDate"/><br><br>
+        Date: <input type="text" name="date"/><br><br>
     </label>
     <label>
-        Script: <input type="text" name="script"><br><br>
+        Script/Invoice: <input type="text" name="script"><br> Note: This field should be left blank for Audits<br><br>
     </label>
     <label>
-        Quantity: <input type="text" name="qty"/><br><br>
+        Type: <input type="text" name="type"><br>Note: This field can be left blank for Prescriptions and Purchases<br><br>
     </label>
     <label>
         NDC: <input type="text" name="ndc"/><br><br>
     </label>
-    <label>
-        Real Count: <input type="text" name="realCount"/><br><br>
-    </label>
     <button type="submit">Submit</button>
 </form>
-{{.}}
 </body>
 </html>

@@ -140,9 +140,14 @@ Order struct contains the pharmacist on the order, the script/type of the order
 the quantity and the date of the order
 */
 type Order struct {
-	AcPharmacist, AcDate string
+	AcPharmacist         string
+	AcMonth              string
+	AcDay                string
+	AcYear               string
 	AcScript, AcType     string
 	AnQty                float64
+	AcNdc                string
+	AnId                 int64
 }
 
 /**
@@ -155,10 +160,49 @@ Description: Creates an order using an audit, prescription, or purchase
 @param acType The type of the order
 @return An Order Object
 */
-func MakeOrder(acPharmacist string, acScript string, acType string, anQty float64, acDate time.Time) Order {
-	var lcDate string
-	lcDate = acDate.Month().String() + " " + strconv.Itoa(acDate.Day()) + " " + strconv.Itoa(acDate.Year())
-	return Order{acPharmacist, lcDate, acScript, acType, anQty}
+func MakeOrder(acNdc string, acPharmacist string, acScript string, acType string, anQty float64,
+	acDate time.Time, anId int64) Order {
+	var lcMonth string
+	switch acDate.Month().String() {
+	case "January":
+		lcMonth = "1"
+		break
+	case "February":
+		lcMonth = "2"
+		break
+	case "March":
+		lcMonth = "3"
+		break
+	case "April":
+		lcMonth = "4"
+		break
+	case "May":
+		lcMonth = "5"
+		break
+	case "June":
+		lcMonth = "6"
+		break
+	case "July":
+		lcMonth = "7"
+		break
+	case "August":
+		lcMonth = "8"
+		break
+	case "September":
+		lcMonth = "9"
+		break
+	case "October":
+		lcMonth = "10"
+		break
+	case "November":
+		lcMonth = "11"
+		break
+	case "December":
+		lcMonth = "12"
+		break
+	}
+	return Order{acPharmacist, lcMonth, strconv.Itoa(acDate.Day()) , strconv.Itoa(acDate.Year()),
+		acScript, acType, anQty, acNdc, anId}
 }
 
 /**
