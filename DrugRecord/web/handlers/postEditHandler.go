@@ -9,6 +9,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"../../mainUtils"
 	"../utils"
@@ -28,6 +29,7 @@ func PostEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lcNdc := acRequest.PostForm.Get("ndc")
 	lcNdc, lcErrorString = utils.CheckNDC(lcNdc, lcErrorString)
 	lcPharmacist := acRequest.PostForm.Get("pharmacist")
+	lcPharmacist = strings.ToUpper(lcPharmacist)
 	lcScript := acRequest.PostForm.Get("script")
 	lcType := acRequest.PostForm.Get("type")
 	lcDate := acRequest.PostForm.Get("date")

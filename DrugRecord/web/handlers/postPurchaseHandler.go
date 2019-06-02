@@ -9,6 +9,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"../../mainUtils"
 	"../utils"
@@ -29,13 +30,13 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 	lcNdc := acRequest.PostForm.Get("ndc")
 	lcNdc, lcErrorString = utils.CheckNDC(lcNdc, lcErrorString)
 	lcPharmacist := acRequest.PostForm.Get("pharmacist")
+	lcPharmacist = strings.ToUpper(lcPharmacist)
 	lcInvoice := acRequest.PostForm.Get("invoice")
 	lcPurchaseDate := acRequest.PostForm.Get("PurchaseDate")
 	lcMonth, lcDay, lcYear := utils.ParseDate(lcPurchaseDate)
 	lcErrorString, lcYear = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
 	lnQty := acRequest.PostForm.Get("qty")
 	lnActual := acRequest.PostForm.Get("realCount")
-	lcErrorString = utils.CheckQty(lnActual, lcErrorString)
 	if lcErrorString != "" {
 		utils.ExecuteTemplate(acWriter, "purchase.html", lcErrorString)
 		return

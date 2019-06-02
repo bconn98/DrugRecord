@@ -9,6 +9,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"../../mainUtils"
 	"../utils"
@@ -29,12 +30,12 @@ func PostAuditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lcNdc := acRequest.PostForm.Get("ndc")
 	lcNdc, lcErrorString = utils.CheckNDC(lcNdc, lcErrorString)
 	lcPharmacist := acRequest.PostForm.Get("pharmacist")
+	lcPharmacist = strings.ToUpper(lcPharmacist)
 	lcAuditDate := acRequest.PostForm.Get("AuditDate")
 	lcAuditMonth, lcAuditDay, lcAuditYear := utils.ParseDate(lcAuditDate)
 	lcErrorString, lcAuditYear = utils.CheckDate(lcAuditMonth, lcAuditDay, lcAuditYear, lcErrorString)
 	lnQty := acRequest.PostForm.Get("qty")
 	lnActual := acRequest.PostForm.Get("realCount")
-	lcErrorString = utils.CheckQty(lnActual, lcErrorString)
 	if lcErrorString != "" {
 		utils.ExecuteTemplate(acWriter, "audit.html", lcErrorString)
 		return

@@ -180,7 +180,8 @@ func addType(acNdc string, acPharmacist string, acMonth string, anDay string, an
 	lnQty, _ := strconv.ParseFloat(anQty, 64)
 
 	row, err := db.Query("Select count(script) from orderdb where script = $1 and "+
-		"date = make_date($2, $3, $4) and qty = $5 and ndc = $6;", acScript, lnYear, lnMonth, lnDay, lnQty, acNdc)
+		"date = make_date($2, $3, $4) and qty = $5 and ndc = $6 and type = $7;", acScript, lnYear, lnMonth, lnDay, lnQty,
+		acNdc, acOrderType)
 
 	if err != nil {
 		issue(err)
@@ -273,9 +274,9 @@ func AddPrescription(acNdc string, acPharmacist string, acMonth string, acDay st
 	alterQty(acNdc, acQty)
 
 	if acActual != "" {
-		lnQtyDiff := setDrugQty(acNdc, acActual)
+		lcQtyDiff := setDrugQty(acNdc, acActual)
 		lbCheck = addType(acNdc, acPharmacist, acMonth, acDay, acYear,
-			strconv.Itoa(lnQtyDiff), acScript, "Actual Count")
+			strconv.Itoa(lcQtyDiff), acScript, "Actual Count")
 	}
 	return lbCheck
 }
