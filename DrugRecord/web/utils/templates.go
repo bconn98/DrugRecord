@@ -15,7 +15,8 @@ var mcTemplates = Must(ParseFiles("web/templates/audit.html",
 	"web/templates/closeWindow.html", "web/templates/database.html",
 	"web/templates/newDrug.html", "web/templates/prescription.html",
 	"web/templates/purchase.html", "web/templates/edit.html",
-	"web/templates/editQty.html"))
+	"web/templates/editQty.html", "web/templates/delete.html",
+    "web/templates/deleteSure.html"))
 
 /**
 Function: ExecuteTemplate

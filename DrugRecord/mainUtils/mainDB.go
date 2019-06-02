@@ -107,6 +107,44 @@ func GetOrder(acNdc string, acPharmacist string, acMonth string, acDay string, a
 }
 
 /**
+Function: DeleteOrder
+Description: Delete the order with the given id.
+@param acId The id to delete
+ */
+func DeleteOrder(anId int64) {
+	var lnQty float64
+	var lcNdc string
+	var lcType string
+	rows, err := db.Query("select qty, ndc, type from orderdb where id = $1", anId)
+	issue(err)
+
+	rows.Next()
+	err = rows.Scan(&lnQty, &lcNdc, &lcType)
+	issue(err)
+
+	if lcType == "Purchase" {
+		_, err = db.Query("update drugdb set qty = qty - $1 where ndc = $2", lnQty, lcNdc)
+		issue(err)
+
+		_, err = db.Query("update orderdb set qty = qty - $1 where ndc = $2 and id > $3 and type = 'Actual Count'", lnQty,
+			lcNdc, anId)
+	} else if lcType == "Prescription" {
+		_, err = db.Query("update drugdb set qty = qty + $1 where ndc = $2", lnQty, lcNdc)
+		issue(err)
+
+		_, err = db.Query("update orderdb set qty = qty + $1 where ndc = $2 and id > $3 and type = 'Actual Count'", lnQty,
+			lcNdc, anId)
+	}
+
+
+	if lcType != "Audit" && lcType != "Actual Count" {
+	}
+
+	_, err = db.Query("delete from orderdb where id = $1", anId)
+	issue(err)
+}
+
+/**
 Function: UpdateOrder
 Description: Updates the quantity of an order specified by the passed in id. This
 also updates all Actual Counts after the specified orders and the total drug qty
