@@ -221,17 +221,12 @@ func addType(acNdc string, acPharmacist string, acMonth string, anDay string, an
 		"date = make_date($2, $3, $4) and qty = $5 and ndc = $6 and type = $7;", acScript, lnYear, lnMonth, lnDay, lnQty,
 		acNdc, acOrderType)
 
-	if err != nil {
-		issue(err)
-	}
+	issue(err)
 
 	lnCount := 0
 	row.Next()
 	err = row.Scan(&lnCount)
-
-	if err != nil {
-		issue(err)
-	}
+	issue(err)
 
 	if lnCount != 0 {
 		return false
@@ -240,6 +235,7 @@ func addType(acNdc string, acPharmacist string, acMonth string, anDay string, an
 	_, err = db.Query("INSERT INTO orderdb (ndc, pharmacist, qty, date, logdate, script, type) "+
 		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8);", acNdc, acPharmacist, lnQty, lnYear, lnMonth,
 		lnDay, acScript, acOrderType)
+	issue(err)
 
 	return true
 }
@@ -257,17 +253,20 @@ func alterQty(acNdc string, acQty string) {
 		acQty = strings.Replace(acQty, "--", "-", 1)
 	}
 
-	lnQty, _ := strconv.ParseFloat(acQty, 64)
+	lnQty, err := strconv.ParseFloat(acQty, 64)
+	issue(err)
 	rows, err := db.Query("SELECT qty from drugdb where ndc = $1", acNdc)
 	issue(err)
 	rows.Next()
 	err = rows.Scan(&lnRowQty)
 	if err != nil {
 		_, err = db.Query("insert into drugdb (ndc, qty) values ($1, $2)", acNdc, lnQty)
+		issue(err)
 		return
 	}
 	lnNewQty := lnRowQty - lnQty
 	_, err = db.Query("UPDATE drugdb set qty = $1 where ndc = $2", lnNewQty, acNdc)
+	issue(err)
 }
 
 /**
@@ -283,8 +282,10 @@ func setDrugQty(acNdc string, acQty string) int {
 	issue(err)
 	rows.Next()
 	err = rows.Scan(&lnRowQty)
-	lnQty, _ := strconv.Atoi(acQty)
+	lnQty, err := strconv.Atoi(acQty)
+	issue(err)
 	_, err = db.Query("UPDATE drugdb set qty = $1 where ndc = $2", lnQty, acNdc)
+	issue(err)
 	return lnRowQty - lnQty
 }
 
@@ -366,7 +367,8 @@ func AddPurchase(acNdc string, acPharmacist string, acMonth string, acDay string
 	if !lbCheck {
 		return false
 	}
-	alterQty(acNdc, "-"+acQty)
+
+	alterQty(acNdc, "-" + acQty)
 
 	if acActual != "" {
 		lnQtyDiff := setDrugQty(acNdc, acActual)
@@ -424,6 +426,7 @@ Description: Adds the correct default values to a drug
 @param acNdc The ndc of the drug
 */
 func UpdateDrug(acSize string, acForm string, acItemNum string, acName string, acNdc string) {
-	_, _ = db.Query("Update drugdb set size = $1, form = $2, item_num = $3, name = $4 where ndc = $5",
+	_, err := db.Query("Update drugdb set size = $1, form = $2, item_num = $3, name = $4 where ndc = $5",
 		acSize, acForm, acItemNum, acName, acNdc)
+	issue(err)
 }
