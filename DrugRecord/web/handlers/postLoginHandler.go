@@ -7,7 +7,6 @@ Description: Sends the audit information
 package handlers
 
 import (
-	"log"
 	. "net/http"
 
 	. "../../mainUtils"
@@ -21,7 +20,7 @@ Description: Sends the login information for validation, redirects depending on 
 func PostLoginHandler(acWriter ResponseWriter, acRequest *Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		LogError(err.Error())
 	}
 	lcUsername := acRequest.PostForm.Get("uName")
 	lsUser := FindUser(lcUsername)

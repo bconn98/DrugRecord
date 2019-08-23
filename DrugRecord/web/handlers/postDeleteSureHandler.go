@@ -7,7 +7,6 @@ Description: Sends the audit information
 package handlers
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -21,7 +20,7 @@ Description: Sends the delete information to find the order to delete
 func PostDeleteSureHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		mainUtils.LogError(err.Error())
 	}
 
 	lcId := acRequest.PostForm.Get("id")

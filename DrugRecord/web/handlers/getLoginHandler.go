@@ -7,9 +7,9 @@ Description: Gets new login page
 package handlers
 
 import (
-	"log"
 	"net/http"
 
+	"../../mainUtils"
 	"../utils"
 )
 
@@ -20,7 +20,7 @@ Description: Executes the login template
 func GetLoginHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		mainUtils.LogError(err.Error())
 	}
 	utils.ExecuteTemplate(acWriter, "login.html", nil)
 }

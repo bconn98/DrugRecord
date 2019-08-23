@@ -7,9 +7,9 @@ Description: Gets new SignOut page
 package handlers
 
 import (
-	"log"
 	"net/http"
 
+	"../../mainUtils"
 	"../utils"
 )
 
@@ -21,7 +21,7 @@ func GetSignOutHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	SetSignedOut()
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		mainUtils.LogError(err.Error())
 	}
 	utils.ExecuteTemplate(acWriter, "home.html", nil)
 }

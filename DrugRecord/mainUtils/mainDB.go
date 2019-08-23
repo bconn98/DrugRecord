@@ -8,6 +8,7 @@ package mainUtils
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -18,7 +19,7 @@ import (
 
 /**
 Function: FindNDC
-Description: Given a NDC, finds and returns all corresponding rows
+Description: Given a NDC, finds AND returns all corresponding rows
 @param ndc The NDC to match
 @return An array of orders with the given NDC, vital drug information
 */
@@ -36,8 +37,10 @@ func FindNDC(acNdc string) (string, string, string, string, string, time.Time, f
 	var lasOrders []Order
 	var lnId int64
 	rows, err := db.Query(
-		"SELECT pharmacist, date, qty, script, type, id FROM orderdb WHERE ndc = $1 order by date desc;", acNdc)
+		"SELECT pharmacist, date, qty, script, type, id FROM orderdb WHERE ndc = $1 ORDER BY date desc;", acNdc)
 	issue(err)
+	LogSql(fmt.Sprintf("%s%s%s", "SELECT pharmacist, date, qty, script, type, id FROM orderdb WHERE ndc = '", acNdc,
+		"' ORDER BY date desc;"))
 
 	defer func() {
 		if err := rows.Close(); err != nil {
@@ -53,8 +56,10 @@ func FindNDC(acNdc string) (string, string, string, string, string, time.Time, f
 	err = rows.Err()
 	issue(err)
 
-	row, err := db.Query("Select name, form, item_num, size, date, qty from drugdb where ndc = $1", acNdc)
+	row, err := db.Query("SELECT name, form, item_num, size, date, qty FROM drugdb WHERE ndc = $1", acNdc)
 	issue(err)
+	LogSql(fmt.Sprintf( "%s%s%s", "SELECT name, form, item_num, size, date, qty FROM drugdb WHERE ndc = '", acNdc, "';"))
+
 	row.Next()
 	err = row.Scan(&lcName, &lcForm, &lcItemNum, &lcSize, &lcDate, &lnDrugQty)
 
@@ -85,19 +90,28 @@ func GetOrder(acNdc string, acPharmacist string, acMonth string, acDay string, a
 	var lcDate time.Time
 	var lnId int64
 	if acType == "Audit" {
-		rows, err = db.Query("select qty, type, date, script, id from orderdb where ndc = $1 and pharmacist = $2 and " +
-			"date = make_date($3, $4, $5) and type = $6", acNdc, acPharmacist, acYear, acMonth, acDay, acType)
+		rows, err = db.Query("SELECT qty, type, date, script, id FROM orderdb WHERE ndc = $1 AND pharmacist = $2 AND " +
+			"date = make_date($3, $4, $5) AND type = $6", acNdc, acPharmacist, acYear, acMonth, acDay, acType)
+		LogSql(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s%s%s", "SELECT qty, type, date, script, " +
+			"id FROM orderdb WHERE ndc = '", acNdc, "' AND pharmacist = '", acPharmacist, "' AND date = make_date(",
+			acYear, ", ", acMonth, ", ", acDay, ") AND type = '", acType, "';"))
 	} else if acType == "Actual Count" {
-		rows, err = db.Query("select qty, type, date, script, id from orderdb where ndc = $1 and pharmacist = $2 and " +
-			"date = make_date($3, $4, $5) and type = $6 and script = $7", acNdc, acPharmacist, acYear, acMonth, acDay,
+		rows, err = db.Query("SELECT qty, type, date, script, id FROM orderdb WHERE ndc = $1 AND pharmacist = $2 AND " +
+			"date = make_date($3, $4, $5) AND type = $6 AND script = $7", acNdc, acPharmacist, acYear, acMonth, acDay,
 			acType, acScript)
+		LogSql(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s", "SELECT qty, type, date, script, " +
+			"id FROM orderdb WHERE ndc = '", acNdc, "' AND pharmacist = '", acPharmacist, "' AND date = make_date(",
+			acYear, ", ", acMonth, ", ", acDay, ") AND type = '", acType, " AND script = '", acScript, "';"))
 	} else {
-		rows, err = db.Query("select qty, type, date, script, id from orderdb where ndc = $1 and pharmacist = $2 and " +
-			"date = make_date($3, $4, $5) and script = $6", acNdc, acPharmacist, acYear, acMonth, acDay, acScript)
-
+		rows, err = db.Query("SELECT qty, type, date, script, id FROM orderdb WHERE ndc = $1 AND pharmacist = $2 AND " +
+			"date = make_date($3, $4, $5) AND script = $6", acNdc, acPharmacist, acYear, acMonth, acDay, acScript)
+		LogSql(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s%s%s", "SELECT qty, type, date, script, " +
+			"id FROM orderdb WHERE ndc = '", acNdc, "' AND pharmacist = '", acPharmacist, "' AND date = make_date(",
+			acYear, ", ", acMonth, ", ", acDay, ")  AND script = '", acScript, "';"))
 	}
 
 	issue(err)
+
 	for rows.Next() {
 		err := rows.Scan(&lnQty, &lcType, &lcDate, &acScript, &lnId)
 		issue(err)
@@ -109,45 +123,55 @@ func GetOrder(acNdc string, acPharmacist string, acMonth string, acDay string, a
 /**
 Function: DeleteOrder
 Description: Delete the order with the given id.
-@param acId The id to delete
+@param acId The id to DELETE
  */
 func DeleteOrder(anId int64) {
 	var lnQty float64
 	var lcNdc string
 	var lcType string
-	rows, err := db.Query("select qty, ndc, type from orderdb where id = $1", anId)
+	rows, err := db.Query("SELECT qty, ndc, type FROM orderdb WHERE id = $1", anId)
 	issue(err)
+	LogSql(fmt.Sprintf("%s%d%s", "SELECT qty, ndc FROM orderdb WHERE id = ", anId, ";"))
 
 	rows.Next()
 	err = rows.Scan(&lnQty, &lcNdc, &lcType)
 	issue(err)
 
 	if lcType == "Purchase" {
-		_, err = db.Query("update drugdb set qty = qty - $1 where ndc = $2", lnQty, lcNdc)
+		_, err = db.Query("UPDATE drugdb set qty = qty - $1 WHERE ndc = $2", lnQty, lcNdc)
 		issue(err)
+		LogSql(fmt.Sprintf("%s%f%s%s%s", "UPDATE drugdb SET qty = qty - ", lnQty, " WHERE ndc = '", lcNdc, "';"))
 
-		_, err = db.Query("update orderdb set qty = qty - $1 where ndc = $2 and id > $3 and type = 'Actual Count'", lnQty,
-			lcNdc, anId)
+		_, err = db.Query("UPDATE orderdb set qty = qty - $1 WHERE ndc = $2 AND id > $3 AND type = 'Actual Count'",
+			lnQty, lcNdc, anId)
+		issue(err)
+		LogSql(fmt.Sprintf("%s%f%s%s%s%d%s", "UPDATE orderdb set qty = qty - ", lnQty, " WHERE ndc = '", lcNdc,
+			"', AND id > ", anId, " AND type = 'Actual Count';"))
 	} else if lcType == "Prescription" {
-		_, err = db.Query("update drugdb set qty = qty + $1 where ndc = $2", lnQty, lcNdc)
+		_, err = db.Query("UPDATE drugdb set qty = qty + $1 WHERE ndc = $2", lnQty, lcNdc)
 		issue(err)
+		LogSql(fmt.Sprintf("%s%f%s%s%s", "UPDATE drugdb SET qty = qty + ", lnQty, " WHERE ndc = '", lcNdc, "';"))
 
-		_, err = db.Query("update orderdb set qty = qty + $1 where ndc = $2 and id > $3 and type = 'Actual Count'", lnQty,
-			lcNdc, anId)
+		_, err = db.Query("UPDATE orderdb set qty = qty + $1 WHERE ndc = $2 AND id > $3 AND type = 'Actual Count'",
+			lnQty, lcNdc, anId)
+		issue(err)
+		LogSql(fmt.Sprintf("%s%f%s%s%s%d%s", "UPDATE orderdb set qty = qty + ", lnQty, " WHERE ndc = '", lcNdc,
+			"', AND id > ", anId, " AND type = 'Actual Count';"))
 	}
 
 
 	if lcType != "Audit" && lcType != "Actual Count" {
 	}
 
-	_, err = db.Query("delete from orderdb where id = $1", anId)
+	_, err = db.Query("DELETE FROM orderdb WHERE id = $1", anId)
 	issue(err)
+	LogSql(fmt.Sprintf("%s%d%s", "DELETE FROM orderdb WHERE id =", anId, ";"))
 }
 
 /**
 Function: UpdateOrder
 Description: Updates the quantity of an order specified by the passed in id. This
-also updates all Actual Counts after the specified orders and the total drug qty
+also update all Actual Counts after the specified orders AND the total drug qty
 @param acId The id of the order to edit
 @param acScript The script number of the order
 @param acQty The new quantity
@@ -161,31 +185,39 @@ func UpdateOrder(acId string, acScript string, acQty string) {
 	lnQty, _ := strconv.ParseFloat(acQty, 64)
 	lnId, err := strconv.ParseInt(acId, 10, 64)
 
-	rows, err = db.Query("select qty, ndc from orderdb where id = $1 ", lnId)
+	rows, err = db.Query("SELECT qty, ndc FROM orderdb WHERE id = $1 ", lnId)
 	issue(err)
+	LogSql(fmt.Sprintf("%s%d%s", "SELECT qty, ndc FROM orderdb WHERE id = ", lnId, ";"))
 
 	rows.Next()
 	err = rows.Scan(&lnOldQty, &lcNdc)
 	issue(err)
 
-	_, err = db.Query("update orderdb set qty = $1, script = $2 where id = $3", lnQty, acScript, lnId)
+	_, err = db.Query("UPDATE orderdb SET qty = $1, script = $2 WHERE id = $3", lnQty, acScript, lnId)
 	issue(err)
+	LogSql(fmt.Sprintf("%s%f%s%s%s%d%s", "UPDATE orderdb SET qty = ", lnQty, ", script = '", acScript,
+		"' WHERE id = ", lnId, ";"))
 
 	lnDifference := lnQty - lnOldQty
 
 	// Fix the drugDB value as well
-	rows, err = db.Query("select qty from drugdb where ndc = $1", lcNdc)
+	rows, err = db.Query("SELECT qty FROM drugdb WHERE ndc = $1", lcNdc)
 	issue(err)
+	LogSql( fmt.Sprintf("%s%s%s", "SELECT qty FROM drugdb WHERE ndc = '", lcNdc, "';"))
 
 	rows.Next()
 	err = rows.Scan(&lnOldDrugDBQty)
 
 	_, err = db.Query("UPDATE drugdb SET qty = $1 WHERE ndc = $2", lnOldDrugDBQty + lnDifference, lcNdc)
 	issue(err)
+	LogSql(fmt.Sprintf("%s%f%s%s%s", "UPDATE drugdb SET qty = ", lnOldDrugDBQty + lnDifference, " WHERE ndc ='",
+		lcNdc, "';"))
 
-	// Update the other orders that came after the updated order
-	rows, err = db.Query("SELECT qty, id FROM orderdb WHERE id > $1 and type = 'Actual Count' and ndc = $2", lnId, lcNdc)
+	// Update the other orders that came after the UPDATEd order
+	rows, err = db.Query("SELECT qty, id FROM orderdb WHERE id > $1 AND type = 'Actual Count' AND ndc = $2", lnId, lcNdc)
 	issue(err)
+	LogSql(fmt.Sprintf( "%s%d%s%s%s", "SELECT qty, id FROM orderdb WHERE id > ", lnId,
+		" AND type = 'Actual Count' AND ndc = '", lcNdc, ";"))
 
 	var lnActualCount   float64
 	var lnActualCountId int64
@@ -193,8 +225,10 @@ func UpdateOrder(acId string, acScript string, acQty string) {
 		err = rows.Scan(&lnActualCount, &lnActualCountId)
 		issue(err)
 
-		_, err = db.Query("UPDATE orderdb set qty = $1 where id = $2", lnActualCount + lnDifference, lnActualCountId)
+		_, err = db.Query("UPDATE orderdb SET qty = $1 WHERE id = $2", lnActualCount + lnDifference, lnActualCountId)
 		issue(err)
+		LogSql(fmt.Sprintf("%s%f%s%d%s", "UPDATE orderdb SET qty = ", lnActualCount + lnDifference, " WHERE id = ",
+			lnActualCountId, ";"))
 	}
 }
 
@@ -217,11 +251,15 @@ func addType(acNdc string, acPharmacist string, acMonth string, anDay string, an
 	lnYear, _ := strconv.Atoi(anYear)
 	lnQty, _ := strconv.ParseFloat(anQty, 64)
 
-	row, err := db.Query("Select count(script) from orderdb where script = $1 and "+
-		"date = make_date($2, $3, $4) and qty = $5 and ndc = $6 and type = $7;", acScript, lnYear, lnMonth, lnDay, lnQty,
+	row, err := db.Query("SELECT count(script) FROM orderdb WHERE script = $1 AND "+
+		"date = make_date($2, $3, $4) AND qty = $5 AND ndc = $6 AND type = $7;", acScript, lnYear, lnMonth, lnDay, lnQty,
 		acNdc, acOrderType)
 
 	issue(err)
+
+	LogSql(fmt.Sprintf("%s%s%s%d%s%d%s%d%s%f%s%s%s%s%s", "SELECT count(script) FROM orderdb WHERE script = '",
+		acScript, "' AND date = make_date(", lnYear, ", ", lnMonth, ", ", lnDay, ") AND qty = ", lnQty, " AND ndc = '",
+		acNdc, "', AND type = '", acOrderType, "';"))
 
 	lnCount := 0
 	row.Next()
@@ -236,7 +274,9 @@ func addType(acNdc string, acPharmacist string, acMonth string, anDay string, an
 		"VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8);", acNdc, acPharmacist, lnQty, lnYear, lnMonth,
 		lnDay, acScript, acOrderType)
 	issue(err)
-
+	LogSql(fmt.Sprintf("%s%s%s%s%s%f%s%d%s%d%s%d%s%s%s%s%s", "INSERT INTO orderdb (ndc, pharmacist, qty, date, " +
+		"logdate, script, type) VALUES ('", acNdc, "', '", acPharmacist, "', ", lnQty, ", make_date(", lnYear, ", ",
+		lnMonth, ", ", lnDay, "), current_date, '", acScript, "', ", acOrderType, ");"))
 	return true
 }
 
@@ -255,18 +295,21 @@ func alterQty(acNdc string, acQty string) {
 
 	lnQty, err := strconv.ParseFloat(acQty, 64)
 	issue(err)
-	rows, err := db.Query("SELECT qty from drugdb where ndc = $1", acNdc)
+	rows, err := db.Query("SELECT qty FROM drugdb WHERE ndc = $1", acNdc)
 	issue(err)
+	LogSql( fmt.Sprintf("%s%s%s", "SELECT qty FROM drugdb WHERE ndc = '", acNdc, "';"))
 	rows.Next()
 	err = rows.Scan(&lnRowQty)
 	if err != nil {
-		_, err = db.Query("insert into drugdb (ndc, qty) values ($1, $2)", acNdc, lnQty)
+		_, err = db.Query("INSERT INTO drugdb (ndc, qty) VALUES ($1, $2)", acNdc, lnQty)
 		issue(err)
+		LogSql(fmt.Sprintf("%s%s%s%f%s", "INSERT INTO drugdb (ndc, qty) VALUES ('", acNdc, "', ", lnQty, ");"))
 		return
 	}
 	lnNewQty := lnRowQty - lnQty
-	_, err = db.Query("UPDATE drugdb set qty = $1 where ndc = $2", lnNewQty, acNdc)
+	_, err = db.Query("UPDATE drugdb SET qty = $1 WHERE ndc = $2", lnNewQty, acNdc)
 	issue(err)
+	LogSql(fmt.Sprintf("%s%f%s%s%s", "UPDATE drugdb SET qty = ", lnNewQty, " WHERE ndc ='", acNdc, "';"))
 }
 
 /**
@@ -278,14 +321,16 @@ Description: Sets the drug quantity to the new value
 */
 func setDrugQty(acNdc string, acQty string) int {
 	var lnRowQty int
-	rows, err := db.Query("SELECT qty from drugdb where ndc = $1", acNdc)
+	rows, err := db.Query("SELECT qty FROM drugdb WHERE ndc = $1", acNdc)
 	issue(err)
+	LogSql( fmt.Sprintf("%s%s%s", "SELECT qty FROM drugdb WHERE ndc = '", acNdc, "';"))
 	rows.Next()
 	err = rows.Scan(&lnRowQty)
 	lnQty, err := strconv.Atoi(acQty)
 	issue(err)
-	_, err = db.Query("UPDATE drugdb set qty = $1 where ndc = $2", lnQty, acNdc)
+	_, err = db.Query("UPDATE drugdb SET qty = $1 WHERE ndc = $2", lnQty, acNdc)
 	issue(err)
+	LogSql( fmt.Sprintf("%s%d%s%s%s", "UPDATE drugdb SET qty = ", lnQty, " WHERE ndc ='", acNdc, "';"))
 	return lnRowQty - lnQty
 }
 
@@ -386,8 +431,9 @@ Description: See if the drug is in the database yet
 */
 func NewCheck(acNdc string) bool {
 	var lnCount int
-	row, err := db.Query("Select count(ndc) from drugdb where ndc = $1", acNdc)
+	row, err := db.Query("SELECT count(ndc) FROM drugdb WHERE ndc = $1", acNdc)
 	issue(err)
+	LogSql( fmt.Sprintf("%s%s%s", "SELECT count(ndc) FROM drugdb WHERE ndc = '", acNdc, "';"))
 	row.Next()
 	err = row.Scan(&lnCount)
 	issue(err)
@@ -411,9 +457,11 @@ func AddDrug(acNdc string, acMonth string, acDay string, acYear string) {
 	lnMonth, _ := strconv.Atoi(acMonth)
 	lnDay, _ := strconv.Atoi(acDay)
 	lnYear, _ := strconv.Atoi(acYear)
-	_, err = db.Query("Insert into drugdb (ndc, date) values ($1, make_date($2, $3, $4))",
+	_, err = db.Query("INSERT INTO drugdb (ndc, date) VALUES ($1, make_date($2, $3, $4))",
 		acNdc, lnYear, lnMonth, lnDay)
 	issue(err)
+	LogSql(fmt.Sprintf("%s%s%s%d%s%d%s%d%s", "INSERT INTO drugdb (ndc, date) VALUES ('", acNdc, "', make_date(",
+		lnYear,	", ", lnMonth, ", ", lnDay, "));"))
 }
 
 /**
@@ -426,7 +474,9 @@ Description: Adds the correct default values to a drug
 @param acNdc The ndc of the drug
 */
 func UpdateDrug(acSize string, acForm string, acItemNum string, acName string, acNdc string) {
-	_, err := db.Query("Update drugdb set size = $1, form = $2, item_num = $3, name = $4 where ndc = $5",
+	_, err := db.Query("UPDATE drugdb SET size = $1, form = $2, item_num = $3, name = $4 WHERE ndc = $5",
 		acSize, acForm, acItemNum, acName, acNdc)
 	issue(err)
+	LogSql(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", "UPDATE drugdb SET size = '", acSize, "', form = '", acForm, "', " +
+		"item_num = '", acItemNum, "', name = '", acName, "', WHERE ndc = '", acNdc, "';"))
 }

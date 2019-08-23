@@ -7,7 +7,6 @@ Description: Sends the new drug information
 package handlers
 
 import (
-	"log"
 	"net/http"
 
 	"../../mainUtils"
@@ -22,8 +21,9 @@ and executes the database template to refresh
 func PostNewDrugHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		mainUtils.LogError(err.Error())
 	}
+
 	var lcErrorString string
 	lcNdc := acRequest.PostForm.Get("ndc")
 	lcNdc, lcErrorString = CheckNDC(lcNdc, lcErrorString)

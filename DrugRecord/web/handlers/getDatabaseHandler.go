@@ -7,9 +7,9 @@ Description: Gets a new database page
 package handlers
 
 import (
-	"log"
 	"net/http"
 
+	"../../mainUtils"
 	"../utils"
 )
 
@@ -22,7 +22,7 @@ Description: Executes the database template with the output data
 func GetDatabaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		mainUtils.LogError(err.Error())
 	}
 	if !gbSignedIn {
 		utils.ExecuteTemplate(acWriter, "home.html", "You are not signed in")

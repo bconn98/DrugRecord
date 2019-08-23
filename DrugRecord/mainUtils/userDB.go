@@ -8,7 +8,7 @@ package mainUtils
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 
 	_ "github.com/lib/pq"
 )
@@ -20,7 +20,7 @@ Description: Checks for an error and reports it
 */
 func issue(err error) {
 	if err != nil {
-		log.Fatal(err)
+		LogError(err.Error())
 	}
 }
 
@@ -45,9 +45,8 @@ func GetUsers() []User {
 
 	var users []User
 	defer func() {
-		if err := rows.Close(); err != nil {
-			log.Fatal(err)
-		}
+		err := rows.Close()
+		issue( err )
 	}()
 
 	for rows.Next() {
@@ -66,9 +65,11 @@ func GetUsers() []User {
 Function: AddUser
 Description: Adds a user to the database
 @param acUsername The username of the new user
-@param acPassVal The password value for the new user
+@param anPassVal The password value for the new user
 */
-func AddUser(acUsername string, acPassVal int) {
-	_, err := db.Query("INSERT INTO userDB (userName, passVal) VALUES ($1, $2);", acUsername, acPassVal)
+func AddUser(acUsername string, anPassVal int) {
+	_, err := db.Query("INSERT INTO userDB (userName, passVal) VALUES ($1, $2);", acUsername, anPassVal)
 	issue(err)
+	LogSql( fmt.Sprintf("%s%s%s%d%s","INSERT INTO userdb (userName, passVal) VALUES ('", acUsername, "', ", anPassVal,
+		");"))
 }

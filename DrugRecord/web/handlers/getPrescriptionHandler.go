@@ -7,9 +7,9 @@ Description: Gets new prescription page
 package handlers
 
 import (
-	"log"
 	"net/http"
 
+	"../../mainUtils"
 	"../utils"
 )
 
@@ -20,7 +20,7 @@ Description: Execute the prescription template
 func GetPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		mainUtils.LogError(err.Error())
 	}
 	utils.ExecuteTemplate(acWriter, "prescription.html", nil)
 }

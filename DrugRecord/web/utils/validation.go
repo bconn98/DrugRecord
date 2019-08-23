@@ -80,25 +80,6 @@ func CheckQty(acQty string, acErrorString string) string {
 }
 
 /**
-Function: CheckNum
-Description: Checks if the entered value was a number
-@param number The supposed number
-@param str The current error string
-@return The current error string
-*/
-// func CheckNum(number string, str string) string {
-//	_, err := strconv.Atoi(number)
-//	if err != nil {
-//		if number == "" {
-//			str = "You missed a number field!"
-//		} else {
-//			str = number + " is not a valid number"
-//		}
-//	}
-//	return str
-// }
-
-/**
 Function: CheckString
 Description: Checks if the entered value was a non empty string
 @param acInput The supposed string

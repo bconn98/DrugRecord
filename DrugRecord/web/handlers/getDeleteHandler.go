@@ -7,9 +7,9 @@ Description: Gets new audit page
 package handlers
 
 import (
-	"log"
 	"net/http"
 
+	"../../mainUtils"
 	"../utils"
 )
 
@@ -20,7 +20,7 @@ Description: Executes the delete template
 func GetDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		mainUtils.LogError(err.Error())
 	}
 	utils.ExecuteTemplate(acWriter, "delete.html", nil)
 }

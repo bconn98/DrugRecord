@@ -9,10 +9,10 @@ package main
 import (
 	"log"
 	"net/http"
-
+	"os"
 	"github.com/gorilla/mux"
-
 	"./web/handlers"
+	"./mainUtils"
 )
 
 /**
@@ -20,6 +20,13 @@ Function: main
 Description: Creates a new web server at port 8080 and connects all of the handler functions
 */
 func main() {
+	var err error
+	// If the file doesn't exist, create it, or append to the file
+	mainUtils.GpcFile, err = os.OpenFile("c2.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	acRouter := mux.NewRouter()
 	acRouter.HandleFunc("/", handlers.GetDatabaseHandler).Methods("GET")
 	acRouter.HandleFunc("/home", handlers.GetHomeHandler).Methods("GET")
@@ -48,7 +55,7 @@ func main() {
 	http.Handle("/web/assets/", http.StripPrefix("/web/assets", http.FileServer(http.Dir("./web/assets"))))
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.Handle("/", acRouter)
-	err := http.ListenAndServe(":80", nil)
+	err = http.ListenAndServe(":80", nil)
 	if err != nil {
 		log.Fatal(err)
 	}

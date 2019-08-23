@@ -7,7 +7,6 @@ Description: Sends the purchase information
 package handlers
 
 import (
-	"log"
 	"net/http"
 	"strings"
 
@@ -23,7 +22,7 @@ and executes the database template to refresh
 func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		mainUtils.LogError(err.Error())
 	}
 
 	var lcErrorString string

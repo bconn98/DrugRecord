@@ -7,7 +7,6 @@ Description: Sends the audit information
 package handlers
 
 import (
-	"log"
 	. "net/http"
 
 	. "../../mainUtils"
@@ -22,8 +21,9 @@ depending on that validity.
 func PostRegisterHandler(acWriter ResponseWriter, acRequest *Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		LogError(err.Error())
 	}
+
 	lcUsername := acRequest.PostForm.Get("uName")
 	lcPassword := acRequest.PostForm.Get("password")
 

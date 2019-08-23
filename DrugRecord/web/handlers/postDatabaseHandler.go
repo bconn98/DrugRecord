@@ -7,7 +7,6 @@ Description: Sends the database information
 package handlers
 
 import (
-	"log"
 	. "net/http"
 	"strconv"
 
@@ -30,7 +29,7 @@ in the database template
 func PostDatabaseHandler(acWriter ResponseWriter, acRequest *Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		LogError(err.Error())
 	}
 	var lcErrorString string
 	lcNdc := acRequest.PostForm.Get("ndc")

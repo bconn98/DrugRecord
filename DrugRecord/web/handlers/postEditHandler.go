@@ -7,7 +7,6 @@ Description: Sends the audit information
 package handlers
 
 import (
-	"log"
 	"net/http"
 	"strings"
 
@@ -22,7 +21,7 @@ Description: Sends the edit information to find the order to edit
 func PostEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		mainUtils.LogError(err.Error())
 	}
 
 	var lcErrorString string

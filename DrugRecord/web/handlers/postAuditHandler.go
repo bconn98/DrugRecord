@@ -7,7 +7,6 @@ Description: Sends the audit information
 package handlers
 
 import (
-	"log"
 	"net/http"
 	"strings"
 
@@ -23,7 +22,7 @@ database template to refresh the page
 func PostAuditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		mainUtils.LogError(err.Error())
 	}
 
 	var lcErrorString string
