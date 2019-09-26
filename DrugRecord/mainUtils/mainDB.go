@@ -42,12 +42,6 @@ func FindNDC(acNdc string) (string, string, string, string, string, time.Time, f
 	LogSql(fmt.Sprintf("%s%s%s", "SELECT pharmacist, date, qty, script, type, id FROM orderdb WHERE ndc = '", acNdc,
 		"' ORDER BY date desc;"))
 
-	defer func() {
-		if err := rows.Close(); err != nil {
-			log.Fatal(err)
-		}
-	}()
-
 	for rows.Next() {
 		err := rows.Scan(&lcPharmacist, &lcDate, &lnQty, &lcScript, &lcType, &lnId)
 		issue(err)
@@ -66,6 +60,13 @@ func FindNDC(acNdc string) (string, string, string, string, string, time.Time, f
 	if err != nil {
 		return "", "", "", "", "", time.Time{}, 0, nil
 	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
 	return lcName, acNdc, lcForm, lcItemNum, lcSize, lcDate, lnDrugQty, lasOrders
 }
 
@@ -117,6 +118,13 @@ func GetOrder(acNdc string, acPharmacist string, acMonth string, acDay string, a
 		issue(err)
 		lasOrder = append(lasOrder, MakeOrder(acNdc, acPharmacist, acScript, lcType, lnQty, lcDate, lnId))
 	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
 	return lasOrder
 }
 
@@ -159,13 +167,18 @@ func DeleteOrder(anId int64) {
 			"', AND id > ", anId, " AND type = 'Actual Count';"))
 	}
 
-
 	if lcType != "Audit" && lcType != "Actual Count" {
 	}
 
 	_, err = db.Query("DELETE FROM orderdb WHERE id = $1", anId)
 	issue(err)
 	LogSql(fmt.Sprintf("%s%d%s", "DELETE FROM orderdb WHERE id =", anId, ";"))
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 }
 
 /**
@@ -230,6 +243,12 @@ func UpdateOrder(acId string, acScript string, acQty string) {
 		LogSql(fmt.Sprintf("%s%f%s%d%s", "UPDATE orderdb SET qty = ", lnActualCount + lnDifference, " WHERE id = ",
 			lnActualCountId, ";"))
 	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 }
 
 /**
@@ -277,6 +296,13 @@ func addType(acNdc string, acPharmacist string, acMonth string, anDay string, an
 	LogSql(fmt.Sprintf("%s%s%s%s%s%f%s%d%s%d%s%d%s%s%s%s%s", "INSERT INTO orderdb (ndc, pharmacist, qty, date, " +
 		"logdate, script, type) VALUES ('", acNdc, "', '", acPharmacist, "', ", lnQty, ", make_date(", lnYear, ", ",
 		lnMonth, ", ", lnDay, "), current_date, '", acScript, "', ", acOrderType, ");"))
+
+	defer func() {
+		if err := row.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
 	return true
 }
 
@@ -310,6 +336,12 @@ func alterQty(acNdc string, acQty string) {
 	_, err = db.Query("UPDATE drugdb SET qty = $1 WHERE ndc = $2", lnNewQty, acNdc)
 	issue(err)
 	LogSql(fmt.Sprintf("%s%f%s%s%s", "UPDATE drugdb SET qty = ", lnNewQty, " WHERE ndc ='", acNdc, "';"))
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 }
 
 /**
@@ -331,6 +363,12 @@ func setDrugQty(acNdc string, acQty string) int {
 	_, err = db.Query("UPDATE drugdb SET qty = $1 WHERE ndc = $2", lnQty, acNdc)
 	issue(err)
 	LogSql( fmt.Sprintf("%s%d%s%s%s", "UPDATE drugdb SET qty = ", lnQty, " WHERE ndc ='", acNdc, "';"))
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 	return lnRowQty - lnQty
 }
 

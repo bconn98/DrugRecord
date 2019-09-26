@@ -44,10 +44,6 @@ func GetUsers() []User {
 	issue(err)
 
 	var users []User
-	defer func() {
-		err := rows.Close()
-		issue( err )
-	}()
 
 	for rows.Next() {
 		err := rows.Scan(&lcUserName, &lnPassVal)
@@ -57,6 +53,11 @@ func GetUsers() []User {
 	}
 	err = rows.Err()
 	issue(err)
+
+	defer func() {
+		err := rows.Close()
+		issue( err )
+	}()
 
 	return users
 }

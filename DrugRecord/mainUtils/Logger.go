@@ -15,7 +15,7 @@ func LogSql( acEvent string ) {
 }
 
 func LogError( acError string ) {
-	_, err := GpcFile.WriteString(acError + "\n")
+	_, err := GpcFile.WriteString("ERROR: " + acError + "\n")
 	if err != nil {
 		log.Fatal(err)
 	}
