@@ -7,12 +7,13 @@ Description: Runs a database
 package main
 
 import (
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
-	"github.com/gorilla/mux"
-	"./web/handlers"
+
 	"./mainUtils"
+	"./web/handlers"
 )
 
 /**
@@ -40,8 +41,9 @@ func main() {
 	acRouter.HandleFunc("/closeWindow", handlers.GetCloseHandler).Methods("GET")
 	acRouter.HandleFunc("/database", handlers.GetDatabaseHandler).Methods("GET")
 	acRouter.HandleFunc("/edit", handlers.GetEditHandler).Methods("GET")
+	acRouter.HandleFunc("/writeExcel", handlers.GetExcelWriterHandler).Methods("GET")
+	acRouter.HandleFunc("/writeExcel", handlers.PostExcelWriterHandler).Methods("POST")
 	acRouter.HandleFunc("/deleteSure", handlers.PostDeleteSureHandler).Methods("POST")
-	acRouter.HandleFunc("/delete", handlers.GetDeleteHandler).Methods("GET")
 	acRouter.HandleFunc("/delete", handlers.PostDeleteHandler).Methods("POST")
 	acRouter.HandleFunc("/editQty", handlers.PostEditQtyHandler).Methods("POST")
 	acRouter.HandleFunc("/edit", handlers.PostEditHandler).Methods("POST")

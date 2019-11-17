@@ -46,17 +46,16 @@ func GetUsers() []User {
 	var users []User
 
 	for rows.Next() {
-		err := rows.Scan(&lcUserName, &lnPassVal)
-		issue(err)
-		user := User{lcUserName, lnPassVal}
-		users = append(users, user)
+		if rows.Err() != nil {
+			issue(rows.Err())
+			break
+		}
+		issue(rows.Scan(&lcUserName, &lnPassVal))
+		users = append(users, User{lcUserName, lnPassVal})
 	}
-	err = rows.Err()
-	issue(err)
 
 	defer func() {
-		err := rows.Close()
-		issue( err )
+		issue(rows.Close())
 	}()
 
 	return users
@@ -69,8 +68,9 @@ Description: Adds a user to the database
 @param anPassVal The password value for the new user
 */
 func AddUser(acUsername string, anPassVal int) {
-	_, err := db.Query("INSERT INTO userDB (userName, passVal) VALUES ($1, $2);", acUsername, anPassVal)
+	insertString := fmt.Sprintf("%s%s%s%d%s", "INSERT INTO userdb (userName, passVal) VALUES ('", acUsername,
+		"', ", anPassVal, ");")
+	_, err := db.Exec(insertString)
 	issue(err)
-	LogSql( fmt.Sprintf("%s%s%s%d%s","INSERT INTO userdb (userName, passVal) VALUES ('", acUsername, "', ", anPassVal,
-		");"))
+	LogSql(insertString)
 }
