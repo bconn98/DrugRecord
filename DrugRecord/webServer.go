@@ -10,7 +10,6 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"os"
 
 	"./mainUtils"
 	"./web/handlers"
@@ -22,11 +21,17 @@ Description: Creates a new web server at port 8080 and connects all of the handl
 */
 func main() {
 	var err error
+
+	mainUtils.Initial = true
+
 	// If the file doesn't exist, create it, or append to the file
-	mainUtils.GpcFile, err = os.OpenFile("c2.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
+	mainUtils.LogSql("Starting Program")
+
+	defer func() {
+		if err = mainUtils.GpcFile.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	acRouter := mux.NewRouter()
 	acRouter.HandleFunc("/", handlers.GetDatabaseHandler).Methods("GET")
@@ -42,6 +47,8 @@ func main() {
 	acRouter.HandleFunc("/database", handlers.GetDatabaseHandler).Methods("GET")
 	acRouter.HandleFunc("/edit", handlers.GetEditHandler).Methods("GET")
 	acRouter.HandleFunc("/writeExcel", handlers.GetExcelWriterHandler).Methods("GET")
+	acRouter.HandleFunc("/deleteSure", handlers.PostDeleteSureHandler).Methods("GET")
+	acRouter.HandleFunc("/delete", handlers.PostDeleteHandler).Methods("GET")
 	acRouter.HandleFunc("/writeExcel", handlers.PostExcelWriterHandler).Methods("POST")
 	acRouter.HandleFunc("/deleteSure", handlers.PostDeleteSureHandler).Methods("POST")
 	acRouter.HandleFunc("/delete", handlers.PostDeleteHandler).Methods("POST")
