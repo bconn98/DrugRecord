@@ -8,6 +8,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"../../mainUtils"
@@ -34,8 +35,20 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 	lcPurchaseDate := acRequest.PostForm.Get("PurchaseDate")
 	lcMonth, lcDay, lcYear := utils.ParseDate(lcPurchaseDate)
 	lcErrorString, lcYear = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
-	lnQty := acRequest.PostForm.Get("qty")
-	lnActual := acRequest.PostForm.Get("realCount")
+	lrQty, err := strconv.ParseFloat(acRequest.PostForm.Get("qty"), 64)
+	if err != nil {
+		mainUtils.LogError(err.Error())
+	}
+
+	lcActual := acRequest.PostForm.Get("realCount")
+	if lcActual == "" {
+		lcActual = "-1000" // Set a default value that should never be seen
+	}
+	lrActual, err := strconv.ParseFloat(lcActual, 64)
+	if err != nil {
+		mainUtils.LogError(err.Error())
+	}
+
 	if lcErrorString != "" {
 		utils.ExecuteTemplate(acWriter, "purchase.html", lcErrorString)
 		return
@@ -43,9 +56,12 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 
 	// Checks if the drug exists yet
 	lbCheck := mainUtils.NewCheck(lcNdc)
+	purchase := mainUtils.MakePurchase(lcNdc, lcPharmacist, lcInvoice, lcYear, lcMonth,
+		lcDay, lrQty, lrActual)
+
 	// If the drug does exist
 	if lbCheck {
-		lbLogged := mainUtils.AddPurchase(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcInvoice, lnActual)
+		lbLogged := mainUtils.AddPurchase(purchase)
 
 		if !lbLogged {
 			utils.ExecuteTemplate(acWriter, "purchase.html", "Purchase already logged!")
@@ -57,6 +73,6 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 	} else {
 		mainUtils.AddDrug(lcNdc, lcMonth, lcDay, lcYear)
 		utils.ExecuteTemplate(acWriter, "newDrug.html", nil)
-		mainUtils.AddPurchase(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcInvoice, lnActual)
+		mainUtils.AddPurchase(purchase)
 	}
 }

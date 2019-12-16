@@ -8,6 +8,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"../../mainUtils"
@@ -36,16 +37,33 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 	lcErrorString, lcYear = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
 	lnQty := acRequest.PostForm.Get("qty")
 	lnActual := acRequest.PostForm.Get("realCount")
+
+	lrQty, err := strconv.ParseFloat(lnQty, 64)
+	if err != nil {
+		mainUtils.LogError(err.Error())
+	}
+
+	lrActual, err := strconv.ParseFloat(lnActual, 64)
+	if err != nil {
+		mainUtils.LogError(err.Error())
+	}
+
+	if lnActual == "" {
+		lrActual = -1000
+	}
+
 	if lcErrorString != "" {
 		utils.ExecuteTemplate(acWriter, "prescription.html", lcErrorString)
 		return
 	}
 
 	lbCheck := mainUtils.NewCheck(lcNdc)
+	prescription := mainUtils.MakePrescription(lcNdc, lcPharmacist, lcScript, lrQty, lcYear, lcMonth, lcDay, lrActual)
+
 	// If the drug does exist
 	if lbCheck {
 
-		lbLogged := mainUtils.AddPrescription(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcScript, lnActual)
+		lbLogged := mainUtils.AddPrescription(prescription)
 
 		if !lbLogged {
 			utils.ExecuteTemplate(acWriter, "prescription.html", "Prescription already logged!")
@@ -57,6 +75,6 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 	} else {
 		mainUtils.AddDrug(lcNdc, lcMonth, lcDay, lcYear)
 		utils.ExecuteTemplate(acWriter, "newDrug.html", nil)
-		mainUtils.AddPrescription(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lnQty, lcScript, lnActual)
+		mainUtils.AddPrescription(prescription)
 	}
 }

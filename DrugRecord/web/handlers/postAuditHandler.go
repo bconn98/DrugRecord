@@ -8,6 +8,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"../../mainUtils"
@@ -34,12 +35,18 @@ func PostAuditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lcAuditMonth, lcAuditDay, lcAuditYear := utils.ParseDate(lcAuditDate)
 	lcErrorString, lcAuditYear = utils.CheckDate(lcAuditMonth, lcAuditDay, lcAuditYear, lcErrorString)
 	lnQty := acRequest.PostForm.Get("qty")
-	lnActual := acRequest.PostForm.Get("realCount")
+
+	lrQty, err := strconv.ParseFloat(lnQty, 64)
+	if err != nil {
+		mainUtils.LogError(err.Error())
+	}
+
 	if lcErrorString != "" {
 		utils.ExecuteTemplate(acWriter, "audit.html", lcErrorString)
 		return
 	}
-	lbCheck := mainUtils.AddAudit(lcNdc, lcPharmacist, lcAuditMonth, lcAuditDay, lcAuditYear, lnQty, lnActual)
+	lbCheck := mainUtils.AddAudit(mainUtils.MakeAudit(lcNdc, lcPharmacist, lrQty, lcAuditYear, lcAuditMonth,
+		lcAuditDay))
 
 	if !lbCheck {
 		utils.ExecuteTemplate(acWriter, "audit.html", "Audit already logged!")

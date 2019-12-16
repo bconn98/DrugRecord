@@ -12,6 +12,13 @@ Description: All the structs needed to implement the C2 record
 @date 5/16/18
 */
 
+func ParseDateStrings(acTime time.Time) (string, string, string) {
+	lcMonth := acTime.Month().String()
+	lcDay := strconv.Itoa(acTime.Day())
+	lcYear := strconv.Itoa(acTime.Year())
+	return lcMonth, lcDay, lcYear
+}
+
 /**
 Date struct holds a month day and year
 */
@@ -38,10 +45,13 @@ Prescription struct contains the ndc of  drug of the order, the pharmacist that 
 the order, the script id, the quantity of the order, the date the order was filled
 */
 type Prescription struct {
-	mcNdc                string
-	mcPharmacist, Script string
-	mnOrderQuantity      float64
-	mcDate               time.Time
+	mcNdc                  string
+	mcPharmacist, mcScript string
+	mcYear                 string
+	mcMonth                string
+	mcDay                  string
+	mnOrderQuantity        float64
+	mrActualQty            float64
 }
 
 /**
@@ -54,8 +64,10 @@ Description: Makes a Prescription struct
 @param acDate The date of the order
 @return A prescription object
 */
-func MakePrescription(acNdc string, asPharmacist string, acScript string, anQty float64, acDate time.Time) Prescription {
-	return Prescription{acNdc, asPharmacist, acScript, anQty, acDate}
+func MakePrescription(acNdc string, asPharmacist string, acScript string, anQty float64, acYear string, acMonth string,
+	acDay string, arActualQty float64) Prescription {
+	return Prescription{acNdc, asPharmacist, acScript, acYear, acMonth,
+		acDay, anQty, arActualQty}
 }
 
 /**
@@ -65,8 +77,10 @@ the date the audit was performed and the ndc of the audited drug
 type Audit struct {
 	mcNdc           string
 	mcPharmacist    string
+	mcYear          string
+	mcMonth         string
+	mcDay           string
 	mnAuditQuantity float64
-	mcDate          time.Time
 }
 
 /**
@@ -78,8 +92,10 @@ Description: Makes an audit struct
 @param acNdc The ndc of the drug
 @return An Audit object
 */
-func MakeAudit(acNdc string, acPharmacist string, anAuditQuantity float64, acDate time.Time) Audit {
-	return Audit{acNdc, acPharmacist, anAuditQuantity, acDate}
+func MakeAudit(acNdc string, acPharmacist string, anAuditQuantity float64, acYear string, acMonth string,
+	acDay string) Audit {
+	return Audit{acNdc, acPharmacist, acYear, acMonth,
+		acDay, anAuditQuantity}
 }
 
 /**
@@ -89,8 +105,12 @@ and the pharmacist that counted the drug
 type Purchase struct {
 	mnNdc        string
 	mcPharmacist string
-	mnQty        float64
-	mcDate       time.Time
+	mcInvoice    string
+	mcYear       string
+	mcMonth      string
+	mcDay        string
+	mrQty        float64
+	mrActualQty  float64
 }
 
 /**
@@ -102,8 +122,10 @@ Description: Makes a Purchase struct
 @param acPharmacist The pharmacist that counted the drug
 @return A Purchase object
 */
-func MakePurchase(acNdc string, acPharmacist string, anQty float64, acDate time.Time) Purchase {
-	return Purchase{acNdc, acPharmacist, anQty, acDate}
+func MakePurchase(acNdc string, acPharmacist string, acInvoice string, acYear string, acMonth string, acDay string,
+	anQty float64, anActualQty float64) Purchase {
+	return Purchase{acNdc, acPharmacist, acInvoice, acYear, acMonth,
+		acDay, anQty, anActualQty}
 }
 
 /**
@@ -140,14 +162,14 @@ Order struct contains the pharmacist on the order, the script/type of the order
 the quantity and the date of the order
 */
 type Order struct {
-	AcPharmacist         string
-	AcMonth              string
-	AcDay                string
-	AcYear               string
-	AcScript, AcType     string
-	AnQty                float64
-	AcNdc                string
-	AnId                 int64
+	AcPharmacist     string
+	AcMonth          string
+	AcDay            int
+	AcYear           int
+	AcScript, AcType string
+	ArQty            float64
+	AcNdc            string
+	AnId             int64
 }
 
 /**
@@ -160,49 +182,14 @@ Description: Creates an order using an audit, prescription, or purchase
 @param acType The type of the order
 @return An Order Object
 */
-func MakeOrder(acNdc string, acPharmacist string, acScript string, acType string, anQty float64,
-	acDate time.Time, anId int64) Order {
-	var lcMonth string
-	switch acDate.Month().String() {
-	case "January":
-		lcMonth = "1"
-		break
-	case "February":
-		lcMonth = "2"
-		break
-	case "March":
-		lcMonth = "3"
-		break
-	case "April":
-		lcMonth = "4"
-		break
-	case "May":
-		lcMonth = "5"
-		break
-	case "June":
-		lcMonth = "6"
-		break
-	case "July":
-		lcMonth = "7"
-		break
-	case "August":
-		lcMonth = "8"
-		break
-	case "September":
-		lcMonth = "9"
-		break
-	case "October":
-		lcMonth = "10"
-		break
-	case "November":
-		lcMonth = "11"
-		break
-	case "December":
-		lcMonth = "12"
-		break
-	}
-	return Order{acPharmacist, lcMonth, strconv.Itoa(acDate.Day()) , strconv.Itoa(acDate.Year()),
-		acScript, acType, anQty, acNdc, anId}
+func MakeOrder(acNdc string, acPharmacist string, acScript string, acType string, arQty float64,
+	acYear string, acMonth string, acDay string, anId int64) Order {
+
+	lnDay, _ := strconv.Atoi(acDay)
+	lnYear, _ := strconv.Atoi(acYear)
+
+	return Order{acPharmacist, acMonth, lnDay, lnYear,
+		acScript, acType, arQty, acNdc, anId}
 }
 
 /**

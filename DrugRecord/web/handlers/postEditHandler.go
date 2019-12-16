@@ -38,7 +38,9 @@ func PostEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 		utils.ExecuteTemplate(acWriter, "edit.html", lcErrorString)
 		return
 	}
-	lasOrders := mainUtils.GetOrder(lcNdc, lcPharmacist, lcMonth, lcDay, lcYear, lcScript, lcType)
+	order := mainUtils.MakeOrder(lcNdc, lcPharmacist, lcScript, lcType, 0, lcYear, lcMonth, lcDay,
+		0) // ID doesn't matter
+	lasOrders := mainUtils.GetOrder(order)
 
 	if len(lasOrders) != 0 {
 		utils.ExecuteTemplate(acWriter, "editQty.html", lasOrders[0])
