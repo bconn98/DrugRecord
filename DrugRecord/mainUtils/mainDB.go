@@ -143,9 +143,9 @@ func DeleteOrder(anId int64) {
 		alterQty(lcNdc, -lnQty)
 
 		updateString := fmt.Sprintf("%s%f%s%s%s%d%s", "UPDATE orderdb set qty = qty + ", lnQty,
-			" WHERE ndc = '", lcNdc, "' AND id > ", anId, " AND type = 'Actual Count';")
+			" WHERE ndc = '", lcNdc, "' AND id > ", anId, " AND type = 'Over/Short';")
 
-		_, err = db.Exec("UPDATE orderdb set qty = qty + $1 WHERE ndc = $2 AND id > $3 AND type = 'Actual Count';",
+		_, err = db.Exec("UPDATE orderdb set qty = qty + $1 WHERE ndc = $2 AND id > $3 AND type = 'Over/Short';",
 			lnQty, lcNdc, anId)
 		issue(err)
 		LogSql(updateString)
@@ -161,7 +161,7 @@ func DeleteOrder(anId int64) {
 /**
  * Function: UpdateOrder
  * Description: Updates the quantity of an order specified by the passed in id. This
- * also update all Actual Counts after the specified orders AND the total drug qty
+ * also update all Over/Shorts after the specified orders AND the total drug qty
  * @param acId The id of the order to edit
  * @param acScript The script number of the order
  * @param acQty The new quantity
@@ -185,13 +185,13 @@ func UpdateOrder(acId string, acScript string, acQty string) {
 	LogSql(updateString)
 
 	var lrDifference float64
-	if lcType == "Purchase" || lcType == "Actual Count" {
+	if lcType == "Purchase" || lcType == "Over/Short" {
 		lrDifference = lnQty - lnOldQty
 	} else {
 		lrDifference = lnOldQty - lnQty
 	}
 
-	if lcType != "Audit" && lcType != "Actual Count" {
+	if lcType != "Audit" && lcType != "Over/Short" {
 		// Fix the drugDB value as well
 		alterQty(lcNdc, -lrDifference)
 	}
@@ -304,7 +304,7 @@ func AddPrescription(prescription Prescription) bool {
 
 	if prescription.mrActualQty != -1000 {
 		lnQtyDiff := setDrugQty(order.AcNdc, prescription.mrActualQty)
-		order.AcType = "Actual Count"
+		order.AcType = "Over/Short"
 		order.ArQty = lnQtyDiff
 		lbCheck = addType(order)
 	}
@@ -329,7 +329,7 @@ func AddAudit(audit Audit) bool {
 	}
 
 	lnQtyDiff := setDrugQty(order.AcNdc, audit.mnAuditQuantity)
-	order.AcType = "Actual Count"
+	order.AcType = "Over/Short"
 	order.ArQty = lnQtyDiff
 	lbCheck = addType(order)
 
@@ -355,7 +355,7 @@ func AddPurchase(purchase Purchase) bool {
 
 	if purchase.mrActualQty != -1000 {
 		lnQtyDiff := setDrugQty(purchase.mnNdc, purchase.mrActualQty)
-		order.AcType = "Actual Count"
+		order.AcType = "Over/Short"
 		order.ArQty = lnQtyDiff
 		lbCheck = addType(order)
 	}

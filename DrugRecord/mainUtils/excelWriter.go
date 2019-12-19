@@ -102,7 +102,7 @@ func getSheet(acNdc string, acName string) {
 	var lcForm, lcItem, lcSize, lcPharm, lcScript, lcType string
 
 	originalDate := time.Date(1900, 1, 1, 0, 0, 0, 0, time.UTC)
-	programDate := time.Date(2019, 5, 3, 0, 0, 0, 0, time.UTC)
+	// programDate := time.Date(2019, 5, 3, 0, 0, 0, 0, time.UTC)
 
 	issue(db.QueryRow("SELECT form, item_num, date, size from drugDB where ndc = $1", acNdc).Scan(&lcForm, &lcItem,
 		&lcDate, &lcSize))
@@ -138,12 +138,13 @@ func getSheet(acNdc string, acName string) {
 
 		} else if strings.ToUpper(lcType) == "ACTUAL COUNT" {
 
-			if lcDate.Before(programDate) {
-
-				issue(file.SetCellFormula(acName, "G"+strconv.Itoa(row), ""))
-				issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lnQty))
-
-			}
+			// TODO: Believe this is no longer needed but may need to reintroduce in testing
+			// if lcDate.Before(programDate) {
+			//
+			// 	issue(file.SetCellFormula(acName, "G"+strconv.Itoa(row), ""))
+			// 	issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lnQty))
+			//
+			// }
 
 			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
 
