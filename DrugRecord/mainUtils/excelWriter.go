@@ -148,6 +148,10 @@ func getSheet(acNdc string, acName string) {
 
 			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
 
+		} else if strings.ToUpper(lcType) == "OVER/UNDER" {
+
+			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
+
 		} else if strings.ToUpper(lcType) == "REAL COUNT" {
 
 			issue(file.SetCellFormula(acName, "G"+strconv.Itoa(row), ""))
