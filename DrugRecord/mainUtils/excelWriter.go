@@ -152,7 +152,7 @@ func getSheet(acNdc string, acName string) {
 
 			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
 
-		} else if strings.ToUpper(lcType) == "REAL COUNT" {
+		} else if strings.ToUpper(lcType) == "REAL COUNT" || strings.ToUpper(lcType) == "AUDIT" {
 
 			issue(file.SetCellFormula(acName, "G"+strconv.Itoa(row), ""))
 			issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lnQty))
