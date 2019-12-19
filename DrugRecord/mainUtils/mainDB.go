@@ -10,6 +10,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -81,7 +82,7 @@ func GetOrder(order Order) []Order {
 	var lasOrders []Order
 	var selectString string
 
-	if order.AcType == "Audit" {
+	if strings.ToUpper(order.AcType) == "AUDIT" {
 		selectString = fmt.Sprintf("%s%s%s%s%s%d%s%s%s%d%s%s%s", "SELECT qty, id FROM orderdb WHERE ndc = '",
 			order.AcNdc, "' AND pharmacist = '", order.AcPharmacist, "' AND date = make_date(",
 			order.AcYear, ", ", order.AcMonth, ", ", order.AcDay, ") AND type = '", order.AcType, "';")
@@ -135,8 +136,8 @@ func DeleteOrder(anId int64) {
 	issue(db.QueryRow("SELECT qty, ndc, type FROM orderdb WHERE id = $1;", anId).Scan(&lnQty, &lcNdc, &lcType))
 	LogSql(selectString)
 
-	if lcType != "Audit" {
-		if lcType == "Purchase" {
+	if strings.ToUpper(lcType) != "AUDIT" {
+		if strings.ToUpper(lcType) == "PURCHASE" {
 			lnQty *= -1
 		}
 
@@ -178,6 +179,8 @@ func UpdateOrder(acId string, acScript string, acQty string) {
 	issue(db.QueryRow("SELECT qty, ndc, type FROM orderdb WHERE id = $1;", lnId).Scan(&lnOldQty, &lcNdc, &lcType))
 	LogSql(selectString)
 
+	lcType = strings.ToUpper(lcType)
+
 	updateString := fmt.Sprintf("%s%f%s%s%s%d%s", "UPDATE orderdb SET qty = ", lnQty, ", script = '",
 		acScript, "' WHERE id = ", lnId, ";")
 	_, err = db.Exec("UPDATE orderdb SET qty = $1, script = $2 WHERE id = $3;", lnQty, acScript, lnId)
@@ -185,13 +188,13 @@ func UpdateOrder(acId string, acScript string, acQty string) {
 	LogSql(updateString)
 
 	var lrDifference float64
-	if lcType == "Purchase" || lcType == "Over/Short" {
+	if lcType == "PURCHASE" || lcType == "OVER/SHORT" {
 		lrDifference = lnQty - lnOldQty
 	} else {
 		lrDifference = lnOldQty - lnQty
 	}
 
-	if lcType != "Audit" && lcType != "Over/Short" {
+	if lcType != "AUDIT" && lcType != "OVER/SHORT" {
 		// Fix the drugDB value as well
 		alterQty(lcNdc, -lrDifference)
 	}
