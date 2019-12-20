@@ -102,7 +102,7 @@ func getSheet(acNdc string, acName string) {
 	var lcForm, lcItem, lcSize, lcPharm, lcScript, lcType string
 
 	originalDate := time.Date(1900, 1, 1, 0, 0, 0, 0, time.UTC)
-	// programDate := time.Date(2019, 5, 3, 0, 0, 0, 0, time.UTC)
+	programDate := time.Date(2019, 5, 3, 0, 0, 0, 0, time.UTC)
 
 	issue(db.QueryRow("SELECT form, item_num, date, size from drugDB where ndc = $1", acNdc).Scan(&lcForm, &lcItem,
 		&lcDate, &lcSize))
@@ -136,25 +136,28 @@ func getSheet(acNdc string, acName string) {
 
 			fillPurchase(acName, lcPharm, lcScript, lcDate, lnQty, lcLogDate, row)
 
-		} else if strings.ToUpper(lcType) == "ACTUAL COUNT" {
+		} else if strings.ToUpper(lcType) == "ACTUAL COUNT" || strings.ToUpper(lcType) == "OVER/SHORT" {
 
 			// TODO: Believe this is no longer needed but may need to reintroduce in testing
-			// if lcDate.Before(programDate) {
-			//
-			// 	issue(file.SetCellFormula(acName, "G"+strconv.Itoa(row), ""))
-			// 	issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lnQty))
-			//
-			// }
+			if lcDate.Before(programDate) {
+
+				issue(file.SetCellFormula(acName, "G"+strconv.Itoa(row), ""))
+				issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lnQty))
+
+			}
 
 			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
 
-		} else if strings.ToUpper(lcType) == "OVER/SHORT" {
-
-			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
-
-		} else if strings.ToUpper(lcType) == "REAL COUNT" || strings.ToUpper(lcType) == "AUDIT" {
+		} else if strings.ToUpper(lcType) == "REAL COUNT" {
 
 			issue(file.SetCellFormula(acName, "G"+strconv.Itoa(row), ""))
+			issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lnQty))
+			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
+
+		} else if strings.ToUpper(lcType) == "AUDIT" {
+
+			issue(file.SetCellFormula(acName, "G"+strconv.Itoa(row), "=G"+strconv.Itoa(row-2)+" + C"+strconv.Itoa(
+				row-1)+"- F"+strconv.Itoa(row-1)))
 			issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lnQty))
 			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
 
