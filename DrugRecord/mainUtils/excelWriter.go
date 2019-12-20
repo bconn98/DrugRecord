@@ -148,7 +148,7 @@ func getSheet(acNdc string, acName string) {
 
 			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
 
-		} else if strings.ToUpper(lcType) == "OVER/UNDER" {
+		} else if strings.ToUpper(lcType) == "OVER/SHORT" {
 
 			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
 

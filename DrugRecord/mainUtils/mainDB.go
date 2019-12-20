@@ -209,6 +209,7 @@ func addType(order Order) bool {
 
 	var lnCount int
 
+	// Check and see if the order is already entered in the system
 	selectString := fmt.Sprintf("%s%s%s%d%s%s%s%d%s%f%s%f%s%s%s", "SELECT count(script) FROM orderdb WHERE script = '",
 		order.AcScript, "' AND date = make_date(", order.AcYear, ", ", order.AcMonth, ", ", order.AcDay, ") AND qty = ",
 		order.ArQty, " AND ndc = '", order.ArQty, "' AND type = '", order.AcType, "';")
