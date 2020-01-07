@@ -45,7 +45,7 @@ func PostAuditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 		utils.ExecuteTemplate(acWriter, "audit.html", lcErrorString)
 		return
 	}
-	lbCheck := mainUtils.AddAudit(mainUtils.MakeAudit(lcNdc, lcPharmacist, lrQty, lcAuditYear, lcAuditMonth,
+	lbCheck, _ := mainUtils.AddAudit(mainUtils.MakeAudit(lcNdc, lcPharmacist, lrQty, lcAuditYear, lcAuditMonth,
 		lcAuditDay))
 
 	if !lbCheck {

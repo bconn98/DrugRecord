@@ -63,7 +63,7 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 	// If the drug does exist
 	if lbCheck {
 
-		lbLogged := mainUtils.AddPrescription(prescription)
+		lbLogged, _ := mainUtils.AddPrescription(prescription)
 
 		if !lbLogged {
 			utils.ExecuteTemplate(acWriter, "prescription.html", "Prescription already logged!")
@@ -74,7 +74,7 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 		return
 	} else {
 		mainUtils.AddDrug(lcNdc, lcMonth, lcDay, lcYear)
-		utils.ExecuteTemplate(acWriter, "newDrug.html", nil)
-		mainUtils.AddPrescription(prescription)
+		_, id := mainUtils.AddPrescription(prescription)
+		utils.ExecuteTemplate(acWriter, "newDrug.html", mainUtils.NewDrug{Ndc: lcNdc, Id: id})
 	}
 }

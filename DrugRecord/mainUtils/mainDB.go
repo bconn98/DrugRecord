@@ -45,8 +45,8 @@ func FindNDC(acNdc string) (string, string, string, string, string, time.Time, f
 
 		issue(rows.Scan(&lcPharmacist, &lcDate, &lnQty, &lcScript, &lcType, &lnId))
 		lcMonth, lcDay, lcYear := ParseDateStrings(lcDate)
-		lasOrders = append(lasOrders, MakeOrder(acNdc, lcPharmacist, lcScript, lcType, lnQty, lcYear, lcMonth, lcDay,
-			lnId))
+		lasOrders = append(lasOrders, MakeOrder(acNdc, lcPharmacist, lcScript, lcType, lnQty, 0, lcYear,
+			lcMonth, lcDay, lnId))
 	}
 
 	selectString = fmt.Sprintf("%s%s%s",
@@ -113,7 +113,7 @@ func GetOrder(order Order) []Order {
 
 		issue(rows.Scan(&lnQty, &lnId))
 		lasOrders = append(lasOrders, MakeOrder(order.AcNdc, order.AcPharmacist, order.AcScript, order.AcType, lnQty,
-			strconv.Itoa(order.AcYear), order.AcMonth, strconv.Itoa(order.AcDay), lnId))
+			order.ArActualQty, strconv.Itoa(order.AcYear), order.AcMonth, strconv.Itoa(order.AcDay), lnId))
 	}
 
 	defer func() {
@@ -205,8 +205,9 @@ func UpdateOrder(acId string, acScript string, acQty string) {
  * Description: Creates a new row in the orderdb with passed in attributes
  * @param order The order to be added to the DB
  */
-func addType(order Order) bool {
+func addType(order Order) (bool, int) {
 
+	lnId := 0
 	var lnCount int
 
 	// Check and see if the order is already entered in the system
@@ -220,7 +221,7 @@ func addType(order Order) bool {
 	LogSql(selectString)
 
 	if lnCount != 0 {
-		return false
+		return false, 0
 	}
 
 	insertString := fmt.Sprintf("%s%s%s%s%s%f%s%d%s%s%s%d%s%s%s%s%s", "INSERT INTO orderdb (ndc, pharmacist, qty, "+
@@ -234,7 +235,11 @@ func addType(order Order) bool {
 	issue(err)
 	LogSql(insertString)
 
-	return true
+	issue(db.QueryRow("SELECT id FROM orderdb where ndc = $1 and pharmacist = $2 and qty = $3 and date = make_date("+
+		"$4, $5, $6) and script = $7 and type = $8;", order.AcNdc, order.AcPharmacist, order.ArQty, order.AcYear,
+		order.AcMonth, order.AcDay, order.AcScript, order.AcType).Scan(&lnId))
+
+	return true, lnId
 }
 
 /**
@@ -293,26 +298,27 @@ func setDrugQty(acNdc string, arQty float64) float64 {
  * Description: Adds a prescription type order to the orderdb
  * @param prescription The prescription to add to the DB
  */
-func AddPrescription(prescription Prescription) bool {
+func AddPrescription(prescription Prescription) (bool, int) {
 
 	lbCheck := true
-	order := MakeOrder(prescription.mcNdc, prescription.mcPharmacist, prescription.mcScript, "Prescription",
-		prescription.mnOrderQuantity, prescription.mcYear, prescription.mcMonth, prescription.mcDay,
-		0) // Id is not important
+	order := MakeOrder(prescription.McNdc, prescription.mcPharmacist, prescription.mcScript, "Prescription",
+		prescription.mnOrderQuantity, prescription.mrActualQty, prescription.mcYear, prescription.mcMonth,
+		prescription.mcDay, 0) // Id is not important
 
-	if !addType(order) {
-		return false
+	check, id := addType(order)
+	if !check {
+		return false, id
 	}
 
-	alterQty(prescription.mcNdc, prescription.mnOrderQuantity)
+	alterQty(prescription.McNdc, prescription.mnOrderQuantity)
 
 	if prescription.mrActualQty != -1000 {
 		lnQtyDiff := setDrugQty(order.AcNdc, prescription.mrActualQty)
 		order.AcType = "Over/Short"
 		order.ArQty = lnQtyDiff
-		lbCheck = addType(order)
+		lbCheck, _ = addType(order)
 	}
-	return lbCheck
+	return lbCheck, id
 }
 
 /**
@@ -320,24 +326,25 @@ func AddPrescription(prescription Prescription) bool {
  * Description: Adds a audit type order to the orderdb
  * @param audit The audit to add to the DB
  */
-func AddAudit(audit Audit) bool {
+func AddAudit(audit Audit) (bool, int) {
 
 	issue(err)
 
 	lbCheck := true
 	order := MakeOrder(audit.mcNdc, audit.mcPharmacist, "", "Audit", audit.mnAuditQuantity,
-		audit.mcYear, audit.mcMonth, audit.mcDay, 0) // Id is not important
+		audit.mnAuditQuantity, audit.mcYear, audit.mcMonth, audit.mcDay, 0) // Id is not important
 
-	if !addType(order) {
-		return false
+	check, id := addType(order)
+	if !check {
+		return false, id
 	}
 
 	lnQtyDiff := setDrugQty(order.AcNdc, audit.mnAuditQuantity)
 	order.AcType = "Over/Short"
 	order.ArQty = lnQtyDiff
-	lbCheck = addType(order)
+	lbCheck, _ = addType(order)
 
-	return lbCheck
+	return lbCheck, id
 }
 
 /**
@@ -345,25 +352,51 @@ func AddAudit(audit Audit) bool {
  * Description: Adds a purchase type order to the orderdb
  * @param purchase The purchase to add to the DB
  */
-func AddPurchase(purchase Purchase) bool {
+func AddPurchase(purchase Purchase) (bool, int) {
 
 	lbCheck := true
-	order := MakeOrder(purchase.mnNdc, purchase.mcPharmacist, purchase.mcInvoice, "Purchase", purchase.mrQty,
-		purchase.mcYear, purchase.mcMonth, purchase.mcDay, 0) // Id is not important
+	order := MakeOrder(purchase.MnNdc, purchase.mcPharmacist, purchase.mcInvoice, "Purchase", purchase.mrQty,
+		purchase.mrActualQty, purchase.mcYear, purchase.mcMonth, purchase.mcDay, 0) // Id is not important
 
-	if !addType(order) {
-		return false
+	check, id := addType(order)
+	if !check {
+		return false, id
 	}
 
-	alterQty(purchase.mnNdc, -1*purchase.mrQty)
+	alterQty(purchase.MnNdc, -1*purchase.mrQty)
 
 	if purchase.mrActualQty != -1000 {
-		lnQtyDiff := setDrugQty(purchase.mnNdc, purchase.mrActualQty)
+		lnQtyDiff := setDrugQty(purchase.MnNdc, purchase.mrActualQty)
 		order.AcType = "Over/Short"
 		order.ArQty = lnQtyDiff
-		lbCheck = addType(order)
+		lbCheck, _ = addType(order)
 	}
-	return lbCheck
+	return lbCheck, id
+}
+
+/**
+ * Function: AddPurchase
+ * Description: Adds a purchase type order to the orderdb
+ * @param purchase The purchase to add to the DB
+ */
+func AddOrder(order Order) (bool, int) {
+
+	lbCheck := true
+
+	check, id := addType(order)
+	if !check {
+		return false, id
+	}
+
+	alterQty(order.AcNdc, -1*order.ArQty)
+
+	if order.ArActualQty != -1000 {
+		lnQtyDiff := setDrugQty(order.AcNdc, order.ArActualQty)
+		order.AcType = "Over/Short"
+		order.ArQty = lnQtyDiff
+		lbCheck, _ = addType(order)
+	}
+	return lbCheck, id
 }
 
 /**
@@ -411,13 +444,54 @@ func AddDrug(acNdc string, acMonth string, acDay string, acYear string) {
  * @param acItemNum The item number of the drug
  * @param acName The name of the drug
  * @param acNdc The ndc of the drug
+ * @param acOldNdc The ndc of the drug on first entry
  */
-func UpdateDrug(acSize string, acForm string, acItemNum string, acName string, acNdc string) {
+func UpdateDrug(acSize string, acForm string, acItemNum string, acName string, acNdc string, acOldNdc string) {
 	updateString := fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", "UPDATE drugdb SET size = '", acSize, "', form = '",
-		acForm, "', item_num = '", acItemNum, "', name = '", acName, "' WHERE ndc = '", acNdc, "';")
+		acForm, "', item_num = '", acItemNum, "', name = '", acName, "', ndc = '", acNdc, "' WHERE ndc = '", acOldNdc, "';")
 
-	_, err := db.Exec("UPDATE drugdb SET size = $1, form = $2, item_num = $3, name = $4 WHERE ndc = $5;", acSize,
-		acForm, acItemNum, acName, acNdc)
+	_, err := db.Exec("UPDATE drugdb SET size = $1, form = $2, item_num = $3, name = $4, ndc = $5, "+
+		"qty = 0 WHERE ndc = $6;",
+		acSize, acForm, acItemNum, acName, acNdc, acOldNdc)
+	issue(err)
+	LogSql(updateString)
+
+	if acNdc != acOldNdc {
+		_, err = db.Exec("DELETE from drugdb where ndc = $1", acOldNdc)
+	}
+}
+
+/**
+ * Method: UpdateOrderNdc
+ * Description: Reset the ndc of an order
+ * @param acId The id of the order to change
+ * @param acNdc The new ndc
+ */
+func UpdateOrderNdc(acId string, acNdc string) {
+	var lrQty float64
+	var lcNdc string
+	var lcType string
+
+	issue(db.QueryRow("SELECT ndc FROM orderdb WHERE id = $1", acId).Scan(&lcNdc))
+
+	if lcNdc != acNdc {
+		_, err := db.Exec("DELETE FROM drugdb WHERE ndc = $1", lcNdc)
+		issue(err)
+	}
+
+	updateString := fmt.Sprintf("%s%s%s%s%s", "UPDATE orderdb set ndc = '", acNdc, "' where id = '", acId, "';")
+
+	_, err = db.Exec("UPDATE orderdb set ndc = $1 where id = $2", acNdc, acId)
+	issue(err)
+	LogSql(updateString)
+
+	issue(db.QueryRow("SELECT qty, type FROM orderdb WHERE id = $1;", acId).Scan(&lrQty, &lcType))
+
+	if lcType == "Purchase" {
+		lrQty *= -1
+	}
+	updateString = fmt.Sprintf("%s%f%s%s%s", "UPDATE drugdb set qty = qty - ", lrQty, " where ndc = '", acNdc, "';")
+	_, err = db.Exec("UPDATE drugdb set qty = qty - $1 where ndc = $2", lrQty, acNdc)
 	issue(err)
 	LogSql(updateString)
 }

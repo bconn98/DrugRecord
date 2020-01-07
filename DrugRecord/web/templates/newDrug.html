@@ -7,7 +7,16 @@
 <body>
 <form action="/newDrug" method="POST">
     <label>
-        Reenter NDC: <input type="text" name="ndc"/><br><br>
+        <input type = "hidden" value = "{{.Id}}" name = "id" />
+    </label>
+    <label>
+        <input type = "hidden" value = "{{.Ndc}}" name = "oldNdc" />
+    </label>
+    If the following NDC was entered incorrectly, please correct it and submit. Do not submit other data.
+
+    <br><br>
+    <label>
+        Check NDC: <input type="text" name="ndc" value = {{.Ndc}} /><br><br>
     </label>
     <label>
         Name: <input type="text" name="name"/> <br><br>
@@ -23,6 +32,6 @@
     </label>
     <button type="submit">Submit</button>
 </form>
-{{.}}
+{{.Error}}
 </body>
 </html>

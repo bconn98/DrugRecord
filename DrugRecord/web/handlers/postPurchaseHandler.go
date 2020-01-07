@@ -61,7 +61,7 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 
 	// If the drug does exist
 	if lbCheck {
-		lbLogged := mainUtils.AddPurchase(purchase)
+		lbLogged, _ := mainUtils.AddPurchase(purchase)
 
 		if !lbLogged {
 			utils.ExecuteTemplate(acWriter, "purchase.html", "Purchase already logged!")
@@ -72,7 +72,7 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 		return
 	} else {
 		mainUtils.AddDrug(lcNdc, lcMonth, lcDay, lcYear)
-		utils.ExecuteTemplate(acWriter, "newDrug.html", nil)
-		mainUtils.AddPurchase(purchase)
+		_, id := mainUtils.AddPurchase(purchase)
+		utils.ExecuteTemplate(acWriter, "newDrug.html", mainUtils.NewDrug{Ndc: lcNdc, Id: id})
 	}
 }

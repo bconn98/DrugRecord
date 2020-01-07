@@ -45,7 +45,7 @@ Prescription struct contains the ndc of  drug of the order, the pharmacist that 
 the order, the script id, the quantity of the order, the date the order was filled
 */
 type Prescription struct {
-	mcNdc                  string
+	McNdc                  string
 	mcPharmacist, mcScript string
 	mcYear                 string
 	mcMonth                string
@@ -103,7 +103,7 @@ Purchase struct contains the ndc of a drug, purchase date, and purchased quantit
 and the pharmacist that counted the drug
 */
 type Purchase struct {
-	mnNdc        string
+	MnNdc        string
 	mcPharmacist string
 	mcInvoice    string
 	mcYear       string
@@ -162,14 +162,14 @@ Order struct contains the pharmacist on the order, the script/type of the order
 the quantity and the date of the order
 */
 type Order struct {
-	AcPharmacist     string
-	AcMonth          string
-	AcDay            int
-	AcYear           int
-	AcScript, AcType string
-	ArQty            float64
-	AcNdc            string
-	AnId             int64
+	AcPharmacist       string
+	AcMonth            string
+	AcDay              int
+	AcYear             int
+	AcScript, AcType   string
+	ArQty, ArActualQty float64
+	AcNdc              string
+	AnId               int64
 }
 
 /**
@@ -178,18 +178,19 @@ Description: Creates an order using an audit, prescription, or purchase
 @param acPharmacist The pharmacist on the order
 @param acScript The script/type of the order
 @param anQty The quantity of the order
+@param anQty The real quantity of the order drug
 @param acDate The date of the order
 @param acType The type of the order
 @return An Order Object
 */
-func MakeOrder(acNdc string, acPharmacist string, acScript string, acType string, arQty float64,
+func MakeOrder(acNdc string, acPharmacist string, acScript string, acType string, arQty float64, arActualQty float64,
 	acYear string, acMonth string, acDay string, anId int64) Order {
 
 	lnDay, _ := strconv.Atoi(acDay)
 	lnYear, _ := strconv.Atoi(acYear)
 
 	return Order{acPharmacist, acMonth, lnDay, lnYear,
-		acScript, acType, arQty, acNdc, anId}
+		acScript, acType, arQty, arActualQty, acNdc, anId}
 }
 
 /**
@@ -198,4 +199,10 @@ User struct contains a username and a password value
 type User struct {
 	UserName string
 	PassVal  int
+}
+
+type NewDrug struct {
+	Error string
+	Ndc   string
+	Id    int
 }

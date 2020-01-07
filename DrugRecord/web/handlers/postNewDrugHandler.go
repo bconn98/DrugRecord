@@ -25,6 +25,8 @@ func PostNewDrugHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	}
 
 	var lcErrorString string
+	lcId := acRequest.PostForm.Get("id")
+	lcOldNdc := acRequest.PostForm.Get("oldNdc")
 	lcNdc := acRequest.PostForm.Get("ndc")
 	lcNdc, lcErrorString = CheckNDC(lcNdc, lcErrorString)
 	lcName := acRequest.PostForm.Get("name")
@@ -34,10 +36,18 @@ func PostNewDrugHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lcPkgSize := acRequest.PostForm.Get("pkgSize")
 
 	if lcErrorString != "" {
-		ExecuteTemplate(acWriter, "newDrug.html", lcErrorString)
+
+		if mainUtils.NewCheck(lcNdc) {
+			mainUtils.UpdateOrderNdc(lcId, lcNdc)
+			GetCloseHandler(acWriter, acRequest)
+			return
+		}
+
+		ExecuteTemplate(acWriter, "newDrug.html", mainUtils.NewDrug{Error: lcErrorString, Ndc: lcNdc})
 		return
 	}
-	mainUtils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc)
+	mainUtils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc, lcOldNdc)
+	mainUtils.UpdateOrderNdc(lcId, lcNdc)
 	GetCloseHandler(acWriter, acRequest)
 	return
 }

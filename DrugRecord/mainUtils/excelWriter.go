@@ -78,7 +78,7 @@ func createSheet(acName string) int {
 	issue(file.SetCellStyle(acName, "A9", "A9", styleA))
 
 	// Create the chart
-	for i := 7; i < 1000; i++ {
+	for i := 7; i < 3000; i++ {
 		issue(file.SetCellStyle(acName, "A"+strconv.Itoa(i), "J"+strconv.Itoa(i), style3))
 		if i >= 10 {
 			issue(file.SetCellFormula(acName, "G"+strconv.Itoa(i), "=G"+strconv.Itoa(i-1)+" + C"+strconv.Itoa(
@@ -97,7 +97,7 @@ func createSheet(acName string) int {
  *    - acName The name of the sheet and drug
  */
 func getSheet(acNdc string, acName string) {
-	var lnQty int
+	var lrQty float64
 	var lcDate, lcLogDate time.Time
 	var lcForm, lcItem, lcSize, lcPharm, lcScript, lcType string
 
@@ -115,7 +115,8 @@ func getSheet(acNdc string, acName string) {
 		lcDate.Day())+"/"+strconv.Itoa(lcDate.Year())))
 	issue(file.SetCellValue(acName, "G2", lcSize))
 
-	rows, err := db.Query("SELECT pharmacist, qty, date, logdate, script, type from orderDB where ndc = $1 order by date", acNdc)
+	rows, err := db.Query("SELECT pharmacist, qty, date, logdate, script, "+
+		"type from orderDB where ndc = $1 order by date, id", acNdc)
 	issue(err)
 
 	row := 10
@@ -124,46 +125,50 @@ func getSheet(acNdc string, acName string) {
 			issue(rows.Err())
 			break
 		}
-		issue(rows.Scan(&lcPharm, &lnQty, &lcDate, &lcLogDate, &lcScript, &lcType))
+		issue(rows.Scan(&lcPharm, &lrQty, &lcDate, &lcLogDate, &lcScript, &lcType))
 
 		if lcDate.Year() == originalDate.Year() && lcDate.Month() == originalDate.Month() && lcDate.Day() == originalDate.Day() {
 
-			issue(file.SetCellValue(acName, "G5", lnQty))
-			issue(file.SetCellValue(acName, "G9", lnQty))
+			issue(file.SetCellValue(acName, "G5", lrQty))
+			issue(file.SetCellValue(acName, "G9", lrQty))
 			row--
 
 		} else if strings.ToUpper(lcType) == "PURCHASE" {
 
-			fillPurchase(acName, lcPharm, lcScript, lcDate, lnQty, lcLogDate, row)
+			fillPurchase(acName, lcPharm, lcScript, lcDate, lrQty, lcLogDate, row)
 
-		} else if strings.ToUpper(lcType) == "ACTUAL COUNT" || strings.ToUpper(lcType) == "OVER/SHORT" {
+		} else if strings.ToUpper(lcType) == "ACTUAL COUNT" {
 
 			// TODO: Believe this is no longer needed but may need to reintroduce in testing
 			if lcDate.Before(programDate) {
 
 				issue(file.SetCellFormula(acName, "G"+strconv.Itoa(row), ""))
-				issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lnQty))
+				issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lrQty))
 
 			}
 
-			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
+			fillCount(acName, lcPharm, lcType, lcDate, lrQty, lcLogDate, row)
+
+		} else if strings.ToUpper(lcType) == "OVER/SHORT" {
+
+			fillCount(acName, lcPharm, lcType, lcDate, lrQty, lcLogDate, row)
 
 		} else if strings.ToUpper(lcType) == "REAL COUNT" {
 
 			issue(file.SetCellFormula(acName, "G"+strconv.Itoa(row), ""))
-			issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lnQty))
-			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
+			issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lrQty))
+			fillCount(acName, lcPharm, lcType, lcDate, lrQty, lcLogDate, row)
 
 		} else if strings.ToUpper(lcType) == "AUDIT" {
 
 			issue(file.SetCellFormula(acName, "G"+strconv.Itoa(row), "=G"+strconv.Itoa(row-2)+" + C"+strconv.Itoa(
 				row-1)+"- F"+strconv.Itoa(row-1)))
-			issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lnQty))
-			fillCount(acName, lcPharm, lcType, lcDate, lnQty, lcLogDate, row)
+			issue(file.SetCellValue(acName, "G"+strconv.Itoa(row), lrQty))
+			fillCount(acName, lcPharm, lcType, lcDate, lrQty, lcLogDate, row)
 
 		} else {
 
-			fillScript(acName, lcPharm, lcScript, lcDate, lnQty, lcLogDate, row)
+			fillScript(acName, lcPharm, lcScript, lcDate, lrQty, lcLogDate, row)
 
 		}
 
@@ -179,13 +184,13 @@ func getSheet(acNdc string, acName string) {
  * Description: Fill a purchase line using the passed in pieces.
  * Parameters: All the inputs to print on line 'row'.
  */
-func fillPurchase(acName string, acPharm string, acScript string, acDate time.Time, anQty int,
+func fillPurchase(acName string, acPharm string, acScript string, acDate time.Time, arQty float64,
 	acLogDate time.Time, row int) {
 	issue(file.SetCellValue(acName, "A"+strconv.Itoa(row), acScript))
 
 	issue(file.SetCellValue(acName, "B"+strconv.Itoa(row), strconv.Itoa(monthMap[acDate.Month().String()])+"/"+strconv.Itoa(acDate.Day())+"/"+strconv.Itoa(acDate.Year())))
 
-	issue(file.SetCellValue(acName, "C"+strconv.Itoa(row), anQty))
+	issue(file.SetCellValue(acName, "C"+strconv.Itoa(row), arQty))
 
 	issue(file.SetCellValue(acName, "I"+strconv.Itoa(row), acPharm))
 
@@ -197,13 +202,13 @@ func fillPurchase(acName string, acPharm string, acScript string, acDate time.Ti
  * Description: Fill a script line using the passed in pieces.
  * Parameters: All the inputs to print on line 'row'.
  */
-func fillScript(acName string, acPharm string, acScript string, acDate time.Time, anQty int,
+func fillScript(acName string, acPharm string, acScript string, acDate time.Time, arQty float64,
 	acLogDate time.Time, row int) {
 	issue(file.SetCellValue(acName, "D"+strconv.Itoa(row), acScript))
 
 	issue(file.SetCellValue(acName, "E"+strconv.Itoa(row), strconv.Itoa(monthMap[acDate.Month().String()])+"/"+strconv.Itoa(acDate.Day())+"/"+strconv.Itoa(acDate.Year())))
 
-	issue(file.SetCellValue(acName, "F"+strconv.Itoa(row), anQty))
+	issue(file.SetCellValue(acName, "F"+strconv.Itoa(row), arQty))
 
 	issue(file.SetCellValue(acName, "I"+strconv.Itoa(row), acPharm))
 
@@ -215,7 +220,7 @@ func fillScript(acName string, acPharm string, acScript string, acDate time.Time
  * Description: Fill a real or actual count line using the passed in pieces.
  * Parameters: All the inputs to print on line 'row'.
  */
-func fillCount(acName string, acPharm string, acType string, acDate time.Time, anQty int,
+func fillCount(acName string, acPharm string, acType string, acDate time.Time, arQty float64,
 	acLogDate time.Time, row int) {
 
 	style, err := file.NewStyle(`{"fill":{"type":"gradient","color":["#FFFF00","#FFFF00"],"shading":1}}`)
@@ -224,7 +229,7 @@ func fillCount(acName string, acPharm string, acType string, acDate time.Time, a
 	issue(file.SetCellStyle(acName, "F"+strconv.Itoa(row), "F"+strconv.Itoa(row), style))
 
 	// The use the same columns
-	fillScript(acName, acPharm, acType, acDate, anQty, acLogDate, row)
+	fillScript(acName, acPharm, acType, acDate, arQty, acLogDate, row)
 }
 
 /**

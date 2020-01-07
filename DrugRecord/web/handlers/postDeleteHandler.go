@@ -38,7 +38,7 @@ func PostDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 		utils.ExecuteTemplate(acWriter, "delete.html", lcErrorString)
 		return
 	}
-	order := mainUtils.MakeOrder(lcNdc, lcPharmacist, lcScript, lcType, 0, lcYear, lcMonth, lcDay,
+	order := mainUtils.MakeOrder(lcNdc, lcPharmacist, lcScript, lcType, 0, 0, lcYear, lcMonth, lcDay,
 		0) // ID doesn't matter
 	lasOrders := mainUtils.GetOrder(order)
 
