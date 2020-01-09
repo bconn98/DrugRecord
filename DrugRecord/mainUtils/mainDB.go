@@ -375,31 +375,6 @@ func AddPurchase(purchase Purchase) (bool, int) {
 }
 
 /**
- * Function: AddPurchase
- * Description: Adds a purchase type order to the orderdb
- * @param purchase The purchase to add to the DB
- */
-func AddOrder(order Order) (bool, int) {
-
-	lbCheck := true
-
-	check, id := addType(order)
-	if !check {
-		return false, id
-	}
-
-	alterQty(order.AcNdc, -1*order.ArQty)
-
-	if order.ArActualQty != -1000 {
-		lnQtyDiff := setDrugQty(order.AcNdc, order.ArActualQty)
-		order.AcType = "Over/Short"
-		order.ArQty = lnQtyDiff
-		lbCheck, _ = addType(order)
-	}
-	return lbCheck, id
-}
-
-/**
  * Function: NewCheck
  * Description: See if the drug is in the database yet
  * @param acNdc The NDC of the drug to check
@@ -446,13 +421,14 @@ func AddDrug(acNdc string, acMonth string, acDay string, acYear string) {
  * @param acNdc The ndc of the drug
  * @param acOldNdc The ndc of the drug on first entry
  */
-func UpdateDrug(acSize string, acForm string, acItemNum string, acName string, acNdc string, acOldNdc string) {
+func UpdateDrug(acSize string, acForm string, acItemNum string, acName string, acNdc string,
+	arQty float64, acOldNdc string) {
 	updateString := fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", "UPDATE drugdb SET size = '", acSize, "', form = '",
 		acForm, "', item_num = '", acItemNum, "', name = '", acName, "', ndc = '", acNdc, "' WHERE ndc = '", acOldNdc, "';")
 
 	_, err := db.Exec("UPDATE drugdb SET size = $1, form = $2, item_num = $3, name = $4, ndc = $5, "+
-		"qty = 0 WHERE ndc = $6;",
-		acSize, acForm, acItemNum, acName, acNdc, acOldNdc)
+		"qty = $6 WHERE ndc = $7;",
+		acSize, acForm, acItemNum, acName, acNdc, arQty, acOldNdc)
 	issue(err)
 	LogSql(updateString)
 
@@ -494,4 +470,22 @@ func UpdateOrderNdc(acId string, acNdc string) {
 	_, err = db.Exec("UPDATE drugdb set qty = qty - $1 where ndc = $2", lrQty, acNdc)
 	issue(err)
 	LogSql(updateString)
+}
+
+func GetDrug(acNdc string) Drug {
+	var name, size, form, item_num, qty string
+	issue(db.QueryRow("SELECT name, size, form, item_num, qty from drugdb where ndc = $1", acNdc).Scan(&name, &size,
+		&form, &item_num, &qty))
+	lrQty, err := strconv.ParseFloat(qty, 10)
+	issue(err)
+
+	return Drug{
+		McNdc:      acNdc,
+		MrQuantity: lrQty,
+		McName:     name,
+		McDate:     time.Time{},
+		McForm:     form,
+		McSize:     size,
+		McItemNum:  item_num,
+	}
 }

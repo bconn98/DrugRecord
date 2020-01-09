@@ -40,8 +40,9 @@
     <br>
     <h3>Drug: {{.Name}} &emsp;&ensp; NDC: {{.Ndc}} &emsp;&ensp; Package Size: {{.Size}}</h3>
     <h4>Form: {{.Form}} &emsp;&ensp; Item Number: {{.ItemNum}} &emsp;&ensp; Initial Date: {{.Date}}</h4>
-    <h2> Current Quantity: {{.Qty}}</h2>
-</div>
+    <h2> Current Quantity: {{.Qty}}</h2> <br>
+    <button type="button" onclick="newPopup('/editDrugGetNdc')">Edit Drug </button>  <br>
+</div> <br>
 <div>
     <table id="table">
         <tr id="header">

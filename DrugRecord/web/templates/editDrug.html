@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Drug</title>
+</head>
+<body>
+<form action="/editDrug" method="POST">
+    <label>
+        <input type="hidden"  value = {{.MrQuantity}} name="qty"><br><br>
+    </label>
+    <label>
+        <input type="hidden"  value = {{.McNdc}} name="ndc"><br><br>
+    </label>
+    <label>
+        Drug Name: <input type="text"  value = {{.McName}} name="name"><br><br>
+    </label>
+    <label>
+        Ndc: {{.McNdc}} <br><br>
+    </label>
+    <label>
+        Package Size: <input type="text"  value = {{.McSize}} name="size"><br><br>
+    </label>
+    <label>
+        Form: <input type="text"  value = {{.McForm}} name="form"><br><br>
+    </label>
+    <label>
+        Item Number: <input type="text"  value = {{.McItemNum}} name="item_num"><br><br>
+    </label>
+    <label>
+        Qty: {{.MrQuantity}} <br><br>
+    </label>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>

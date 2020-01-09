@@ -132,8 +132,13 @@ func MakePurchase(acNdc string, acPharmacist string, acInvoice string, acYear st
 Drug struct contains an id name, ndc code, and quantity
 */
 type Drug struct {
-	McId, McNdc string
-	MnQuantity  float64
+	McNdc      string
+	MrQuantity float64
+	McName     string
+	McDate     time.Time
+	McForm     string
+	McSize     string
+	McItemNum  string
 }
 
 /**
@@ -143,19 +148,19 @@ Description: Given: a drug name, ndc, and quantity, creates a drug structure
 @param acNdc The ndc specific to the drug
 @param anQty The current quantity of the drug
 */
-func MakeDrug(acName string, acNdc string, anQty float64) Drug {
-	return Drug{acName, acNdc, anQty}
-}
+// func MakeDrug(acName string, acNdc string, anQty float64) Drug {
+// 	return Drug{acName, acNdc, anQty}
+// }
 
 /**
 Function: UpdateQty
 Description: Updates the quantity of the drug
 @param anQty The quantity to change by
 */
-func (drug Drug) UpdateQty(anQty float64) Drug {
-	anQty = drug.MnQuantity + anQty
-	return MakeDrug(drug.McId, drug.McNdc, anQty)
-}
+// func (drug Drug) UpdateQty(anQty float64) Drug {
+// 	anQty = drug.MnQuantity + anQty
+// 	return MakeDrug(drug.McId, drug.McNdc, anQty)
+// }
 
 /**
 Order struct contains the pharmacist on the order, the script/type of the order

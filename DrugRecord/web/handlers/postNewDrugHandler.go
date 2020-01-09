@@ -46,7 +46,7 @@ func PostNewDrugHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 		ExecuteTemplate(acWriter, "newDrug.html", mainUtils.NewDrug{Error: lcErrorString, Ndc: lcNdc})
 		return
 	}
-	mainUtils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc, lcOldNdc)
+	mainUtils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc, 0, lcOldNdc)
 	mainUtils.UpdateOrderNdc(lcId, lcNdc)
 	GetCloseHandler(acWriter, acRequest)
 	return
