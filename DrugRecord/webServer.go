@@ -46,6 +46,7 @@ func main() {
 	acRouter.HandleFunc("/closeWindow", handlers.GetCloseHandler).Methods("GET")
 	acRouter.HandleFunc("/database", handlers.GetDatabaseHandler).Methods("GET")
 	acRouter.HandleFunc("/edit", handlers.GetEditHandler).Methods("GET")
+	acRouter.HandleFunc("/delete", handlers.GetDeleteHandler).Methods("GET")
 	acRouter.HandleFunc("/writeExcel", handlers.GetExcelWriterHandler).Methods("GET")
 	acRouter.HandleFunc("/editDrug", handlers.GetDrugEditHandler).Methods("GET")
 	acRouter.HandleFunc("/editDrugGetNdc", handlers.GetDrugEditGetNdcHandler).Methods("GET")

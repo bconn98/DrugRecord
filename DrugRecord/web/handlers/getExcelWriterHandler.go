@@ -7,20 +7,23 @@ Description: Gets new excel writer page
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"../../mainUtils"
-	"../utils"
+	"github.com/sqweek/dialog"
 )
 
 /**
 Function: GetExcelWriterHandler
-Description: Executes the audit template
+Description: Executes the excel writer
 */
 func GetExcelWriterHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
-	err := acRequest.ParseForm()
+	lcFileName, err := dialog.File().Filter("Excel Workbook (*.xlsx)", "xlsx").Title("Export to XLSX").Save()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		log.Fatal(err)
 	}
-	utils.ExecuteTemplate(acWriter, "writeExcel.html", nil)
+	mainUtils.ExcelWriter(lcFileName)
+
+	GetCloseHandler(acWriter, acRequest)
 }
