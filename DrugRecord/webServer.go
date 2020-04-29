@@ -54,7 +54,6 @@ func main() {
 	acRouter.HandleFunc("/editDrug", handlers.PostDrugEditHandler).Methods("POST")
 	acRouter.HandleFunc("/deleteSure", handlers.PostDeleteSureHandler).Methods("POST")
 	acRouter.HandleFunc("/delete", handlers.PostDeleteHandler).Methods("POST")
-	acRouter.HandleFunc("/writeExcel", handlers.PostExcelWriterHandler).Methods("POST")
 	acRouter.HandleFunc("/deleteSure", handlers.PostDeleteSureHandler).Methods("POST")
 	acRouter.HandleFunc("/delete", handlers.PostDeleteHandler).Methods("POST")
 	acRouter.HandleFunc("/editQty", handlers.PostEditQtyHandler).Methods("POST")
