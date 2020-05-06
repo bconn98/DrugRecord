@@ -30,35 +30,34 @@
 </div>
 <div id="content">
     <br>
-    <form id="search" action="/database" method="POST">
+    <form id="search" action="/databaseName" method="POST">
         <label>
-            NDC: <input type="text" name="ndc"/>
+            Search: <input type="text" name="search"/>
         </label>
         <br/><br/>
         <button type="submit">Submit</button>
     </form>
-    <br>
-    <h3>Drug: {{.Name}} &emsp;&ensp; NDC: {{.Ndc}} &emsp;&ensp; Package Size: {{.Size}}</h3>
-    <h4>Form: {{.Form}} &emsp;&ensp; Item Number: {{.ItemNum}} &emsp;&ensp; Initial Date: {{.Date}}</h4>
-    <h2> Current Quantity: {{.Qty}}</h2> <br>
-    <button type="button" onclick="newPopup('/editDrugGetNdc')">Edit Drug </button>  <br>
 </div> <br>
 <div>
     <table id="table">
         <tr id="header">
-            <th>Pharmacist</th>
-            <th>Script#/Invoice#</th>
-            <th>Type</th>
-            <th>Quantity</th>
-            <th>Date</th>
+            <th>Drug</th>
+            <th>NDC</th>
+            <th>Package Size</th>
+            <th>Form</th>
+            <th>Item Number</th>
+            <th>Initial Date</th>
+            <th>Current Quantity</th>
         </tr>
-        {{range .Orders}}
-            <tr id="{{.AcType}}">
-                <td>{{.AcPharmacist}}</td>
-                <td>{{.AcScript}}</td>
-                <td>{{.AcType}}</td>
-                <td>{{.ArQty}}</td>
-                <td>{{.AcMonth}}-{{.AcDay}}-{{.AcYear}}</td>
+        {{range .Drugs}}
+            <tr id="{{.Name}}">
+                <td>{{.Name}}</td>
+                <td>{{.Ndc}}</td>
+                <td>{{.Size}}</td>
+                <td>{{.Form}}</td>
+                <td>{{.ItemNum}}</td>
+                <td>{{.Month}}-{{.Day}}-{{.Year}}</td>
+                <td>{{.Quantity}}</td>
             </tr>
         {{end}}
     </table>

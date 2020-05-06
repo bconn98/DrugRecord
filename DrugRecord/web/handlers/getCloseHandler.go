@@ -18,5 +18,5 @@ Description: Executes the close template
 */
 func GetCloseHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	ExecuteTemplate(acWriter, "closeWindow.html", nil)
-	GetDatabaseHandler(acWriter, acRequest)
+	GetDatabaseNdcHandler(acWriter, acRequest)
 }

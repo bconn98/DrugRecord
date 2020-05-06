@@ -142,6 +142,21 @@ type Drug struct {
 }
 
 /**
+Drug struct contains an id name, ndc code, and quantity
+*/
+type DrugDB struct {
+	Name     string
+	Ndc      string
+	Size     string
+	Form     string
+	ItemNum  string
+	Month    string
+	Day      string
+	Year     string
+	Quantity float64
+}
+
+/**
 Function: makeDrug
 Description: Given: a drug name, ndc, and quantity, creates a drug structure
 @param acName The name of the drug

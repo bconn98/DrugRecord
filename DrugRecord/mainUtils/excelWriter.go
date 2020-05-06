@@ -132,10 +132,13 @@ func getSheet(acNdc string, acName string) {
 	var lcForm, lcItem, lcSize, lcPharm, lcScript, lcType string
 
 	originalDate := time.Date(1900, 1, 1, 0, 0, 0, 0, time.UTC)
-	programDate := time.Date(2019, 5, 3, 0, 0, 0, 0, time.UTC)
 
 	issue(db.QueryRow("SELECT form, item_num, date, size from drugDB where ndc = $1", acNdc).Scan(&lcForm, &lcItem,
 		&lcDate, &lcSize))
+
+	rows, err := db.Query("SELECT pharmacist, qty, date, logdate, script, "+
+		"type from orderDB where ndc = $1 order by date, id", acNdc)
+	issue(err)
 
 	streamWriter, err := file.NewStreamWriter(acName)
 	issue(err)
@@ -145,10 +148,6 @@ func getSheet(acNdc string, acName string) {
 
 	makeHeader(streamWriter, acName, acNdc, lcForm, lcItem, date, lcSize)
 
-	rows, err := db.Query("SELECT pharmacist, qty, date, logdate, script, "+
-		"type from orderDB where ndc = $1 order by date, id", acNdc)
-	issue(err)
-
 	row := 10
 	for rows.Next() {
 		if rows.Err() != nil {
@@ -157,65 +156,39 @@ func getSheet(acNdc string, acName string) {
 		}
 		issue(rows.Scan(&lcPharm, &lrQty, &lcDate, &lcLogDate, &lcScript, &lcType))
 
-		if lcDate.Year() == originalDate.Year() && lcDate.Month() == originalDate.Month() && lcDate.Day() == originalDate.Day() {
+		if lcDate.Equal(originalDate) {
 
-			issue(streamWriter.SetRow("A5", []interface{}{ // Row 5
-				blankCell, // A
-				blankCell, // B
-				blankCell, // C
-				blankCell, // D
-				blankCell, // E
-				excelize.Cell{StyleID: boldStyle, Value: "STARTING:"}, // F
-				excelize.Cell{StyleID: borderStyle, Value: lrQty}}))   // G
-
-			issue(streamWriter.SetRow("A9", []interface{}{ // Row 9
-				excelize.Cell{StyleID: borderStyle, Value: "STARTING INVENTORY"}, // A
-				blankCell, // B
-				blankCell, // C
-				blankCell, // D
-				blankCell, // E
-				blankCell, // F
-				excelize.Cell{StyleID: borderStyle, Value: lrQty}, // G
-				borderCell,   // H
-				borderCell,   // I
-				borderCell})) // J
+			fillInital(streamWriter, lrQty)
 			row-- // Negate row++ below
 
 		} else if strings.ToUpper(lcType) == "PURCHASE" {
 
 			fillPurchase(streamWriter, lcPharm, lcScript, lcDate, lrQty, lcLogDate, row)
 
-		} else if strings.ToUpper(lcType) == "ACTUAL COUNT" {
-
-			// TODO: Believe this is no longer needed but may need to reintroduce in testing
-			if lcDate.Before(programDate) {
-
-				// No formula for projected, hard code the value (lrQty)
-
-			}
-
-			fillCount(streamWriter, acName, lcPharm, lcType, lcDate, lrQty, lcLogDate, row)
-
-		} else if strings.ToUpper(lcType) == "OVER/SHORT" { // TODO: Believe this was removed
-
-			fillCount(streamWriter, acName, lcPharm, lcType, lcDate, lrQty, lcLogDate, row)
-
 		} else if strings.ToUpper(lcType) == "REAL COUNT" {
 
 			// No formula for projected, hard code the value (lrQty)
 
-			fillCount(streamWriter, acName, lcPharm, lcType, lcDate, lrQty, lcLogDate, row)
-
-		} else if strings.ToUpper(lcType) == "AUDIT" {
-
-			// Use row above formula (G (row - 2) + C (row - 1) - F (row - 1)) projected,
-			// hard code the value for row as (lrQty)
-
-			fillCount(streamWriter, acName, lcPharm, lcType, lcDate, lrQty, lcLogDate, row)
+			fillScript(streamWriter, highlightStyle, lcPharm, lcType, lcDate, lrQty, lcLogDate, row)
 
 		} else {
 
-			fillScript(streamWriter, lcPharm, lcScript, lcDate, lrQty, lcLogDate, row)
+			var style int
+
+			if strings.ToUpper(lcType) == "OVER/SHORT" {
+				style = highlightStyle
+			} else if strings.ToUpper(lcType) == "AUDIT" {
+
+				// Use row above formula (G (row - 2) + C (row - 1) - F (row - 1)) projected,
+				// hard code the value for row as (lrQty)
+
+				style = highlightStyle
+
+			} else {
+				style = borderStyle
+			}
+
+			fillScript(streamWriter, style, lcPharm, lcScript, lcDate, lrQty, lcLogDate, row)
 
 		}
 
@@ -225,6 +198,29 @@ func getSheet(acNdc string, acName string) {
 
 	issue(streamWriter.Flush())
 	issue(rows.Close())
+}
+
+func fillInital(acStreamWriter *excelize.StreamWriter, arQty float64) {
+	issue(acStreamWriter.SetRow("A5", []interface{}{ // Row 5
+		blankCell, // A
+		blankCell, // B
+		blankCell, // C
+		blankCell, // D
+		blankCell, // E
+		excelize.Cell{StyleID: boldStyle, Value: "STARTING:"}, // F
+		excelize.Cell{StyleID: borderStyle, Value: arQty}}))   // G
+
+	issue(acStreamWriter.SetRow("A9", []interface{}{ // Row 9
+		excelize.Cell{StyleID: borderStyle, Value: "STARTING INVENTORY"}, // A
+		blankCell, // B
+		blankCell, // C
+		blankCell, // D
+		blankCell, // E
+		blankCell, // F
+		excelize.Cell{StyleID: borderStyle, Value: arQty}, // G
+		borderCell,   // H
+		borderCell,   // I
+		borderCell})) // J
 }
 
 /**
@@ -256,7 +252,8 @@ func fillPurchase(acStreamWriter *excelize.StreamWriter, acPharm string, acScrip
  * Description: Fill a script line using the passed in pieces.
  * Parameters: All the inputs to print on line 'row'.
  */
-func fillScript(acStreamWriter *excelize.StreamWriter, acPharm string, acScript string, acDate time.Time, arQty float64,
+func fillScript(acStreamWriter *excelize.StreamWriter, style int, acPharm string, acScript string, acDate time.Time,
+	arQty float64,
 	acLogDate time.Time, row int) {
 
 	issue(acStreamWriter.SetRow("A"+strconv.Itoa(row), []interface{}{
@@ -266,31 +263,7 @@ func fillScript(acStreamWriter *excelize.StreamWriter, acPharm string, acScript 
 		excelize.Cell{StyleID: borderStyle, Value: acScript}, // D
 		excelize.Cell{StyleID: borderStyle, Value: strconv.Itoa(monthMap[acDate.Month().String()]) + "/" + strconv.Itoa(
 			acDate.Day()) + "/" + strconv.Itoa(acDate.Year())}, // E
-		excelize.Cell{StyleID: borderStyle, Value: arQty}, // F
-		borderCell, // G
-		borderCell, // H
-		excelize.Cell{StyleID: borderStyle, Value: acPharm}, // I
-		excelize.Cell{StyleID: borderStyle, Value: strconv.Itoa(monthMap[acLogDate.Month().String()]) + "/" + strconv.Itoa(
-			acLogDate.Day()) + "/" + strconv.Itoa(acLogDate.Year())}})) // J
-}
-
-/**
- * Method: fillCount
- * Description: Fill a real or actual count line using the passed in pieces.
- * Parameters: All the inputs to print on line 'row'.
- */
-func fillCount(acStreamWriter *excelize.StreamWriter, acName string, acPharm string, acType string, acDate time.Time,
-	arQty float64,
-	acLogDate time.Time, row int) {
-
-	issue(acStreamWriter.SetRow("A"+strconv.Itoa(row), []interface{}{
-		borderCell, // A
-		borderCell, // B
-		borderCell, // C
-		excelize.Cell{StyleID: borderStyle, Value: acType}, // D
-		excelize.Cell{StyleID: borderStyle, Value: strconv.Itoa(monthMap[acDate.Month().String()]) + "/" + strconv.Itoa(
-			acDate.Day()) + "/" + strconv.Itoa(acDate.Year())}, // E
-		excelize.Cell{StyleID: highlightStyle, Value: arQty}, // F
+		excelize.Cell{StyleID: style, Value: arQty}, // F
 		borderCell, // G
 		borderCell, // H
 		excelize.Cell{StyleID: borderStyle, Value: acPharm}, // I
@@ -307,9 +280,7 @@ func fillCount(acStreamWriter *excelize.StreamWriter, acName string, acPharm str
  */
 func fixName(acName string, acSeenMap map[string]int) string {
 
-	if strings.Contains(acName, "/") {
-		acName = strings.ReplaceAll(acName, "/", "-")
-	}
+	acName = strings.ReplaceAll(acName, "/", "-")
 
 	if strings.Contains(acName, "(") && strings.Contains(acName, ")") {
 		acName = string([]rune(acName)[0 : len(acName)-3])

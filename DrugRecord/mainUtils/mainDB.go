@@ -472,6 +472,45 @@ func UpdateOrderNdc(acId string, acNdc string) {
 	LogSql(updateString)
 }
 
+func GetDrugs(acName string) []DrugDB {
+	var ndc, name, size, form, item_num, qty string
+	var date time.Time
+	var lasDrugs []DrugDB
+	acName = "%" + acName + "%"
+
+	rows, err := db.Query("SELECT ndc, name, size, form, item_num, qty, date from drugdb where name like $1", acName)
+	issue(err)
+
+	for rows.Next() {
+		if rows.Err() != nil {
+			issue(rows.Err())
+			break
+		}
+
+		issue(rows.Scan(&ndc, &name, &size, &form, &item_num, &qty, &date))
+
+		lrQty, err := strconv.ParseFloat(qty, 10)
+		issue(err)
+		month, day, year := ParseDateStrings(date)
+
+		lasDrugs = append(lasDrugs,
+			DrugDB{
+				Name:     name,
+				Ndc:      ndc,
+				Size:     size,
+				Form:     form,
+				ItemNum:  item_num,
+				Quantity: lrQty,
+				Month:    month,
+				Day:      day,
+				Year:     year,
+			})
+	}
+
+	return lasDrugs
+
+}
+
 func GetDrug(acNdc string) Drug {
 	var name, size, form, item_num, qty string
 	issue(db.QueryRow("SELECT name, size, form, item_num, qty from drugdb where ndc = $1", acNdc).Scan(&name, &size,

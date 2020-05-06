@@ -16,10 +16,10 @@ import (
 var gbSignedIn = true // This should be false when there is a sign in feature
 
 /**
-Function: GetDatabaseHandler
+Function: GetDatabaseNdcHandler
 Description: Executes the database template with the output data
 */
-func GetDatabaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+func GetDatabaseNdcHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
 		mainUtils.LogError(err.Error())
@@ -28,7 +28,7 @@ func GetDatabaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 		utils.ExecuteTemplate(acWriter, "home.html", "You are not signed in")
 		return
 	}
-	utils.ExecuteTemplate(acWriter, "database.html", nil)
+	utils.ExecuteTemplate(acWriter, "databaseDrug.html", nil)
 }
 
 func SetSignedIn() {
