@@ -9,6 +9,11 @@
 <img id="logo" src="/web/assets/logo.png" alt=""/>
 <h1> Medicine Shoppe C2 Form </h1>
 <br>
+<style>
+    tr[data-ref] {
+        cursor: pointer;
+    }
+</style>
 <script>
     // Popup window code
     function newPopup(url) {
@@ -50,7 +55,7 @@
             <th>Current Quantity</th>
         </tr>
         {{range .Drugs}}
-            <tr id="{{.Name}}">
+            <tr id="{{.Ndc}}" data-ref="{{.Ndc}}">
                 <td>{{.Name}}</td>
                 <td>{{.Ndc}}</td>
                 <td>{{.Size}}</td>
@@ -62,5 +67,16 @@
         {{end}}
     </table>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const rows = document.querySelectorAll("tr[data-ref]");
+
+        rows.forEach(row => {
+            row.addEventListener("click", () => {
+               window.open("/databaseDrug/" + row.dataset.ref, '_self', '')
+            });
+        });
+    });
+</script>
 </body>
 </html>

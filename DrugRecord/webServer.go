@@ -58,6 +58,9 @@ func main() {
 	mainUtils.AcRouter.HandleFunc("/databaseDrug", handlers.GetDatabaseNdcHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/databaseDrug", handlers.PostDatabaseNdcHandler).Methods("POST")
 
+	mainUtils.AcRouter.HandleFunc("/databaseDrug/{ndc:[0-9]{5}-[0-9]{4}-[0-9]{2}}",
+		handlers.GetDatabaseNdcClickHandler).Methods("GET")
+
 	mainUtils.AcRouter.HandleFunc("/databaseName", handlers.GetDatabaseNameHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/databaseName", handlers.PostDatabaseNameHandler).Methods("POST")
 

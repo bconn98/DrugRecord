@@ -71,7 +71,7 @@ func FindNDC(acNdc string) (string, string, string, string, string, time.Time, f
 /**
  * Function: GetOrder
  * Description: Gets the fields of an order that weren't specified by user
- * @param order The order to get from the
+ * @param order The order id to get
  */
 func GetOrder(anId int64) []Order {
 
