@@ -7,7 +7,9 @@ Description: Gets new audit page
 package handlers
 
 import (
+	"github.com/gorilla/mux"
 	"net/http"
+	"strconv"
 
 	"../../mainUtils"
 	"../utils"
@@ -22,5 +24,16 @@ func GetDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	if err != nil {
 		mainUtils.LogError(err.Error())
 	}
-	utils.ExecuteTemplate(acWriter, "delete.html", nil)
+
+	vars := mux.Vars(acRequest)
+
+	lnId, err := strconv.ParseInt(vars["id"], 10, 64)
+
+	if err != nil {
+		mainUtils.LogError(err.Error())
+	}
+
+	lasOrders := mainUtils.GetOrder(lnId)
+
+	utils.ExecuteTemplate(acWriter, "deleteSure.html", lasOrders[0])
 }

@@ -9,6 +9,11 @@
 <img id="logo" src="/web/assets/logo.png" alt=""/>
 <h1> Medicine Shoppe C2 Form </h1>
 <br>
+<style>
+    tr[data-ref] {
+        cursor: pointer;
+    }
+</style>
 <script>
     // Popup window code
     function newPopup(url) {
@@ -24,8 +29,6 @@
     <button type="button" onclick="newPopup('/prescription')">New Prescription</button>
     <button type="button" onclick="newPopup('/audit')">New Audit</button>
     <button type="button" onclick="newPopup('/purchase')">New Purchase</button>
-    <button type="button" onclick="newPopup('/edit')">Edit Order</button>
-    <button type="button" onclick="newPopup('/delete')">Delete Order</button>
     <button type="button" onclick="newPopup('/writeExcel')">Write to Excel</button>
 </div>
 <div id="content">
@@ -53,7 +56,7 @@
             <th>Date</th>
         </tr>
         {{range .Orders}}
-            <tr id="{{.AcType}}">
+            <tr id="{{.AnId}}" data-ref="{{.AnId}}">
                 <td>{{.AcPharmacist}}</td>
                 <td>{{.AcScript}}</td>
                 <td>{{.AcType}}</td>
@@ -63,5 +66,16 @@
         {{end}}
     </table>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const rows = document.querySelectorAll("tr[data-ref]");
+
+        rows.forEach(row => {
+            row.addEventListener("click", () => {
+                newPopup("/edit/" + row.dataset.ref)
+            });
+        });
+    });
+</script>
 </body>
 </html>

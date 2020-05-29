@@ -73,34 +73,20 @@ func FindNDC(acNdc string) (string, string, string, string, string, time.Time, f
  * Description: Gets the fields of an order that weren't specified by user
  * @param order The order to get from the
  */
-func GetOrder(order Order) []Order {
+func GetOrder(anId int64) []Order {
 
 	var err error
-	var lnId int64
+	var lcNdc, lcPharm, lcType, lcScript string
+	var lcDate time.Time
 	var lnQty float64
 	var rows *sql.Rows
 	var lasOrders []Order
 	var selectString string
 
-	if strings.ToUpper(order.AcType) == "AUDIT" {
-		selectString = fmt.Sprintf("%s%s%s%s%s%d%s%s%s%d%s%s%s", "SELECT qty, id FROM orderdb WHERE ndc = '",
-			order.AcNdc, "' AND pharmacist = '", order.AcPharmacist, "' AND date = make_date(",
-			order.AcYear, ", ", order.AcMonth, ", ", order.AcDay, ") AND type = '", order.AcType, "';")
+	rows, err = db.Query("SELECT ndc, pharmacist, qty, date, type, script FROM orderdb WHERE id = $1", anId)
 
-		rows, err = db.Query("SELECT qty, id FROM orderdb WHERE ndc = $1 AND pharmacist = $2 AND "+
-			"date = make_date($3, $4, $5) AND type = $6;", order.AcNdc, order.AcPharmacist, order.AcYear,
-			order.AcMonth, order.AcDay, order.AcType)
-
-	} else {
-		selectString = fmt.Sprintf("%s%s%s%s%s%d%s%s%s%d%s%s%s%s%s", "SELECT qty, id FROM orderdb WHERE ndc = '",
-			order.AcNdc, "' AND pharmacist = '", order.AcPharmacist, "' AND date = make_date(", order.AcYear, ", ",
-			order.AcMonth, ", ", order.AcDay, ") AND type = '", order.AcType, " AND script = '", order.AcScript, "';")
-
-		rows, err = db.Query("SELECT qty, id FROM orderdb WHERE ndc = $1 AND pharmacist = $2 AND date = make_date($3, "+
-			"$4, "+
-			"$5) AND type = $6 AND script = $7;", order.AcNdc, order.AcPharmacist, order.AcYear, order.AcMonth, order.AcDay,
-			order.AcType, order.AcScript)
-	}
+	selectString = fmt.Sprintf("%s%d%s", "SELECT ndc, pharmacist, qty, date, "+
+		"type FROM orderdb WHERE id = ", anId, ";")
 
 	LogSql(selectString)
 	issue(err)
@@ -111,9 +97,9 @@ func GetOrder(order Order) []Order {
 			break
 		}
 
-		issue(rows.Scan(&lnQty, &lnId))
-		lasOrders = append(lasOrders, MakeOrder(order.AcNdc, order.AcPharmacist, order.AcScript, order.AcType, lnQty,
-			order.ArActualQty, strconv.Itoa(order.AcYear), order.AcMonth, strconv.Itoa(order.AcDay), lnId))
+		issue(rows.Scan(&lcNdc, &lcPharm, &lnQty, &lcDate, &lcType, &lcScript))
+		lasOrders = append(lasOrders, MakeOrder(lcNdc, lcPharm, lcScript, lcType, lnQty,
+			0, strconv.Itoa(lcDate.Year()), lcDate.Month().String(), strconv.Itoa(lcDate.Day()), anId))
 	}
 
 	defer func() {

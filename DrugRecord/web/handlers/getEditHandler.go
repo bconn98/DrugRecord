@@ -7,7 +7,9 @@ Description: Gets new audit page
 package handlers
 
 import (
+	"github.com/gorilla/mux"
 	"net/http"
+	"strconv"
 
 	"../../mainUtils"
 	"../utils"
@@ -19,8 +21,20 @@ Description: Executes the edits template
 */
 func GetEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
+
 	if err != nil {
 		mainUtils.LogError(err.Error())
 	}
-	utils.ExecuteTemplate(acWriter, "edit.html", nil)
+
+	vars := mux.Vars(acRequest)
+
+	lnId, err := strconv.ParseInt(vars["id"], 10, 64)
+
+	if err != nil {
+		mainUtils.LogError(err.Error())
+	}
+
+	lasOrders := mainUtils.GetOrder(lnId)
+
+	utils.ExecuteTemplate(acWriter, "editQty.html", lasOrders[0])
 }
