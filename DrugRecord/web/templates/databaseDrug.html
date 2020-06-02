@@ -17,8 +17,16 @@
 <script>
     // Popup window code
     function newPopup(url) {
-        window.open(
-            url, 'popUpWindow', 'height=450,width=400,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+        var win = window.open(
+            url, 'popUpWindow', 'height=450,width=400,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,' +
+            'menubar=no,location=no,directories=no,status=yes');
+        var win_timer = setInterval(function () {
+            if(win.closed) {
+                window.location.reload();
+                clearInterval(win_timer);
+            }
+
+        }, 100)
     }
 </script>
 <!-- <div id = "navigation">
@@ -67,8 +75,6 @@
     </table>
 </div>
 <script>
-    setTimeout("location.reload();", 10000)
-
     document.addEventListener("DOMContentLoaded", () => {
         const rows = document.querySelectorAll("tr[data-ref]");
 
