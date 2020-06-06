@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"../../mainUtils"
+	"github.com/bconn98/DrugRecord/DrugRecord/mainUtils"
 )
 
 /**

@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"../../mainUtils"
-	"../utils"
+	"github.com/bconn98/DrugRecord/DrugRecord/mainUtils"
+	"github.com/bconn98/DrugRecord/DrugRecord/web/utils"
 )
 
 /**
