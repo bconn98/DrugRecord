@@ -1,10 +1,11 @@
 package mainUtils
 
 import (
-	"github.com/360EntSecGroup-Skylar/excelize"
 	"strconv"
 	"strings"
 	"time"
+
+	excelize "github.com/360EntSecGroup-Skylar/excelize/v2"
 )
 
 var monthMap = make(map[string]int)
