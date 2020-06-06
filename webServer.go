@@ -12,8 +12,8 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/bconn98/DrugRecord/DrugRecord/mainUtils"
-	"github.com/bconn98/DrugRecord/DrugRecord/web/handlers"
+	"github.com/bconn98/DrugRecord/mainUtils"
+	"github.com/bconn98/DrugRecord/web/handlers"
 )
 
 /**

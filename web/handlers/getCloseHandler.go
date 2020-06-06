@@ -9,7 +9,7 @@ package handlers
 import (
 	"net/http"
 
-	. "github.com/bconn98/DrugRecord/DrugRecord/web/utils"
+	. "github.com/bconn98/DrugRecord/web/utils"
 )
 
 /**

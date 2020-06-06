@@ -10,7 +10,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/bconn98/DrugRecord/DrugRecord/mainUtils"
+	"github.com/bconn98/DrugRecord/mainUtils"
 	"github.com/sqweek/dialog"
 )
 
