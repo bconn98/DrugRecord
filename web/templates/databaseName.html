@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medicine Shoppe C2 Form</title>
+    <link rel="stylesheet" type="text/css" href="/web/assets/databaseStyle.css"/>
+</head>
+<body>
+<img id="logo" src="/web/assets/logo.png" alt=""/>
+<h1> Medicine Shoppe C2 Form </h1>
+<br>
+<style>
+    tr[data-ref] {
+        cursor: pointer;
+    }
+</style>
+<script>
+    // Popup window code
+    function newPopup(url) {
+        var win = window.open(
+            url, 'popUpWindow', 'height=450,width=400,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,' +
+            'menubar=no,location=no,directories=no,status=yes');
+        var win_timer = setInterval(function () {
+            if(win.closed) {
+                window.location.reload();
+                clearInterval(win_timer);
+            }
+
+        }, 100)
+    }
+</script>
+<!-- <div id = "navigation">
+    <div id = "signout"> <a href= "/SignOut"> Sign out</a> </div>
+</div> Put this back in with the login feature -->
+<div id="buttons">
+    <br>
+    <button type="button" onclick="newPopup('/prescription')">New Prescription</button>
+    <button type="button" onclick="newPopup('/audit')">New Audit</button>
+    <button type="button" onclick="newPopup('/purchase')">New Purchase</button>
+    <button type="button" onclick="newPopup('/edit')">Edit Order</button>
+    <button type="button" onclick="newPopup('/delete')">Delete Order</button>
+    <button type="button" onclick="newPopup('/writeExcel')">Write to Excel</button>
+</div>
+<div id="content">
+    <br>
+    <form id="search" action="/databaseName" method="POST">
+        <label>
+            Search: <input type="text" name="search"/>
+        </label>
+        <br/><br/>
+        <button type="submit">Submit</button>
+    </form>
+</div> <br>
+<div>
+    <table id="table">
+        <tr id="header">
+            <th>Drug</th>
+            <th>NDC</th>
+            <th>Package Size</th>
+            <th>Form</th>
+            <th>Item Number</th>
+            <th>Initial Date</th>
+            <th>Current Quantity</th>
+        </tr>
+        {{range .Drugs}}
+            <tr id="{{.Ndc}}" data-ref="{{.Ndc}}">
+                <td>{{.Name}}</td>
+                <td>{{.Ndc}}</td>
+                <td>{{.Size}}</td>
+                <td>{{.Form}}</td>
+                <td>{{.ItemNum}}</td>
+                <td>{{.Month}}-{{.Day}}-{{.Year}}</td>
+                <td>{{.Quantity}}</td>
+            </tr>
+        {{end}}
+    </table>
+</div>
+<script>
+    setTimeout("location.reload();", 10000)
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const rows = document.querySelectorAll("tr[data-ref]");
+
+        rows.forEach(row => {
+            row.addEventListener("click", () => {
+                window.open("/databaseDrug/" + row.dataset.ref, '_self', '')
+            });
+        });
+    });
+</script>
+</body>
+</html>

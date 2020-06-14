@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Are you sure you want to delete?</title>
+</head>
+<body>
+<form action="/deleteSure" method="POST">
+    <label>
+        <input type="hidden"  value = {{.AnId}} name="id"><br><br>
+    </label>
+    <label>
+        Qty: {{.ArQty}} <br><br>
+    </label>
+    <label>
+        Script/Invoice: {{.AcScript}} <br><br>
+    </label>
+    <label>
+        Pharmacist: {{.AcPharmacist}}<br><br>
+    </label>
+    <label>
+        Date: {{.AcMonth}}-{{.AcDay}}-{{.AcYear}}<br><br>
+    </label>
+    <label>
+        Type: {{.AcType}}<br><br>
+    </label>
+    <label>
+        NDC: {{.AcNdc}}<br><br>
+    </label>
+    <button type="submit">Delete</button>
+    <button type="button" onclick="window.open('', '_self', ''); window.close();">Cancel</button>
+</form>
+</body>
+</html>
