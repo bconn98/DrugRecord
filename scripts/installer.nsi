@@ -118,22 +118,20 @@ Function OnRestoreDirBrowse
     ExecWait '$INSTDIR\scripts\restore.cmd $0'
 FunctionEnd
 
-Section "PostgreSQL" SEC_POSTGRESQL
-  IfFileExists $PROGRAMFILES64\PostgreSQL endPostgreSQL beginPostgreSQL
-  Goto endPostgreSQL
-  beginPostgreSQL:
-    ExecWait "$INSTDIR\Prerequisites\postgresql-12.3-1-windows-x64.exe --mode unattended  --servicepassword Zoo123"
-  endPostgreSQL:
-SectionEnd
-
-
 ; This is save database
 Section Uninstall
    ExecWait '$INSTDIR\scripts\backup.cmd "$INSTDIR\backups"'
 SectionEnd
 
 Section
-    ; Create uninstaller
-    WriteUninstaller "$INSTDIR\backup.exe"
+  ; Install Prereq
+  IfFileExists $PROGRAMFILES64\PostgreSQL endPostgreSQL beginPostgreSQL
+  Goto endPostgreSQL
+  beginPostgreSQL:
+    ExecWait "$INSTDIR\Prerequisites\postgresql-12.3-1-windows-x64.exe --mode unattended  --servicepassword Zoo123"
+  endPostgreSQL:
+
+  ; Create uninstaller
+  WriteUninstaller "$INSTDIR\backup.exe"
 SectionEnd
 
