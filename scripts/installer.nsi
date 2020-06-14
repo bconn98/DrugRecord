@@ -31,7 +31,6 @@ Var Dialog
 Var TextPgDir
 
 ;--------------------------------
-Page Components
 Page Directory
 Page Instfiles
 
@@ -44,58 +43,9 @@ Section !Required
         File /r "A:\Documents\JetBrains\GolandProjects\DrugRecord\DrugRecord\*"
 SectionEnd
 
-Section "Logo" SEC_LOGO
-  Call LaunchLogo
-SectionEnd
+Page custom LogoPage
 
-Section "PostgreSQL" SEC_POSTGRESQL
-  IfFileExists $PROGRAMFILES64\PostgreSQL endPostgreSQL beginPostgreSQL
-  Goto endPostgreSQL
-  beginPostgreSQL:
-    ExecWait "$INSTDIR\Prerequisites\postgresql-12.3-1-windows-x64.exe --mode unattended  --servicepassword Zoo123"
-  endPostgreSQL:
-SectionEnd
-
-Section "Restore From Backup" SEC_RESTORE
-  Call Restore
-SectionEnd
-
-Function Restore
-    nsDialogs::Create 1018
-    Pop $Dialog
-
-    ${If} $Dialog == error
-        Abort
-    ${EndIf}
-
-    ${NSD_CreateGroupBox} 5% 86u 90% 34u "Select your backup file"
-    Pop $0
-
-        ${NSD_CreateDirRequest} 15% 100u 49% 12u "$INSTDIR\backups\backup.sql"
-        Pop $TextPgDir
-
-        ${NSD_CreateBrowseButton} 65% 100u 20% 12u "Browse..."
-        Pop $0
-
-        ${NSD_OnClick} $0 OnRestoreDirBrowse
-
-    GetDlgItem $0 $HWNDPARENT 1
-    SendMessage $0 ${WM_SETTEXT} 0 `STR:$(^NextBtn)`
-    EnableWindow $0 1
-    nsDialogs::Show
-FunctionEnd
-
-Function OnRestoreDirBrowse
-    ${NSD_GetText} $TextPgDir $0
-    nsDialogs::SelectFileDialog "Select Backup" "$0"
-    Pop $0
-    ${If} $0 != error
-        ${NSD_SetText} $TextPgDir "$0"
-    ${EndIf}
-    ExecWait '$INSTDIR\scripts\restore.cmd $0'
-FunctionEnd
-
-Function LaunchLogo
+Function LogoPage
     nsDialogs::Create 1018
     Pop $Dialog
 
@@ -129,6 +79,53 @@ Function OnLogoDirBrowse
     ${EndIf}
     CopyFiles $0 $INSTDIR\web\assets\logo.png
 FunctionEnd
+
+Page custom RestorePage
+
+Function RestorePage
+    nsDialogs::Create 1018
+    Pop $Dialog
+
+    ${If} $Dialog == error
+        Abort
+    ${EndIf}
+
+    ${NSD_CreateGroupBox} 5% 86u 90% 34u "Select your backup file or next to continue"
+    Pop $0
+
+        ${NSD_CreateDirRequest} 15% 100u 49% 12u "$INSTDIR\backups\"
+        Pop $TextPgDir
+
+        ${NSD_CreateBrowseButton} 65% 100u 20% 12u "Browse..."
+        Pop $0
+
+        ${NSD_OnClick} $0 OnRestoreDirBrowse
+
+    GetDlgItem $0 $HWNDPARENT 1
+    SendMessage $0 ${WM_SETTEXT} 0 `STR:$(^CloseBtn)`
+
+    EnableWindow $0 1
+    nsDialogs::Show
+FunctionEnd
+
+Function OnRestoreDirBrowse
+    ${NSD_GetText} $TextPgDir $0
+    nsDialogs::SelectFileDialog "Select Backup" "$0"
+    Pop $0
+    ${If} $0 != error
+        ${NSD_SetText} $TextPgDir "$0"
+    ${EndIf}
+    ExecWait '$INSTDIR\scripts\restore.cmd $0'
+FunctionEnd
+
+Section "PostgreSQL" SEC_POSTGRESQL
+  IfFileExists $PROGRAMFILES64\PostgreSQL endPostgreSQL beginPostgreSQL
+  Goto endPostgreSQL
+  beginPostgreSQL:
+    ExecWait "$INSTDIR\Prerequisites\postgresql-12.3-1-windows-x64.exe --mode unattended  --servicepassword Zoo123"
+  endPostgreSQL:
+SectionEnd
+
 
 ; This is save database
 Section Uninstall
