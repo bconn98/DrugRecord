@@ -6,16 +6,16 @@
 ; prompts the user asking them where to install, and drops a copy of "MyProg.exe"
 ; there.
 
-; Save DB option which finds the database of drugrecord, compresses it to
-; a desired location.
-
 ;--------------------------------
+
+!include "nsDialogs.nsh"
+!include WinMessages.nsh
 
 ; The name of the installer
 Name "C-ll Installer"
 
 ; The file to write
-OutFile "c-ll.exe"
+OutFile "cll_installer.exe"
 
 !include "Sections.nsh"
 !include nsDialogs.nsh
@@ -26,55 +26,117 @@ InstallDir $DESKTOP\C-ll
 ; The text to prompt the user to enter a directory
 DirText "This will install C-ll on your computer. Choose a directory"
 
-;--------------------------------
-Page Directory
-Page Components
-Page Instfiles
-Page Custom Logo
-Page Custom CloseWindow
 
-Section "Program Required Files (Required)"
+Var Dialog
+Var TextPgDir
+
+;--------------------------------
+Page Components
+Page Directory
+Page Instfiles
+
+Section !Required
   SectionIn RO
-    # common files here
+        ; Set install path
+        SetOutPath $INSTDIR
+
+        ; Put files there
+        File /r "A:\Documents\JetBrains\GolandProjects\DrugRecord\DrugRecord\*"
+SectionEnd
+
+Section "Logo" SEC_LOGO
+  Call LaunchLogo
 SectionEnd
 
 Section "PostgreSQL" SEC_POSTGRESQL
-  SectionIn 1
-      IfFileExists $PROGRAMFILES64\PostgreSQL endPostgreSQL beginPostgreSQL
-      Goto endPostgreSQL
-      beginPostgreSQL:
-        ExecWait "$INSTDIR\\Prerequisites\postgresql-12.3-1-windows-x64.exe --mode unattended  --servicepassword Zoo123"
-      endPostgreSQL:
+  IfFileExists $PROGRAMFILES64\PostgreSQL endPostgreSQL beginPostgreSQL
+  Goto endPostgreSQL
+  beginPostgreSQL:
+    ExecWait "$INSTDIR\Prerequisites\postgresql-12.3-1-windows-x64.exe --mode unattended  --servicepassword Zoo123"
+  endPostgreSQL:
 SectionEnd
 
-Function .onSelChange
-  !insertmacro StartRadioButtons $1
-   !insertmacro RadioButton ${SEC_POSTGRESQL}
-  !insertmacro EndRadioButtons
+Section "Restore From Backup" SEC_RESTORE
+  Call Restore
+SectionEnd
+
+Function Restore
+    nsDialogs::Create 1018
+    Pop $Dialog
+
+    ${If} $Dialog == error
+        Abort
+    ${EndIf}
+
+    ${NSD_CreateGroupBox} 5% 86u 90% 34u "Select your backup file"
+    Pop $0
+
+        ${NSD_CreateDirRequest} 15% 100u 49% 12u "$INSTDIR\backups\backup.sql"
+        Pop $TextPgDir
+
+        ${NSD_CreateBrowseButton} 65% 100u 20% 12u "Browse..."
+        Pop $0
+
+        ${NSD_OnClick} $0 OnRestoreDirBrowse
+
+    GetDlgItem $0 $HWNDPARENT 1
+    SendMessage $0 ${WM_SETTEXT} 0 `STR:$(^NextBtn)`
+    EnableWindow $0 1
+    nsDialogs::Show
 FunctionEnd
+
+Function OnRestoreDirBrowse
+    ${NSD_GetText} $TextPgDir $0
+    nsDialogs::SelectFileDialog "Select Backup" "$0"
+    Pop $0
+    ${If} $0 != error
+        ${NSD_SetText} $TextPgDir "$0"
+    ${EndIf}
+    ExecWait '$INSTDIR\scripts\restore.cmd $0'
+FunctionEnd
+
+Function LaunchLogo
+    nsDialogs::Create 1018
+    Pop $Dialog
+
+    ${If} $Dialog == error
+        Abort
+    ${EndIf}
+
+    ${NSD_CreateGroupBox} 5% 86u 90% 34u "Select your logo, or next to continue"
+    Pop $0
+
+        ${NSD_CreateDirRequest} 15% 100u 49% 12u "$INSTDIR\web\assets\logo.png"
+        Pop $TextPgDir
+
+        ${NSD_CreateBrowseButton} 65% 100u 20% 12u "Browse..."
+        Pop $0
+
+        ${NSD_OnClick} $0 OnLogoDirBrowse
+
+    GetDlgItem $0 $HWNDPARENT 1
+    SendMessage $0 ${WM_SETTEXT} 0 `STR:$(^NextBtn)`
+    EnableWindow $0 1
+    nsDialogs::Show
+FunctionEnd
+
+Function OnLogoDirBrowse
+    ${NSD_GetText} $TextPgDir $0
+    nsDialogs::SelectFileDialog "Select Logo" "$0"
+    Pop $0
+    ${If} $0 != error
+        ${NSD_SetText} $TextPgDir "$0"
+    ${EndIf}
+    CopyFiles $0 $INSTDIR\web\assets\logo.png
+FunctionEnd
+
+; This is save database
+Section Uninstall
+   ExecWait '$INSTDIR\scripts\backup.cmd "$INSTDIR\backups"'
+SectionEnd
 
 Section
-; Set output path to the installation directory.
-SetOutPath $INSTDIR
-
-; Put file there
-File /r "A:\Documents\JetBrains\GolandProjects\DrugRecord\DrugRecord\*"
-
-SectionEnd ; end the section
-
-Function Logo
-  nsDialogs::Create 1018
-  ${NSD_CreateLabel} 0 0 100% 20u "Press next to select a new logo. If not desired, close file explorer window."
-  nsDialogs::Show
-  nsDialogs::SelectFileDialog open "$DOCUMENTS\" ".png files|*.png"
-  Delete $INSTDIR\web\logo.png
-  Pop $0
-  CopyFiles $0 $INSTDIR\web\assets\logo.png
-FunctionEnd
-
-Function CloseWindow
-  nsDialogs::Create 1018
-  ${NSD_CreateLabel} 0 0 100% 20u "Installation complete"
-  nsDialogs::Show
-FunctionEnd
+    ; Create uninstaller
+    WriteUninstaller "$INSTDIR\backup.exe"
+SectionEnd
 
