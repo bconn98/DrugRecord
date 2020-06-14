@@ -9,6 +9,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 
@@ -24,6 +25,19 @@ func main() {
 	var err error
 
 	mainUtils.Initial = true
+	argsWithProg := os.Args
+
+	if len(argsWithProg) > 1 {
+		switch argsWithProg[1] {
+		case "true":
+			mainUtils.GbLogAll = true
+		default:
+			mainUtils.GbLogAll = false
+
+		}
+	} else {
+		mainUtils.GbLogAll = false
+	}
 
 	// If the file doesn't exist, create it, or append to the file
 	mainUtils.LogSql("Starting Program")

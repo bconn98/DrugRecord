@@ -1,8 +1,6 @@
 package mainUtils
 
 import (
-	"fmt"
-	"io"
 	"log"
 	"os"
 	"strings"
@@ -11,16 +9,20 @@ import (
 
 var GpcFile *os.File
 var Initial bool
+var GbLogAll bool
 
 func LogSql(acEvent string) {
-	updateLogStructure()
-	_, err := GpcFile.WriteString(acEvent + "\n")
-	if err != nil {
-		log.Fatal(err)
+	if GbLogAll {
+		updateLogStructure()
+		_, err := GpcFile.WriteString(acEvent + "\n")
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
 func LogError(acError string) {
+	updateLogStructure()
 	if _, err := GpcFile.WriteString("ERROR: " + acError + "\n"); err != nil {
 		log.Fatal(err)
 	}
@@ -59,44 +61,4 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
-}
-
-func GetLastNdc() string {
-	var lcNdc string
-
-	lastLine := getLastLineWithSeek()
-
-	runes := []rune(lastLine)
-
-	// ... Convert back into a string from rune slice.
-	lcNdc = string(runes[0:14])
-	fmt.Println(lcNdc)
-
-	return lcNdc
-}
-
-func getLastLineWithSeek() string {
-	line := ""
-	var cursor int64 = 0
-	stat, _ := GpcFile.Stat()
-	filesize := stat.Size()
-	for {
-		cursor -= 1
-		GpcFile.Seek(cursor, io.SeekEnd)
-
-		char := make([]byte, 1)
-		GpcFile.Read(char)
-
-		if cursor != -1 && (char[0] == 10 || char[0] == 13) { // stop if we find a line
-			break
-		}
-
-		line = fmt.Sprintf("%s%s", string(char), line) // there is more efficient way
-
-		if cursor == -filesize { // stop if we are at the begining
-			break
-		}
-	}
-
-	return line
 }
