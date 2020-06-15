@@ -15,7 +15,6 @@ copy * ..\..\DrugRecord\web\templates
 del A:\Documents\JetBrains\GolandProjects\DrugRecord\DrugRecord\web\assets\homeStyle.css
 del A:\Documents\JetBrains\GolandProjects\DrugRecord\DrugRecord\web\assets\loginStyle.css
 del A:\Documents\JetBrains\GolandProjects\DrugRecord\DrugRecord\web\assets\registerStyle.css
-del A:\Documents\JetBrains\GolandProjects\DrugRecord\DrugRecord\web\templates\writeExcel.html
 cd A:\Documents\JetBrains\GolandProjects\DrugRecord\
 copy .\DrugRecord.exe DrugRecord\cll.exe
 copy .\scripts\start.cmd DrugRecord\scripts\start.cmd
