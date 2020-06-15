@@ -464,7 +464,8 @@ func GetDrugs(acName string) []DrugDB {
 	var lasDrugs []DrugDB
 	acName = "%" + acName + "%"
 
-	rows, err := db.Query("SELECT ndc, name, size, form, item_num, qty, date from drugdb where name like $1", acName)
+	rows, err := db.Query("SELECT ndc, name, size, form, item_num, qty, "+
+		"date from drugdb where lower(name) like lower($1)", acName)
 	issue(err)
 
 	for rows.Next() {
