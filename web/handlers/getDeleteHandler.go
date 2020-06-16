@@ -1,13 +1,10 @@
-/**
-File: getDeleteHandler
-Description: Gets new audit page
-@author Bryan Conn
-@date 6/2/19
-*/
 package handlers
 
 import (
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 
 	"github.com/bconn98/DrugRecord/mainUtils"
 	"github.com/bconn98/DrugRecord/web/utils"
@@ -22,5 +19,16 @@ func GetDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	if err != nil {
 		mainUtils.LogError(err.Error())
 	}
-	utils.ExecuteTemplate(acWriter, "delete.html", nil)
+
+	vars := mux.Vars(acRequest)
+
+	lnId, err := strconv.ParseInt(vars["id"], 10, 64)
+
+	if err != nil {
+		mainUtils.LogError(err.Error())
+	}
+
+	lasOrders := mainUtils.GetOrder(lnId)
+
+	utils.ExecuteTemplate(acWriter, "delete.html", lasOrders[0])
 }

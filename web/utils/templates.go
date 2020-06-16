@@ -15,7 +15,7 @@ var mcTemplates = Must(ParseFiles("web/templates/audit.html",
 	"web/templates/closeWindow.html", "web/templates/databaseDrug.html",
 	"web/templates/newDrug.html", "web/templates/prescription.html",
 	"web/templates/purchase.html", "web/templates/editQty.html",
-	"web/templates/deleteSure.html", "web/templates/writeExcel.html",
+	"web/templates/delete.html", "web/templates/writeExcel.html",
 	"web/templates/editDrug.html", "web/templates/editDrugGetNdc.html",
 	"web/templates/databaseName.html"))
 

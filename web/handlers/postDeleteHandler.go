@@ -1,5 +1,5 @@
 /**
-File: postDeleteSureHandler
+File: postDeleteHandler
 Description: Sends the audit information
 @author Bryan Conn
 @date 6/2/2019
@@ -14,10 +14,10 @@ import (
 )
 
 /**
-Function: PostDeleteSureHandler
+Function: PostDeleteHandler
 Description: Sends the delete information to find the order to delete
 */
-func PostDeleteSureHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+func PostDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
 		mainUtils.LogError(err.Error())

@@ -53,7 +53,7 @@ func main() {
 	mainUtils.AcRouter.HandleFunc("/SignOut", handlers.GetSignOutHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/closeWindow", handlers.GetCloseHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/writeExcel", handlers.GetExcelWriterHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/deleteSure", handlers.PostDeleteSureHandler).Methods("POST")
+	mainUtils.AcRouter.HandleFunc("/delete", handlers.PostDeleteHandler).Methods("POST")
 
 	mainUtils.AcRouter.HandleFunc("/edit/{id:[0-9]+}", handlers.GetEditHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/editQty", handlers.PostEditQtyHandler).Methods("POST")
@@ -64,7 +64,7 @@ func main() {
 	mainUtils.AcRouter.HandleFunc("/editDrugGetNdc", handlers.GetDrugEditGetNdcHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/editDrugGetNdc", handlers.PostDrugEditGetNdcHandler).Methods("POST")
 
-	mainUtils.AcRouter.HandleFunc("/deleteSure/{id:[0-9]+}", handlers.GetDeleteHandler).Methods("GET")
+	mainUtils.AcRouter.HandleFunc("/delete/{id:[0-9]+}", handlers.GetDeleteHandler).Methods("GET")
 
 	mainUtils.AcRouter.HandleFunc("/newDrug", handlers.GetNewDrugHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/newDrug", handlers.PostNewDrugHandler).Methods("POST")
