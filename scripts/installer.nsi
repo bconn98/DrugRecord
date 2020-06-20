@@ -128,7 +128,7 @@ Section
   IfFileExists $PROGRAMFILES64\PostgreSQL endPostgreSQL beginPostgreSQL
   Goto endPostgreSQL
   beginPostgreSQL:
-    ExecWait "$INSTDIR\Prerequisites\postgresql-12.3-1-windows-x64.exe --mode unattended  --servicepassword Zoo123"
+    ExecWait "$INSTDIR\Prerequisites\postgresql-12.3-1-windows-x64.exe --mode unattended  --servicepassword Zoo123 --superpassword Zoo123"
     ExecWait "$PROGRAMFILES64\PostgreSQL\12\pg_env.bat"
   endPostgreSQL:
 
