@@ -130,6 +130,8 @@ Section
   beginPostgreSQL:
     ExecWait "$INSTDIR\Prerequisites\postgresql-12.3-1-windows-x64.exe --mode unattended  --servicepassword Zoo123 --superpassword Zoo123"
     ExecWait "$PROGRAMFILES64\PostgreSQL\12\pg_env.bat"
+    Delete "$INSTDIR\Prerequisites\postgresql-12.3-1-windows-x64.exe"
+    RmDir /r "$INSTDIR\Prerequisites\"
   endPostgreSQL:
 
   ; Create uninstaller
