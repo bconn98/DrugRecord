@@ -20,7 +20,6 @@
 - [Contributing](#Contributing)
 - [Team](#Team)
 - [Support](#Support)
-- [License](#License)
 
 ---
 
@@ -109,12 +108,3 @@ Reach out to me at one of the following places!
 - Facebook at <a href="https://www.facebook.com/bryan.conn.39/" target="_blank"> `bryan.conn.39` </a>
 - Instagram at <a href="https://www.instagram.com/bconn98/" target="_blank"> `bconn98` </a>
 - Github at <a href="http://github.com/bconn98" target="_blank">`bconn98`</a>
-
----
-
-## License
-
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
-
-- **[MIT license](http://opensource.org/licenses/mit-license.php)**
-- Copyright 2020 © <a href="http://github.com/bconn98" target="_blank"> Bconn98</a>
