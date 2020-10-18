@@ -85,10 +85,6 @@
 
 - **HACK AWAY!** 🔨🔨🔨
 
-### Step 4
-
-- 🔃 Create a new pull request using <a href="https://github.com/joanaz/HireDot2/compare/" target="_blank">`https://github.com/joanaz/HireDot2/compare/`</a>.
-
 ---
 
 ## Team
