@@ -7,11 +7,11 @@ Description: Gets new excel writer page
 package handlers
 
 import (
+	"log"
 	"net/http"
 
-	"github.com/sqweek/dialog"
-
 	"github.com/bconn98/DrugRecord/mainUtils"
+	"github.com/sqweek/dialog"
 )
 
 /**

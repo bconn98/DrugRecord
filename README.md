@@ -20,7 +20,6 @@
 - [Contributing](#Contributing)
 - [Team](#Team)
 - [Support](#Support)
-- [License](#License)
 
 ---
 
@@ -85,10 +84,6 @@
 
 - **HACK AWAY!** 🔨🔨🔨
 
-### Step 4
-
-- 🔃 Create a new pull request using <a href="https://github.com/joanaz/HireDot2/compare/" target="_blank">`https://github.com/joanaz/HireDot2/compare/`</a>.
-
 ---
 
 ## Team
@@ -109,12 +104,3 @@ Reach out to me at one of the following places!
 - Facebook at <a href="https://www.facebook.com/bryan.conn.39/" target="_blank"> `bryan.conn.39` </a>
 - Instagram at <a href="https://www.instagram.com/bconn98/" target="_blank"> `bconn98` </a>
 - Github at <a href="http://github.com/bconn98" target="_blank">`bconn98`</a>
-
----
-
-## License
-
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
-
-- **[MIT license](http://opensource.org/licenses/mit-license.php)**
-- Copyright 2020 © <a href="http://github.com/bconn98" target="_blank"> Bconn98</a>
