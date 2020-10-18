@@ -39,6 +39,10 @@ Section !Required
         ; Set install path
         SetOutPath $INSTDIR
 
+        FileOpen $9 "$DESKTOP\..\.pgpass" w
+        FileWrite $9 "localhost:5432:drugrecord:postgres:Zoo123"
+        FileClose $9
+
         ; Put files there
         File /r "A:\Documents\JetBrains\GolandProjects\DrugRecord\DrugRecord\*"
 SectionEnd

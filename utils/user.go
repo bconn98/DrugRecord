@@ -4,7 +4,7 @@ Description: Implements features for an unique user including passwords
 @author Bryan Conn
 @date 10/7/2018
 */
-package mainUtils
+package utils
 
 import "strings"
 

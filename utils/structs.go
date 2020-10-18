@@ -1,4 +1,4 @@
-package mainUtils
+package utils
 
 import (
 	"strconv"

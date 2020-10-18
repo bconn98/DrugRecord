@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
+	"github.com/bconn98/DrugRecord/utils"
 )
 
 /**
@@ -20,12 +20,12 @@ Description: Sends the delete information to find the order to delete
 func PostDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	lcId := acRequest.PostForm.Get("id")
 	lnId, err := strconv.ParseInt(lcId, 10, 64)
 
-	mainUtils.DeleteOrder(lnId)
+	utils.DeleteOrder(lnId)
 	GetCloseHandler(acWriter, acRequest)
 }

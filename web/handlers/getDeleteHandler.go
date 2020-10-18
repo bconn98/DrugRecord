@@ -11,8 +11,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	"github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/utils"
+	"github.com/bconn98/DrugRecord/web/webUtils"
 )
 
 /**
@@ -22,7 +22,7 @@ Description: Executes the delete template
 func GetDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	vars := mux.Vars(acRequest)
@@ -30,10 +30,10 @@ func GetDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lnId, err := strconv.ParseInt(vars["id"], 10, 64)
 
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
-	lasOrders := mainUtils.GetOrder(lnId)
+	lasOrders := utils.GetOrder(lnId)
 
-	utils.ExecuteTemplate(acWriter, "deleteSure.html", lasOrders[0])
+	webUtils.ExecuteTemplate(acWriter, "deleteSure.html", lasOrders[0])
 }

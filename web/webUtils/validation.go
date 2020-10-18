@@ -4,7 +4,7 @@ Description: Checks a multitude of different input for validity.
 @author Bryan Conn
 @date 11/26/2018
 */
-package utils
+package webUtils
 
 import "strconv"
 

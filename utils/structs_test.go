@@ -1,4 +1,4 @@
-package mainUtils
+package utils
 
 /**
 File: structs_test

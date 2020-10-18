@@ -9,8 +9,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	"github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/utils"
+	"github.com/bconn98/DrugRecord/web/webUtils"
 )
 
 /**
@@ -20,7 +20,7 @@ Description: Execute the prescription template
 func GetPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
-	utils.ExecuteTemplate(acWriter, "prescription.html", nil)
+	webUtils.ExecuteTemplate(acWriter, "prescription.html", nil)
 }

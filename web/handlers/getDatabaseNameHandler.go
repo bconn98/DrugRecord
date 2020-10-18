@@ -9,8 +9,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	"github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/utils"
+	"github.com/bconn98/DrugRecord/web/webUtils"
 )
 
 /**
@@ -20,11 +20,11 @@ Description: Executes the database template with the output data
 func GetDatabaseNameHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 	if !gbSignedIn {
-		utils.ExecuteTemplate(acWriter, "home.html", "You are not signed in")
+		webUtils.ExecuteTemplate(acWriter, "home.html", "You are not signed in")
 		return
 	}
-	utils.ExecuteTemplate(acWriter, "databaseName.html", nil)
+	webUtils.ExecuteTemplate(acWriter, "databaseName.html", nil)
 }

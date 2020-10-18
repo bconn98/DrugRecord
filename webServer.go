@@ -7,18 +7,22 @@ Description: Runs a database
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/go-co-op/gocron"
 	"github.com/gorilla/mux"
-<<<<<<< HEAD
 	"gopkg.in/go-ini/ini.v1"
-=======
->>>>>>> master
 
-	"github.com/bconn98/DrugRecord/mainUtils"
+	"github.com/bconn98/DrugRecord/utils"
 	"github.com/bconn98/DrugRecord/web/handlers"
 )
+
+func test() {
+	fmt.Println("Fuck off")
+}
 
 /**
 Function: main
@@ -27,7 +31,7 @@ Description: Creates a new web server at port 8080 and connects all of the handl
 func main() {
 	var err error
 
-	mainUtils.Initial = true
+	utils.Initial = true
 
 	lcIniFile, err := ini.Load("configs/configuration.ini")
 	if err != nil {
@@ -38,70 +42,77 @@ func main() {
 
 	switch lcLogLevel {
 	case "DEBUG":
-		mainUtils.GbLogLevel = mainUtils.DEBUG
+		utils.GbLogLevel = utils.DEBUG
 		break
 	case "SQL":
-		mainUtils.GbLogLevel = mainUtils.SQL
+		utils.GbLogLevel = utils.SQL
 		break
 	case "INFO":
-		mainUtils.GbLogLevel = mainUtils.INFO
+		utils.GbLogLevel = utils.INFO
 		break
 	case "WARNING":
-		mainUtils.GbLogLevel = mainUtils.WARNING
+		utils.GbLogLevel = utils.WARNING
 		break
 	case "ERROR":
-		mainUtils.GbLogLevel = mainUtils.ERROR
+		utils.GbLogLevel = utils.ERROR
 		break
 	}
 
 	// If the file doesn't exist, create it, or append to the file
-	mainUtils.Log("Starting Program", mainUtils.INFO)
+	utils.Log("Starting Program", utils.INFO)
+
+	lcGoScheduler := gocron.NewScheduler(time.UTC)
+	_, err = lcGoScheduler.Every(1).Day().At("04:00").Do(utils.Backup)
+	if err != nil {
+		utils.Log(err.Error(), utils.ERROR)
+	}
+	lcGoScheduler.StartAsync()
 
 	defer func() {
-		if err = mainUtils.GpcFile.Close(); err != nil {
+		if err = utils.GpcFile.Close(); err != nil {
 			log.Fatal(err)
 		}
 	}()
 
-	mainUtils.AcRouter = mux.NewRouter()
-	mainUtils.AcRouter.HandleFunc("/home", handlers.GetHomeHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/SignOut", handlers.GetSignOutHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/closeWindow", handlers.GetCloseHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/writeExcel", handlers.GetExcelWriterHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/delete", handlers.PostDeleteHandler).Methods("POST")
+	utils.AcRouter = mux.NewRouter()
+	utils.AcRouter.HandleFunc("/home", handlers.GetHomeHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/SignOut", handlers.GetSignOutHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/closeWindow", handlers.GetCloseHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/writeExcel", handlers.GetExcelWriterHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/delete", handlers.PostDeleteHandler).Methods("POST")
 
-	mainUtils.AcRouter.HandleFunc("/edit/{id:[0-9]+}", handlers.GetEditHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/editQty", handlers.PostEditQtyHandler).Methods("POST")
+	utils.AcRouter.HandleFunc("/edit/{id:[0-9]+}", handlers.GetEditHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/editQty", handlers.PostEditQtyHandler).Methods("POST")
 
-	mainUtils.AcRouter.HandleFunc("/editDrug", handlers.GetDrugEditHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/editDrug", handlers.PostDrugEditHandler).Methods("POST")
+	utils.AcRouter.HandleFunc("/editDrug", handlers.GetDrugEditHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/editDrug", handlers.PostDrugEditHandler).Methods("POST")
 
-	mainUtils.AcRouter.HandleFunc("/editDrugGetNdc", handlers.GetDrugEditGetNdcHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/editDrugGetNdc", handlers.PostDrugEditGetNdcHandler).Methods("POST")
+	utils.AcRouter.HandleFunc("/editDrugGetNdc", handlers.GetDrugEditGetNdcHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/editDrugGetNdc", handlers.PostDrugEditGetNdcHandler).Methods("POST")
 
-	mainUtils.AcRouter.HandleFunc("/delete/{id:[0-9]+}", handlers.GetDeleteHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/delete/{id:[0-9]+}", handlers.GetDeleteHandler).Methods("GET")
 
-	mainUtils.AcRouter.HandleFunc("/newDrug", handlers.GetNewDrugHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/newDrug", handlers.PostNewDrugHandler).Methods("POST")
+	utils.AcRouter.HandleFunc("/newDrug", handlers.GetNewDrugHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/newDrug", handlers.PostNewDrugHandler).Methods("POST")
 
-	mainUtils.AcRouter.HandleFunc("/", handlers.GetDatabaseNdcHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/databaseDrug", handlers.GetDatabaseNdcHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/databaseDrug", handlers.PostDatabaseNdcHandler).Methods("POST")
+	utils.AcRouter.HandleFunc("/", handlers.GetDatabaseNdcHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/databaseDrug", handlers.GetDatabaseNdcHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/databaseDrug", handlers.PostDatabaseNdcHandler).Methods("POST")
 
-	mainUtils.AcRouter.HandleFunc("/databaseDrug/{ndc:[0-9]{5}-[0-9]{4}-[0-9]{2}}",
+	utils.AcRouter.HandleFunc("/databaseDrug/{ndc:[0-9]{5}-[0-9]{4}-[0-9]{2}}",
 		handlers.GetDatabaseNdcClickHandler).Methods("GET")
 
-	mainUtils.AcRouter.HandleFunc("/databaseName", handlers.GetDatabaseNameHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/databaseName", handlers.PostDatabaseNameHandler).Methods("POST")
+	utils.AcRouter.HandleFunc("/databaseName", handlers.GetDatabaseNameHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/databaseName", handlers.PostDatabaseNameHandler).Methods("POST")
 
-	mainUtils.AcRouter.HandleFunc("/audit", handlers.GetAuditHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/audit", handlers.PostAuditHandler).Methods("POST")
+	utils.AcRouter.HandleFunc("/audit", handlers.GetAuditHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/audit", handlers.PostAuditHandler).Methods("POST")
 
-	mainUtils.AcRouter.HandleFunc("/purchase", handlers.GetPurchaseHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/purchase", handlers.PostPurchaseHandler).Methods("POST")
+	utils.AcRouter.HandleFunc("/purchase", handlers.GetPurchaseHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/purchase", handlers.PostPurchaseHandler).Methods("POST")
 
-	mainUtils.AcRouter.HandleFunc("/prescription", handlers.GetPrescriptionHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/prescription", handlers.PostPrescriptionHandler).Methods("POST")
+	utils.AcRouter.HandleFunc("/prescription", handlers.GetPrescriptionHandler).Methods("GET")
+	utils.AcRouter.HandleFunc("/prescription", handlers.PostPrescriptionHandler).Methods("POST")
 
 	// mainUtils.AcRouter.HandleFunc("/login", handlers.GetLoginHandler).Methods("GET")
 	// mainUtils.AcRouter.HandleFunc("/login", handlers.PostLoginHandler).Methods("POST")
@@ -111,10 +122,10 @@ func main() {
 
 	http.Handle("/web/assets/", http.StripPrefix("/web/assets", http.FileServer(http.Dir("./web/assets"))))
 	http.Handle("/favicon.ico", http.NotFoundHandler())
-	http.Handle("/", mainUtils.AcRouter)
+	http.Handle("/", utils.AcRouter)
 	err = http.ListenAndServe(":80", nil)
 	if err != nil {
-		mainUtils.Log("Failed to listen on port 80", mainUtils.ERROR)
+		utils.Log("Failed to listen on port 80", utils.ERROR)
 		log.Fatal(err)
 	}
 }

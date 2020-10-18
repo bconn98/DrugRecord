@@ -9,8 +9,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	"github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/utils"
+	"github.com/bconn98/DrugRecord/web/webUtils"
 )
 
 var gbSignedIn = true // This should be false when there is a sign in feature
@@ -22,13 +22,13 @@ Description: Executes the database template with the output data
 func GetDatabaseNdcHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 	if !gbSignedIn {
-		utils.ExecuteTemplate(acWriter, "home.html", "You are not signed in")
+		webUtils.ExecuteTemplate(acWriter, "home.html", "You are not signed in")
 		return
 	}
-	utils.ExecuteTemplate(acWriter, "databaseDrug.html", nil)
+	webUtils.ExecuteTemplate(acWriter, "databaseDrug.html", nil)
 }
 
 func SetSignedIn() {

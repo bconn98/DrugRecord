@@ -9,8 +9,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	. "github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/utils"
+	"github.com/bconn98/DrugRecord/web/webUtils"
 )
 
 /**
@@ -20,15 +20,15 @@ Description: Sends the delete information to find the order to delete
 func PostDrugEditGetNdcHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	var lcErrorString string
 	lcNdc := acRequest.PostForm.Get("ndc")
-	lcNdc, _ = CheckNDC(lcNdc, lcErrorString)
+	lcNdc, _ = webUtils.CheckNDC(lcNdc, lcErrorString)
 
-	drug := mainUtils.GetDrug(lcNdc)
+	drug := utils.GetDrug(lcNdc)
 
-	ExecuteTemplate(acWriter, "editDrug.html", drug)
+	webUtils.ExecuteTemplate(acWriter, "editDrug.html", drug)
 	return
 }

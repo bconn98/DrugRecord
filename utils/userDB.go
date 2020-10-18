@@ -4,7 +4,7 @@ Description: Works with the userdb
 @author: Bryan Conn
 @date: 10/7/18
 */
-package mainUtils
+package utils
 
 import (
 	"database/sql"

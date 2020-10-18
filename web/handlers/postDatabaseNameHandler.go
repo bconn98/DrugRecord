@@ -10,12 +10,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	"github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/utils"
+	"github.com/bconn98/DrugRecord/web/webUtils"
 )
 
 type dataName struct {
-	Drugs []mainUtils.DrugDB
+	Drugs []utils.DrugDB
 }
 
 /**
@@ -26,7 +26,7 @@ in the database template
 func PostDatabaseNameHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 	var lcErrorString string
 	lcInput := acRequest.PostForm.Get("search")
@@ -41,28 +41,28 @@ func PostDatabaseNameHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 	}
 
 	if ndc {
-		lcInput, lcErrorString = utils.CheckNDC(lcInput, lcErrorString)
+		lcInput, lcErrorString = webUtils.CheckNDC(lcInput, lcErrorString)
 
 		if lcErrorString != "" {
-			utils.ExecuteTemplate(acWriter, "databaseDrug.html", nil)
+			webUtils.ExecuteTemplate(acWriter, "databaseDrug.html", nil)
 			return
 		}
-		lcName, lcInput, lcForm, lcItemNum, lcSize, lcDate, lnQty, lasOrders := mainUtils.FindNDC(lcInput)
+		lcName, lcInput, lcForm, lcItemNum, lcSize, lcDate, lnQty, lasOrders := utils.FindNDC(lcInput)
 
 		if lcName == "" && lcInput == "" && lcForm == "" && lcItemNum == "" {
-			utils.ExecuteTemplate(acWriter, "databaseDrug.html", nil)
+			webUtils.ExecuteTemplate(acWriter, "databaseDrug.html", nil)
 			return
 		}
 
 		lcDateString := lcDate.Month().String() + " " + strconv.Itoa(lcDate.Day()) + " " + strconv.Itoa(lcDate.Year())
 		lsData := data{lcName, lcInput, lcForm, lcSize, lcDateString,
 			lcItemNum, lnQty, lasOrders}
-		utils.ExecuteTemplate(acWriter, "databaseDrug.html", lsData)
+		webUtils.ExecuteTemplate(acWriter, "databaseDrug.html", lsData)
 		return
 	} else {
-		lasDrugs := mainUtils.GetDrugs(lcInput)
+		lasDrugs := utils.GetDrugs(lcInput)
 		lsData := dataName{lasDrugs}
-		utils.ExecuteTemplate(acWriter, "databaseName.html", lsData)
+		webUtils.ExecuteTemplate(acWriter, "databaseName.html", lsData)
 	}
 
 }

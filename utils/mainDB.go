@@ -4,7 +4,7 @@ Description: Does the all of the work with the order database
 @author: Bryan Conn
 @date: 10/7/18
 */
-package mainUtils
+package utils
 
 import (
 	"database/sql"
@@ -466,45 +466,6 @@ func GetDrugs(acName string) []DrugDB {
 
 	rows, err := db.Query("SELECT ndc, name, size, form, item_num, qty, "+
 		"date from drugdb where lower(name) like lower($1)", acName)
-	issue(err)
-
-	for rows.Next() {
-		if rows.Err() != nil {
-			issue(rows.Err())
-			break
-		}
-
-		issue(rows.Scan(&ndc, &name, &size, &form, &item_num, &qty, &date))
-
-		lrQty, err := strconv.ParseFloat(qty, 10)
-		issue(err)
-		month, day, year := ParseDateStrings(date)
-
-		lasDrugs = append(lasDrugs,
-			DrugDB{
-				Name:     name,
-				Ndc:      ndc,
-				Size:     size,
-				Form:     form,
-				ItemNum:  item_num,
-				Quantity: lrQty,
-				Month:    month,
-				Day:      day,
-				Year:     year,
-			})
-	}
-
-	return lasDrugs
-
-}
-
-func GetDrugs(acName string) []DrugDB {
-	var ndc, name, size, form, item_num, qty string
-	var date time.Time
-	var lasDrugs []DrugDB
-	acName = "%" + acName + "%"
-
-	rows, err := db.Query("SELECT ndc, name, size, form, item_num, qty, date from drugdb where name like $1", acName)
 	issue(err)
 
 	for rows.Next() {

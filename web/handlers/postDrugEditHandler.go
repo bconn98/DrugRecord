@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	. "github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/utils"
+	. "github.com/bconn98/DrugRecord/web/webUtils"
 )
 
 /**
@@ -21,7 +21,7 @@ Description: Sends the delete information to find the order to delete
 func PostDrugEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	var lcErrorString string
@@ -35,10 +35,10 @@ func PostDrugEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 
 	lrQty, err := strconv.ParseFloat(lcQty, 10)
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
-	mainUtils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc, lrQty, lcNdc)
+	utils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc, lrQty, lcNdc)
 	GetCloseHandler(acWriter, acRequest)
 	return
 }

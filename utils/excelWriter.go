@@ -1,4 +1,4 @@
-package mainUtils
+package utils
 
 import (
 	excelize "github.com/360EntSecGroup-Skylar/excelize/v2"

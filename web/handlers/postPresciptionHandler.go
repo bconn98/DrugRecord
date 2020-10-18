@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	"github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/utils"
+	"github.com/bconn98/DrugRecord/web/webUtils"
 )
 
 /**
@@ -23,29 +23,29 @@ database template to refresh
 func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	var lcErrorString string
 	lcNdc := acRequest.PostForm.Get("ndc")
-	lcNdc, lcErrorString = utils.CheckNDC(lcNdc, lcErrorString)
+	lcNdc, lcErrorString = webUtils.CheckNDC(lcNdc, lcErrorString)
 	lcPharmacist := acRequest.PostForm.Get("pharmacist")
 	lcPharmacist = strings.ToUpper(lcPharmacist)
 	lcScript := acRequest.PostForm.Get("script")
 	lcOrderDate := acRequest.PostForm.Get("OrderDate")
-	lcMonth, lcDay, lcYear := utils.ParseDate(lcOrderDate)
-	lcErrorString, lcYear = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
+	lcMonth, lcDay, lcYear := webUtils.ParseDate(lcOrderDate)
+	lcErrorString, lcYear = webUtils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
 	lnQty := acRequest.PostForm.Get("qty")
 	lnActual := acRequest.PostForm.Get("realCount")
 
 	lrQty, err := strconv.ParseFloat(lnQty, 64)
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	lrActual, err := strconv.ParseFloat(lnActual, 64)
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	if lnActual == "" {
@@ -53,28 +53,28 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 	}
 
 	if lcErrorString != "" {
-		utils.ExecuteTemplate(acWriter, "prescription.html", lcErrorString)
+		webUtils.ExecuteTemplate(acWriter, "prescription.html", lcErrorString)
 		return
 	}
 
-	lbCheck := mainUtils.NewCheck(lcNdc)
-	prescription := mainUtils.MakePrescription(lcNdc, lcPharmacist, lcScript, lrQty, lcYear, lcMonth, lcDay, lrActual)
+	lbCheck := utils.NewCheck(lcNdc)
+	prescription := utils.MakePrescription(lcNdc, lcPharmacist, lcScript, lrQty, lcYear, lcMonth, lcDay, lrActual)
 
 	// If the drug does exist
 	if lbCheck {
 
-		lbLogged, _ := mainUtils.AddPrescription(prescription)
+		lbLogged, _ := utils.AddPrescription(prescription)
 
 		if !lbLogged {
-			utils.ExecuteTemplate(acWriter, "prescription.html", "Prescription already logged!")
+			webUtils.ExecuteTemplate(acWriter, "prescription.html", "Prescription already logged!")
 			return
 		}
 
 		GetCloseHandler(acWriter, acRequest)
 		return
 	} else {
-		mainUtils.AddDrug(lcNdc, lcMonth, lcDay, lcYear)
-		_, id := mainUtils.AddPrescription(prescription)
-		utils.ExecuteTemplate(acWriter, "newDrug.html", mainUtils.NewDrug{Ndc: lcNdc, Id: id})
+		utils.AddDrug(lcNdc, lcMonth, lcDay, lcYear)
+		_, id := utils.AddPrescription(prescription)
+		webUtils.ExecuteTemplate(acWriter, "newDrug.html", utils.NewDrug{Ndc: lcNdc, Id: id})
 	}
 }
