@@ -9,8 +9,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	. "github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/utils"
+	"github.com/bconn98/DrugRecord/web/webUtils"
 )
 
 /**
@@ -21,33 +21,33 @@ and executes the database template to refresh
 func PostNewDrugHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	var lcErrorString string
 	lcId := acRequest.PostForm.Get("id")
 	lcOldNdc := acRequest.PostForm.Get("oldNdc")
 	lcNdc := acRequest.PostForm.Get("ndc")
-	lcNdc, lcErrorString = CheckNDC(lcNdc, lcErrorString)
+	lcNdc, lcErrorString = webUtils.CheckNDC(lcNdc, lcErrorString)
 	lcName := acRequest.PostForm.Get("name")
-	lcErrorString = CheckString(lcName, lcErrorString)
+	lcErrorString = webUtils.CheckString(lcName, lcErrorString)
 	lcForm := acRequest.PostForm.Get("form")
 	lcItem := acRequest.PostForm.Get("item_num")
 	lcPkgSize := acRequest.PostForm.Get("pkgSize")
 
 	if lcErrorString != "" {
 
-		if mainUtils.NewCheck(lcNdc) {
-			mainUtils.UpdateOrderNdc(lcId, lcNdc)
+		if utils.NewCheck(lcNdc) {
+			utils.UpdateOrderNdc(lcId, lcNdc)
 			GetCloseHandler(acWriter, acRequest)
 			return
 		}
 
-		ExecuteTemplate(acWriter, "newDrug.html", mainUtils.NewDrug{Error: lcErrorString, Ndc: lcNdc})
+		webUtils.ExecuteTemplate(acWriter, "newDrug.html", utils.NewDrug{Error: lcErrorString, Ndc: lcNdc})
 		return
 	}
-	mainUtils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc, 0, lcOldNdc)
-	mainUtils.UpdateOrderNdc(lcId, lcNdc)
+	utils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc, 0, lcOldNdc)
+	utils.UpdateOrderNdc(lcId, lcNdc)
 	GetCloseHandler(acWriter, acRequest)
 	return
 }

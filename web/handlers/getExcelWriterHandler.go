@@ -7,10 +7,9 @@ Description: Gets new excel writer page
 package handlers
 
 import (
-	"log"
 	"net/http"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
+	"github.com/bconn98/DrugRecord/utils"
 	"github.com/sqweek/dialog"
 )
 
@@ -21,9 +20,9 @@ Description: Executes the excel writer
 func GetExcelWriterHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lcFileName, err := dialog.File().Filter("Excel Workbook (*.xlsx)", "xlsx").Title("Export to XLSX").Save()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
-	mainUtils.ExcelWriter(lcFileName)
+	utils.ExcelWriter(lcFileName)
 
 	GetCloseHandler(acWriter, acRequest)
 }

@@ -4,7 +4,7 @@ Description: Executes templates and implements the range for html
 @author Bryan Conn
 @date: 10/7/2018
 */
-package utils
+package webUtils
 
 import (
 	. "html/template"
@@ -15,13 +15,9 @@ var mcTemplates = Must(ParseFiles("web/templates/audit.html",
 	"web/templates/closeWindow.html", "web/templates/databaseDrug.html",
 	"web/templates/newDrug.html", "web/templates/prescription.html",
 	"web/templates/purchase.html", "web/templates/editQty.html",
-<<<<<<< HEAD:web/utils/templates.go
 	"web/templates/delete.html", "web/templates/writeExcel.html",
-=======
-	"web/templates/deleteSure.html", "web/templates/writeExcel.html",
->>>>>>> master:DrugRecord/web/utils/templates.go
-	"web/templates/editDrug.html", "web/templates/editDrugGetNdc.html",
-	"web/templates/databaseName.html"))
+	"web/templates/deleteSure.html", "web/templates/editDrug.html",
+	"web/templates/editDrugGetNdc.html", "web/templates/databaseName.html"))
 
 /**
 Function: ExecuteTemplate

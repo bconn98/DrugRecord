@@ -9,7 +9,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
+	"github.com/bconn98/DrugRecord/utils"
 )
 
 /**
@@ -20,12 +20,12 @@ database template to refresh the page
 func PostExcelWriterHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	lcFileName := acRequest.PostForm.Get("fileName")
 
-	mainUtils.ExcelWriter(lcFileName)
+	utils.ExcelWriter(lcFileName)
 
 	GetCloseHandler(acWriter, acRequest)
 }

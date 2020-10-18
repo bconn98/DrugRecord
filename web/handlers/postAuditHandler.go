@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	"github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/utils"
+	"github.com/bconn98/DrugRecord/web/webUtils"
 )
 
 /**
@@ -23,33 +23,33 @@ database template to refresh the page
 func PostAuditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	var lcErrorString string
 	lcNdc := acRequest.PostForm.Get("ndc")
-	lcNdc, lcErrorString = utils.CheckNDC(lcNdc, lcErrorString)
+	lcNdc, lcErrorString = webUtils.CheckNDC(lcNdc, lcErrorString)
 	lcPharmacist := acRequest.PostForm.Get("pharmacist")
 	lcPharmacist = strings.ToUpper(lcPharmacist)
 	lcAuditDate := acRequest.PostForm.Get("AuditDate")
-	lcAuditMonth, lcAuditDay, lcAuditYear := utils.ParseDate(lcAuditDate)
-	lcErrorString, lcAuditYear = utils.CheckDate(lcAuditMonth, lcAuditDay, lcAuditYear, lcErrorString)
+	lcAuditMonth, lcAuditDay, lcAuditYear := webUtils.ParseDate(lcAuditDate)
+	lcErrorString, lcAuditYear = webUtils.CheckDate(lcAuditMonth, lcAuditDay, lcAuditYear, lcErrorString)
 	lnQty := acRequest.PostForm.Get("qty")
 
 	lrQty, err := strconv.ParseFloat(lnQty, 64)
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	if lcErrorString != "" {
-		utils.ExecuteTemplate(acWriter, "audit.html", lcErrorString)
+		webUtils.ExecuteTemplate(acWriter, "audit.html", lcErrorString)
 		return
 	}
-	lbCheck, _ := mainUtils.AddAudit(mainUtils.MakeAudit(lcNdc, lcPharmacist, lrQty, lcAuditYear, lcAuditMonth,
+	lbCheck, _ := utils.AddAudit(utils.MakeAudit(lcNdc, lcPharmacist, lrQty, lcAuditYear, lcAuditMonth,
 		lcAuditDay))
 
 	if !lbCheck {
-		utils.ExecuteTemplate(acWriter, "audit.html", "Audit already logged!")
+		webUtils.ExecuteTemplate(acWriter, "audit.html", "Audit already logged!")
 		return
 	}
 

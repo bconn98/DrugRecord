@@ -9,7 +9,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
+	"github.com/bconn98/DrugRecord/utils"
 )
 
 /**
@@ -19,13 +19,13 @@ Description: Sends the edit information to find the order to edit also edits the
 func PostEditQtyHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	lnId := acRequest.PostForm.Get("id")
 	lcScript := acRequest.PostForm.Get("script")
 	lnQty := acRequest.PostForm.Get("quantity")
 
-	mainUtils.UpdateOrder(lnId, lcScript, lnQty)
+	utils.UpdateOrder(lnId, lcScript, lnQty)
 	GetCloseHandler(acWriter, acRequest)
 }

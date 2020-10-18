@@ -21,6 +21,5 @@ copy .\DrugRecord.exe DrugRecord\cll.exe
 copy .\scripts\start.cmd DrugRecord\scripts\start.cmd
 copy .\scripts\setup_db.cmd DrugRecord\scripts\setup_db.cmd
 copy .\scripts\restore.cmd DrugRecord\scripts\restore.cmd
-copy .\scripts\backup.cmd DrugRecord\scripts\backup.cmd
 copy .\configs\configuration.ini DrugRecord\configs\configuration.ini
 del A:\Documents\JetBrains\GolandProjects\DrugRecord\DrugRecord.exe

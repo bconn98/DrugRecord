@@ -11,8 +11,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	"github.com/bconn98/DrugRecord/web/utils"
+	utils "github.com/bconn98/DrugRecord/utils"
+	webUtils "github.com/bconn98/DrugRecord/web/webUtils"
 )
 
 /**
@@ -23,7 +23,7 @@ func GetEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
 	vars := mux.Vars(acRequest)
@@ -31,10 +31,10 @@ func GetEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lnId, err := strconv.ParseInt(vars["id"], 10, 64)
 
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		utils.Log(err.Error(), utils.ERROR)
 	}
 
-	lasOrders := mainUtils.GetOrder(lnId)
+	lasOrders := utils.GetOrder(lnId)
 
-	utils.ExecuteTemplate(acWriter, "editQty.html", lasOrders[0])
+	webUtils.ExecuteTemplate(acWriter, "editQty.html", lasOrders[0])
 }
