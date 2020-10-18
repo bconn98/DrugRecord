@@ -11,10 +11,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-<<<<<<< HEAD
 	"gopkg.in/go-ini/ini.v1"
-=======
->>>>>>> master
 
 	"github.com/bconn98/DrugRecord/mainUtils"
 	"github.com/bconn98/DrugRecord/web/handlers"
