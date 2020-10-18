@@ -20,7 +20,7 @@ Description: Checks for an error and reports it
 */
 func issue(err error) {
 	if err != nil {
-		LogError(err.Error())
+		Log(err.Error(), ERROR)
 	}
 }
 
@@ -72,5 +72,5 @@ func AddUser(acUsername string, anPassVal int) {
 		"', ", anPassVal, ");")
 	_, err := db.Exec(insertString)
 	issue(err)
-	LogSql(insertString)
+	Log(insertString, SQL)
 }

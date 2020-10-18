@@ -21,7 +21,7 @@ Description: Sends the delete information to find the order to delete
 func PostDrugEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	var lcErrorString string
@@ -35,7 +35,7 @@ func PostDrugEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 
 	lrQty, err := strconv.ParseFloat(lcQty, 10)
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	mainUtils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc, lrQty, lcNdc)

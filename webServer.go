@@ -11,6 +11,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+<<<<<<< HEAD
+	"gopkg.in/go-ini/ini.v1"
+=======
+>>>>>>> master
 
 	"github.com/bconn98/DrugRecord/mainUtils"
 	"github.com/bconn98/DrugRecord/web/handlers"
@@ -25,8 +29,33 @@ func main() {
 
 	mainUtils.Initial = true
 
+	lcIniFile, err := ini.Load("configs/configuration.ini")
+	if err != nil {
+		log.Fatal("Failed to open configuration file")
+	}
+
+	lcLogLevel := lcIniFile.Section("Logging").Key("log_level").String()
+
+	switch lcLogLevel {
+	case "DEBUG":
+		mainUtils.GbLogLevel = mainUtils.DEBUG
+		break
+	case "SQL":
+		mainUtils.GbLogLevel = mainUtils.SQL
+		break
+	case "INFO":
+		mainUtils.GbLogLevel = mainUtils.INFO
+		break
+	case "WARNING":
+		mainUtils.GbLogLevel = mainUtils.WARNING
+		break
+	case "ERROR":
+		mainUtils.GbLogLevel = mainUtils.ERROR
+		break
+	}
+
 	// If the file doesn't exist, create it, or append to the file
-	mainUtils.LogSql("Starting Program")
+	mainUtils.Log("Starting Program", mainUtils.INFO)
 
 	defer func() {
 		if err = mainUtils.GpcFile.Close(); err != nil {
@@ -39,7 +68,7 @@ func main() {
 	mainUtils.AcRouter.HandleFunc("/SignOut", handlers.GetSignOutHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/closeWindow", handlers.GetCloseHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/writeExcel", handlers.GetExcelWriterHandler).Methods("GET")
-	mainUtils.AcRouter.HandleFunc("/deleteSure", handlers.PostDeleteSureHandler).Methods("POST")
+	mainUtils.AcRouter.HandleFunc("/delete", handlers.PostDeleteHandler).Methods("POST")
 
 	mainUtils.AcRouter.HandleFunc("/edit/{id:[0-9]+}", handlers.GetEditHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/editQty", handlers.PostEditQtyHandler).Methods("POST")
@@ -50,7 +79,7 @@ func main() {
 	mainUtils.AcRouter.HandleFunc("/editDrugGetNdc", handlers.GetDrugEditGetNdcHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/editDrugGetNdc", handlers.PostDrugEditGetNdcHandler).Methods("POST")
 
-	mainUtils.AcRouter.HandleFunc("/deleteSure/{id:[0-9]+}", handlers.GetDeleteHandler).Methods("GET")
+	mainUtils.AcRouter.HandleFunc("/delete/{id:[0-9]+}", handlers.GetDeleteHandler).Methods("GET")
 
 	mainUtils.AcRouter.HandleFunc("/newDrug", handlers.GetNewDrugHandler).Methods("GET")
 	mainUtils.AcRouter.HandleFunc("/newDrug", handlers.PostNewDrugHandler).Methods("POST")
@@ -85,6 +114,7 @@ func main() {
 	http.Handle("/", mainUtils.AcRouter)
 	err = http.ListenAndServe(":80", nil)
 	if err != nil {
+		mainUtils.Log("Failed to listen on port 80", mainUtils.ERROR)
 		log.Fatal(err)
 	}
 }
