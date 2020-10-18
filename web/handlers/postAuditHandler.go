@@ -23,7 +23,7 @@ database template to refresh the page
 func PostAuditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	var lcErrorString string
@@ -38,7 +38,7 @@ func PostAuditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 
 	lrQty, err := strconv.ParseFloat(lnQty, 64)
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	if lcErrorString != "" {

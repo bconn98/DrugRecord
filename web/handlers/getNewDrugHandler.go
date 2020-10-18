@@ -20,7 +20,7 @@ Description: Executes the new drug template
 func GetNewDrugHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 	utils.ExecuteTemplate(acWriter, "newDrug.html", nil)
 }

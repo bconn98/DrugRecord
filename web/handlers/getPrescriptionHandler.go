@@ -20,7 +20,7 @@ Description: Execute the prescription template
 func GetPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 	utils.ExecuteTemplate(acWriter, "prescription.html", nil)
 }

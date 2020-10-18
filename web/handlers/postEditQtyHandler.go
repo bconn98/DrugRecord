@@ -19,7 +19,7 @@ Description: Sends the edit information to find the order to edit also edits the
 func PostEditQtyHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	lnId := acRequest.PostForm.Get("id")

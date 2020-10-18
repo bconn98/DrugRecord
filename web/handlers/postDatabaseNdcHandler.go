@@ -7,18 +7,18 @@ Description: Sends the database information
 package handlers
 
 import (
-	. "net/http"
+	"net/http"
 	"strconv"
 
-	. "github.com/bconn98/DrugRecord/mainUtils"
-	. "github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/mainUtils"
+	"github.com/bconn98/DrugRecord/web/utils"
 )
 
 type data struct {
 	Name, Ndc, Form, Size, Date string
 	ItemNum                     string
 	Qty                         float64
-	Orders                      []Order
+	Orders                      []mainUtils.Order
 }
 
 /**
@@ -26,10 +26,10 @@ Function: PostDatabaseNdcHandler
 Description: Sends the information matching the entered NDC to be executed
 in the database template
 */
-func PostDatabaseNdcHandler(acWriter ResponseWriter, acRequest *Request) {
+func PostDatabaseNdcHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 	var lcErrorString string
 	lcInput := acRequest.PostForm.Get("search")
@@ -42,27 +42,28 @@ func PostDatabaseNdcHandler(acWriter ResponseWriter, acRequest *Request) {
 	}
 
 	if ndc {
-		lcInput, lcErrorString = CheckNDC(lcInput, lcErrorString)
+		lcInput, lcErrorString = utils.CheckNDC(lcInput, lcErrorString)
 
 		if lcErrorString != "" {
-			ExecuteTemplate(acWriter, "databaseDrug.html", nil)
+			utils.ExecuteTemplate(acWriter, "databaseDrug.html", nil)
 			return
 		}
-		lcName, lcInput, lcForm, lcItemNum, lcSize, lcDate, lnQty, lasOrders := FindNDC(lcInput)
+		lcName, lcInput, lcForm, lcItemNum, lcSize, lcDate, lnQty, lasOrders := mainUtils.FindNDC(lcInput)
 
 		if lcName == "" && lcInput == "" && lcForm == "" && lcItemNum == "" {
-			ExecuteTemplate(acWriter, "databaseDrug.html", nil)
+			utils.ExecuteTemplate(acWriter, "databaseDrug.html", nil)
 			return
 		}
 
 		lcDateString := lcDate.Month().String() + " " + strconv.Itoa(lcDate.Day()) + " " + strconv.Itoa(lcDate.Year())
 		lsData := data{lcName, lcInput, lcForm, lcSize, lcDateString,
 			lcItemNum, lnQty, lasOrders}
-		ExecuteTemplate(acWriter, "databaseDrug.html", lsData)
+
+		utils.ExecuteTemplate(acWriter, "databaseDrug.html", lsData)
 		return
 	} else {
-		lasDrugs := GetDrugs(lcInput)
+		lasDrugs := mainUtils.GetDrugs(lcInput)
 		lsData := dataName{lasDrugs}
-		ExecuteTemplate(acWriter, "databaseName.html", lsData)
+		utils.ExecuteTemplate(acWriter, "databaseName.html", lsData)
 	}
 }

@@ -23,7 +23,7 @@ database template to refresh
 func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	var lcErrorString string
@@ -40,12 +40,12 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 
 	lrQty, err := strconv.ParseFloat(lnQty, 64)
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	lrActual, err := strconv.ParseFloat(lnActual, 64)
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	if lnActual == "" {

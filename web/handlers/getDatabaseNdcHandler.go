@@ -22,7 +22,7 @@ Description: Executes the database template with the output data
 func GetDatabaseNdcHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 	if !gbSignedIn {
 		utils.ExecuteTemplate(acWriter, "home.html", "You are not signed in")
