@@ -24,7 +24,7 @@ func GetDatabaseNdcClickHandler(acWriter http.ResponseWriter, acRequest *http.Re
 
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 	vars := mux.Vars(acRequest)
 	lcNdc := vars["ndc"]

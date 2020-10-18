@@ -23,7 +23,7 @@ and executes the database template to refresh
 func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	var lcErrorString string
@@ -37,7 +37,7 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 	lcErrorString, lcYear = utils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
 	lrQty, err := strconv.ParseFloat(acRequest.PostForm.Get("qty"), 64)
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	lcActual := acRequest.PostForm.Get("realCount")
@@ -46,7 +46,7 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 	}
 	lrActual, err := strconv.ParseFloat(lcActual, 64)
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	if lcErrorString != "" {

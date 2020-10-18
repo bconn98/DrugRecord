@@ -17,7 +17,7 @@ Description: Executes the delete template
 func GetDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	vars := mux.Vars(acRequest)
@@ -25,7 +25,7 @@ func GetDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lnId, err := strconv.ParseInt(vars["id"], 10, 64)
 
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	lasOrders := mainUtils.GetOrder(lnId)

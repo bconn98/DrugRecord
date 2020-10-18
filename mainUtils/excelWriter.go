@@ -276,6 +276,8 @@ func ExcelWriter(acFileName string) {
 
 	file = excelize.NewFile()
 
+	Log("Writing database to excel format in file "+acFileName, INFO)
+
 	seenMap := make(map[string]int)
 
 	monthMap["January"] = 1
@@ -294,6 +296,8 @@ func ExcelWriter(acFileName string) {
 	rows, err := db.Query("SELECT name, ndc from drugDB order by name")
 	issue(err)
 
+	var lnCounter int
+	lnCounter = 0
 	for rows.Next() {
 		if rows.Err() != nil {
 			issue(rows.Err())
@@ -304,7 +308,10 @@ func ExcelWriter(acFileName string) {
 		lcName = fixName(lcName, seenMap)
 		createSheet(lcName)
 		getSheet(lcNdc, lcName)
+		lnCounter++
 	}
+
+	Log("Wrote "+strconv.Itoa(lnCounter)+" drugs to excel", DEBUG)
 
 	// Set active sheet of the workbook.
 	file.SetActiveSheet(0)
@@ -313,6 +320,7 @@ func ExcelWriter(acFileName string) {
 
 	// Save xlsx file by the given path.
 	issue(file.SaveAs(acFileName + ".xlsx"))
+	Log("Excel file closed", DEBUG)
 
 	issue(rows.Close())
 }

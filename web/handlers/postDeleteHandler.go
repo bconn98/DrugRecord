@@ -20,7 +20,7 @@ Description: Sends the delete information to find the order to delete
 func PostDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	lcId := acRequest.PostForm.Get("id")

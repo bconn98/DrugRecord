@@ -7,32 +7,55 @@ import (
 	"time"
 )
 
+type LogLevel int
+
+const (
+	DEBUG   LogLevel = 0
+	SQL              = 1
+	INFO             = 2
+	WARNING          = 3
+	ERROR            = 4
+)
+
 var GpcFile *os.File
 var Initial bool
-var GbLogAll bool
+var GbLogLevel LogLevel
 
-func LogSql(acEvent string) {
-	if GbLogAll {
-		updateLogStructure()
-		_, err := GpcFile.WriteString(acEvent + "\n")
-		if err != nil {
+func Log(acLog string, anLogLevel LogLevel) {
+	updateLogStructure()
+	switch anLogLevel {
+	case DEBUG:
+		logAll(acLog, "DEBUG", anLogLevel)
+		break
+	case SQL:
+		logAll(acLog, "SQL", anLogLevel)
+		break
+	case INFO:
+		logAll(acLog, "INFO", anLogLevel)
+		break
+	case WARNING:
+		logAll(acLog, "WARNING", anLogLevel)
+		break
+	case ERROR:
+		logAll(acLog, "ERROR", anLogLevel)
+		break
+	}
+}
+
+func logAll(acLog string, acLogLevel string, anLogLevel LogLevel) {
+	currentDateString := time.Now().Format("2006-01-02 15:04:05")
+	if GbLogLevel <= anLogLevel {
+		if _, err := GpcFile.WriteString(currentDateString + " " + acLogLevel + " " + acLog + "\n"); err != nil {
 			log.Fatal(err)
 		}
 	}
 }
 
-func LogError(acError string) {
-	updateLogStructure()
-	if _, err := GpcFile.WriteString("ERROR: " + acError + "\n"); err != nil {
-		log.Fatal(err)
-	}
-}
-
 func updateLogStructure() {
 	var fileName string
-	currentTimeString := time.Now().Format("01-2006")
-	currentTimeString = strings.Replace(currentTimeString, "-", "_", -1)
-	fileName = "log/" + currentTimeString + "_log.log"
+	currentDateString := time.Now().Format("01-2006")
+	currentDateString = strings.Replace(currentDateString, "-", "_", -1)
+	fileName = "log/" + currentDateString + "_log.log"
 	if !fileExists(fileName) {
 		if GpcFile != nil {
 			if err = GpcFile.Close(); err != nil {

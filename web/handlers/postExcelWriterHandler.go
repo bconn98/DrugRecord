@@ -20,7 +20,7 @@ database template to refresh the page
 func PostExcelWriterHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 
 	lcFileName := acRequest.PostForm.Get("fileName")

@@ -7,34 +7,34 @@ Description: Sends the audit information
 package handlers
 
 import (
-	. "net/http"
+	"net/http"
 
-	. "github.com/bconn98/DrugRecord/mainUtils"
-	. "github.com/bconn98/DrugRecord/web/utils"
+	"github.com/bconn98/DrugRecord/mainUtils"
+	"github.com/bconn98/DrugRecord/web/utils"
 )
 
 /**
 Function: PostLoginHandler
 Description: Sends the login information for validation, redirects depending on the outcome
 */
-func PostLoginHandler(acWriter ResponseWriter, acRequest *Request) {
+func PostLoginHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		LogError(err.Error())
+		mainUtils.Log(err.Error(), mainUtils.ERROR)
 	}
 	lcUsername := acRequest.PostForm.Get("uName")
-	lsUser := FindUser(lcUsername)
-	lsTestUser := User{}
+	lsUser := mainUtils.FindUser(lcUsername)
+	lsTestUser := mainUtils.User{}
 	if lsUser == lsTestUser {
-		ExecuteTemplate(acWriter, "login.html", "Unknown Username!")
+		utils.ExecuteTemplate(acWriter, "login.html", "Unknown Username!")
 		return
 	}
 	lcPassword := acRequest.PostForm.Get("password")
-	if !CheckPassword(lsUser, lcPassword) {
-		ExecuteTemplate(acWriter, "login.html", "Password doesn't match our records!")
+	if !mainUtils.CheckPassword(lsUser, lcPassword) {
+		utils.ExecuteTemplate(acWriter, "login.html", "Password doesn't match our records!")
 		return
 	}
 	SetSignedIn()
-	Redirect(acWriter, acRequest, "database", 302)
+	http.Redirect(acWriter, acRequest, "database", 302)
 	return
 }
