@@ -7,10 +7,10 @@ Description: Sends the audit information
 package handlers
 
 import (
-	"net/http"
+	. "net/http"
 
-	"github.com/bconn98/DrugRecord/mainUtils"
-	"github.com/bconn98/DrugRecord/web/utils"
+	. "github.com/bconn98/DrugRecord/mainUtils"
+	. "github.com/bconn98/DrugRecord/web/utils"
 )
 
 /**
@@ -18,33 +18,33 @@ Function: PostRegisterHandler
 Description: Sends the new users information to be validated and redirects differently
 depending on that validity.
 */
-func PostRegisterHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
+func PostRegisterHandler(acWriter ResponseWriter, acRequest *Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		mainUtils.Log(err.Error(), mainUtils.ERROR)
+		LogError(err.Error())
 	}
 
 	lcUsername := acRequest.PostForm.Get("uName")
 	lcPassword := acRequest.PostForm.Get("password")
 
-	leValidation := mainUtils.MakeUser(lcUsername, lcPassword)
+	leValidation := MakeUser(lcUsername, lcPassword)
 	switch leValidation {
-	case mainUtils.UE:
-		utils.ExecuteTemplate(acWriter, "register.html", "Username field cannot be left empty!")
+	case UE:
+		ExecuteTemplate(acWriter, "register.html", "Username field cannot be left empty!")
 		return
-	case mainUtils.US:
-		utils.ExecuteTemplate(acWriter, "register.html", "Username field cannot contain spaces!")
+	case US:
+		ExecuteTemplate(acWriter, "register.html", "Username field cannot contain spaces!")
 		return
-	case mainUtils.PE:
-		utils.ExecuteTemplate(acWriter, "register.html", "Password field cannot be left empty!")
+	case PE:
+		ExecuteTemplate(acWriter, "register.html", "Password field cannot be left empty!")
 		return
-	case mainUtils.PS:
-		utils.ExecuteTemplate(acWriter, "register.html", "Password field cannot contain spaces!")
+	case PS:
+		ExecuteTemplate(acWriter, "register.html", "Password field cannot contain spaces!")
 		return
-	case mainUtils.TN:
-		utils.ExecuteTemplate(acWriter, "register.html", "This username is already in use, please try again!")
+	case TN:
+		ExecuteTemplate(acWriter, "register.html", "This username is already in use, please try again!")
 		return
-	case mainUtils.GOOD:
-		http.Redirect(acWriter, acRequest, "/login", http.StatusFound)
+	case GOOD:
+		Redirect(acWriter, acRequest, "/login", StatusFound)
 	}
 }

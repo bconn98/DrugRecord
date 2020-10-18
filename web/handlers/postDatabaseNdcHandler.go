@@ -58,6 +58,7 @@ func PostDatabaseNdcHandler(acWriter http.ResponseWriter, acRequest *http.Reques
 		lcDateString := lcDate.Month().String() + " " + strconv.Itoa(lcDate.Day()) + " " + strconv.Itoa(lcDate.Year())
 		lsData := data{lcName, lcInput, lcForm, lcSize, lcDateString,
 			lcItemNum, lnQty, lasOrders}
+
 		utils.ExecuteTemplate(acWriter, "databaseDrug.html", lsData)
 		return
 	} else {
