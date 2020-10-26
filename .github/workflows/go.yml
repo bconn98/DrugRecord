@@ -24,7 +24,7 @@ jobs:
     - name: Get dependencies
       run: |
         go version
-        go get -v -t -d ./...
+        go get -v ./...
         
     - name: Build
       run: go build -v .
