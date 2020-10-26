@@ -9,7 +9,6 @@
 </p>
 
 ![GitHub Workflow Status](https://github.com/bconn98/DrugRecord/workflows/Project%20Build/badge.svg?branch=bconn98-patch-1)
-
 ![GitHub Workflow Status](https://github.com/bconn98/DrugRecord/workflows/Project%20Test/badge.svg?branch=bconn98-patch-1)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
