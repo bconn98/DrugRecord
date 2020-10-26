@@ -16,7 +16,7 @@ require (
 	github.com/mattn/go-gtk v0.0.0-20180216084204-5a311a1830ab // indirect
 	github.com/mattn/go-pointer v0.0.0-20171114154726-1d30dc4b6f28 // indirect
 	github.com/skelterjohn/go.wde v0.0.0-20180104102407-a0324cbf3ffe // indirect
-	//github.com/sqweek/dialog v0.0.0-20200911184034-8a3d98e8211d
+	github.com/sqweek/dialog v0.0.0-20200911184034-8a3d98e8211d
 	gopkg.in/go-ini/ini.v1 v1.62.0
 	launchpad.net/goamz v0.0.0-20140813150539-000000000049 // indirect
 )
