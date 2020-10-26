@@ -31,6 +31,7 @@
 - [Contributing](#Contributing)
 - [Team](#Team)
 - [Support](#Support)
+- [License](#License)
 
 ---
 
