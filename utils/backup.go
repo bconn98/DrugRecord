@@ -15,7 +15,7 @@ func Backup() {
 	postgres := &barkup.Postgres{
 		Host: "127.0.0.1",
 		Port: "5432",
-		DB: "drugrecord",
+		DB:   "drugrecord",
 
 		// Not necessary if the program runs as an authorized pg user/role
 		Username: "postgres",
@@ -38,15 +38,15 @@ func Backup() {
 			Log(err.Error(), ERROR)
 		}
 		for _, lcFile := range lacFiles {
-			if strings.Contains(lcFile.Name(), "bu_" ) {
-				err = os.Rename(lcFile.Name(), "backups/" + lcBackupName)
+			if strings.Contains(lcFile.Name(), "bu_") {
+				err = os.Rename(lcFile.Name(), "backups/"+lcBackupName)
 				if err != nil {
 					Log(err.Error(), ERROR)
 				}
 			}
 		}
 
-		Log("Backup written to backups/" +lcBackupName , INFO)
+		Log("Backup written to backups/"+lcBackupName, INFO)
 	}
 
 	lcBackupPath := "backups/"
@@ -55,7 +55,7 @@ func Backup() {
 		Log(err.Error(), ERROR)
 	}
 
-	lcWeekAgo := time.Now().AddDate(0, 0,-7)
+	lcWeekAgo := time.Now().AddDate(0, 0, -7)
 	for _, lcFile := range lacFiles {
 		if lcFile.ModTime().AddDate(0, 0, -6).Before(lcWeekAgo) {
 			if err = os.Remove("backups\\" + lcFile.Name()); err != nil {
