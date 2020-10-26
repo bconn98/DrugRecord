@@ -10,6 +10,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/jimlawless/whereami"
 	_ "github.com/lib/pq"
 )
 
@@ -18,9 +19,9 @@ Function: issue
 Description: Checks for an error and reports it
 @param err The error
 */
-func issue(err error) {
+func issue(err error, acPath string) {
 	if err != nil {
-		Log(err.Error(), ERROR)
+		Log(err.Error(), ERROR, acPath)
 	}
 }
 
@@ -34,29 +35,31 @@ Description: Grabs all of the users from the database
 @return An array of User structures
 */
 func GetUsers() []User {
-	var (
-		lcUserName string
-		lnPassVal  int
-	)
-	issue(err)
+	// var (
+	// 	lcUserName string
+	// 	lnPassVal  int
+	// )
+	issue(err, whereami.WhereAmI())
 
-	rows, err := db.Query("SELECT * FROM userDB;")
-	issue(err)
-
+	// rows, err := db.Query("SELECT * FROM userDB;")
+	// issue(err, whereami.WhereAmI())
+	//
 	var users []User
-
-	for rows.Next() {
-		if rows.Err() != nil {
-			issue(rows.Err())
-			break
-		}
-		issue(rows.Scan(&lcUserName, &lnPassVal))
-		users = append(users, User{lcUserName, lnPassVal})
-	}
-
-	defer func() {
-		issue(rows.Close())
-	}()
+	var testU = User{"Bryan", 2157}
+	users = append(users, testU)
+	//
+	// for rows.Next() {
+	// 	if rows.Err() != nil {
+	// 		issue(rows.Err(), whereami.WhereAmI())
+	// 		break
+	// 	}
+	// 	issue(rows.Scan(&lcUserName, &lnPassVal), whereami.WhereAmI())
+	// 	users = append(users, User{lcUserName, lnPassVal})
+	// }
+	//
+	// defer func() {
+	// 	issue(rows.Close(), whereami.WhereAmI())
+	// }()
 
 	return users
 }
@@ -71,6 +74,6 @@ func AddUser(acUsername string, anPassVal int) {
 	insertString := fmt.Sprintf("%s%s%s%d%s", "INSERT INTO userdb (userName, passVal) VALUES ('", acUsername,
 		"', ", anPassVal, ");")
 	_, err := db.Exec(insertString)
-	issue(err)
-	Log(insertString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(insertString, SQL, whereami.WhereAmI())
 }

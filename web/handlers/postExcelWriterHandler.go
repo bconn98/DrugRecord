@@ -9,6 +9,8 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/jimlawless/whereami"
+
 	"github.com/bconn98/DrugRecord/utils"
 )
 
@@ -20,7 +22,7 @@ database template to refresh the page
 func PostExcelWriterHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	lcFileName := acRequest.PostForm.Get("fileName")

@@ -9,6 +9,8 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/jimlawless/whereami"
+
 	"github.com/bconn98/DrugRecord/utils"
 	"github.com/bconn98/DrugRecord/web/webUtils"
 )
@@ -20,7 +22,7 @@ Description: Executes the database template with the output data
 func GetDatabaseNameHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 	if !gbSignedIn {
 		webUtils.ExecuteTemplate(acWriter, "home.html", "You are not signed in")

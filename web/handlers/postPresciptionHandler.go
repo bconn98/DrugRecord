@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/jimlawless/whereami"
+
 	"github.com/bconn98/DrugRecord/utils"
 	"github.com/bconn98/DrugRecord/web/webUtils"
 )
@@ -23,7 +25,7 @@ database template to refresh
 func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	var lcErrorString string
@@ -40,12 +42,12 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 
 	lrQty, err := strconv.ParseFloat(lnQty, 64)
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	lrActual, err := strconv.ParseFloat(lnActual, 64)
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	if lnActual == "" {

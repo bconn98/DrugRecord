@@ -7,22 +7,18 @@ Description: Runs a database
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/go-co-op/gocron"
 	"github.com/gorilla/mux"
+	"github.com/jimlawless/whereami"
 	"gopkg.in/go-ini/ini.v1"
 
 	"github.com/bconn98/DrugRecord/utils"
 	"github.com/bconn98/DrugRecord/web/handlers"
 )
-
-func test() {
-	fmt.Println("Fuck off")
-}
 
 /**
 Function: main
@@ -59,12 +55,12 @@ func main() {
 	}
 
 	// If the file doesn't exist, create it, or append to the file
-	utils.Log("Starting Program", utils.INFO)
+	utils.Log("Starting Program", utils.INFO, whereami.WhereAmI())
 
 	lcGoScheduler := gocron.NewScheduler(time.UTC)
 	_, err = lcGoScheduler.Every(1).Day().At("04:00").Do(utils.Backup)
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 	lcGoScheduler.StartAsync()
 
@@ -125,7 +121,7 @@ func main() {
 	http.Handle("/", utils.AcRouter)
 	err = http.ListenAndServe(":80", nil)
 	if err != nil {
-		utils.Log("Failed to listen on port 80", utils.ERROR)
+		utils.Log("Failed to listen on port 80", utils.ERROR, whereami.WhereAmI())
 		log.Fatal(err)
 	}
 }

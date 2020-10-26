@@ -46,6 +46,8 @@ github.com/jcmturner/gokrb5/v8 v8.2.0 h1:lzPl/30ZLkTveYsYZPKMcgXc8MbnE6RsTd4F9Kg
 github.com/jcmturner/gokrb5/v8 v8.2.0/go.mod h1:T1hnNppQsBtxW0tCHMHTkAt8n/sABdzZgZdoFrZaZNM=
 github.com/jcmturner/rpc/v2 v2.0.2 h1:gMB4IwRXYsWw4Bc6o/az2HJgFUA1ffSh90i26ZJ6Xl0=
 github.com/jcmturner/rpc/v2 v2.0.2/go.mod h1:VUJYCIDm3PVOEHw8sgt091/20OJjskO/YJki3ELg/Hc=
+github.com/jimlawless/whereami v0.0.0-20160417220522-aebf70d4a772 h1:AmdJkqc+PNWRgFZH/W9W5HbSt5L42ZJaG3LBqIA8D/M=
+github.com/jimlawless/whereami v0.0.0-20160417220522-aebf70d4a772/go.mod h1:O5/I95fNj2n4v8dVHc/XX/rv4i9P5AAr0koHbBkPnh8=
 github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7C0MuV77Wo=
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
 github.com/keighl/barkup v0.0.0-20170220130926-692ec4e5a83a h1:EtHn8KAQ5Koslm8rSrzYRmvMEoGDpGEAKqJLXKMIrb0=

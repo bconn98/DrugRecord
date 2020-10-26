@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jimlawless/whereami"
 	_ "github.com/lib/pq"
 )
 
@@ -34,16 +35,16 @@ func FindNDC(acNdc string) (string, string, string, string, string, time.Time, f
 
 	rows, err := db.Query("SELECT pharmacist, date, qty, script, type, "+
 		"id FROM orderdb WHERE ndc = $1 ORDER BY date desc;", acNdc)
-	issue(err)
-	Log(selectString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(selectString, SQL, whereami.WhereAmI())
 
 	for rows.Next() {
 		if rows.Err() != nil {
-			issue(rows.Err())
+			issue(rows.Err(), whereami.WhereAmI())
 			break
 		}
 
-		issue(rows.Scan(&lcPharmacist, &lcDate, &lnQty, &lcScript, &lcType, &lnId))
+		issue(rows.Scan(&lcPharmacist, &lcDate, &lnQty, &lcScript, &lcType, &lnId), whereami.WhereAmI())
 		lcMonth, lcDay, lcYear := ParseDateStrings(lcDate)
 		lasOrders = append(lasOrders, MakeOrder(acNdc, lcPharmacist, lcScript, lcType, lnQty, 0, lcYear,
 			lcMonth, lcDay, lnId))
@@ -54,15 +55,15 @@ func FindNDC(acNdc string) (string, string, string, string, string, time.Time, f
 
 	err = db.QueryRow("SELECT name, form, item_num, size, date, qty FROM drugdb WHERE ndc = $1;",
 		acNdc).Scan(&lcName, &lcForm, &lcItemNum, &lcSize, &lcDate, &lnDrugQty)
-	issue(err)
-	Log(selectString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(selectString, SQL, whereami.WhereAmI())
 
 	if err != nil {
 		return "", "", "", "", "", time.Time{}, 0, nil
 	}
 
 	defer func() {
-		issue(rows.Close())
+		issue(rows.Close(), whereami.WhereAmI())
 	}()
 
 	return lcName, acNdc, lcForm, lcItemNum, lcSize, lcDate, lnDrugQty, lasOrders
@@ -88,22 +89,22 @@ func GetOrder(anId int64) []Order {
 	selectString = fmt.Sprintf("%s%d%s", "SELECT ndc, pharmacist, qty, date, "+
 		"type FROM orderdb WHERE id = ", anId, ";")
 
-	Log(selectString, SQL)
-	issue(err)
+	Log(selectString, SQL, whereami.WhereAmI())
+	issue(err, whereami.WhereAmI())
 
 	for rows.Next() {
 		if rows.Err() != nil {
-			issue(rows.Err())
+			issue(rows.Err(), whereami.WhereAmI())
 			break
 		}
 
-		issue(rows.Scan(&lcNdc, &lcPharm, &lnQty, &lcDate, &lcType, &lcScript))
+		issue(rows.Scan(&lcNdc, &lcPharm, &lnQty, &lcDate, &lcType, &lcScript), whereami.WhereAmI())
 		lasOrders = append(lasOrders, MakeOrder(lcNdc, lcPharm, lcScript, lcType, lnQty,
 			0, strconv.Itoa(lcDate.Year()), lcDate.Month().String(), strconv.Itoa(lcDate.Day()), anId))
 	}
 
 	defer func() {
-		issue(rows.Close())
+		issue(rows.Close(), whereami.WhereAmI())
 	}()
 
 	return lasOrders
@@ -119,8 +120,8 @@ func DeleteOrder(anId int64) {
 	var lcNdc, lcType string
 
 	selectString := fmt.Sprintf("%s%d%s", "SELECT qty, ndc FROM orderdb WHERE id = ", anId, ";")
-	issue(db.QueryRow("SELECT qty, ndc, type FROM orderdb WHERE id = $1;", anId).Scan(&lnQty, &lcNdc, &lcType))
-	Log(selectString, SQL)
+	issue(db.QueryRow("SELECT qty, ndc, type FROM orderdb WHERE id = $1;", anId).Scan(&lnQty, &lcNdc, &lcType), whereami.WhereAmI())
+	Log(selectString, SQL, whereami.WhereAmI())
 
 	if strings.ToUpper(lcType) != "AUDIT" {
 		if strings.ToUpper(lcType) == "PURCHASE" {
@@ -134,14 +135,14 @@ func DeleteOrder(anId int64) {
 
 		_, err = db.Exec("UPDATE orderdb set qty = qty + $1 WHERE ndc = $2 AND id > $3 AND type = 'Over/Short';",
 			lnQty, lcNdc, anId)
-		issue(err)
-		Log(updateString, SQL)
+		issue(err, whereami.WhereAmI())
+		Log(updateString, SQL, whereami.WhereAmI())
 	}
 
 	deleteString := fmt.Sprintf("%s%d%s", "DELETE FROM orderdb WHERE id =", anId, ";")
 	_, err = db.Exec("DELETE FROM orderdb WHERE id = $1;", anId)
-	issue(err)
-	Log(deleteString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(deleteString, SQL, whereami.WhereAmI())
 
 }
 
@@ -162,16 +163,16 @@ func UpdateOrder(acId string, acScript string, acQty string) {
 	lnId, err := strconv.ParseInt(acId, 10, 64)
 
 	selectString := fmt.Sprintf("%s%d%s", "SELECT qty, ndc FROM orderdb WHERE id = ", lnId, ";")
-	issue(db.QueryRow("SELECT qty, ndc, type FROM orderdb WHERE id = $1;", lnId).Scan(&lnOldQty, &lcNdc, &lcType))
-	Log(selectString, SQL)
+	issue(db.QueryRow("SELECT qty, ndc, type FROM orderdb WHERE id = $1;", lnId).Scan(&lnOldQty, &lcNdc, &lcType), whereami.WhereAmI())
+	Log(selectString, SQL, whereami.WhereAmI())
 
 	lcType = strings.ToUpper(lcType)
 
 	updateString := fmt.Sprintf("%s%f%s%s%s%d%s", "UPDATE orderdb SET qty = ", lnQty, ", script = '",
 		acScript, "' WHERE id = ", lnId, ";")
 	_, err = db.Exec("UPDATE orderdb SET qty = $1, script = $2 WHERE id = $3;", lnQty, acScript, lnId)
-	issue(err)
-	Log(updateString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(updateString, SQL, whereami.WhereAmI())
 
 	var lrDifference float64
 	if lcType == "PURCHASE" || lcType == "OVER/SHORT" {
@@ -203,8 +204,8 @@ func addType(order Order) (bool, int) {
 
 	issue(db.QueryRow("SELECT count(script) FROM orderdb WHERE script = $1 AND date = make_date($2, $3, "+
 		"$4) AND qty = $5 AND ndc = $6 AND type = $7;", order.AcScript, order.AcYear, order.AcMonth, order.AcDay,
-		order.ArQty, order.AcNdc, order.AcType).Scan(&lnCount))
-	Log(selectString, SQL)
+		order.ArQty, order.AcNdc, order.AcType).Scan(&lnCount), whereami.WhereAmI())
+	Log(selectString, SQL, whereami.WhereAmI())
 
 	if lnCount != 0 {
 		return false, 0
@@ -218,12 +219,12 @@ func addType(order Order) (bool, int) {
 		"logdate, script, type) VALUES ($1, $2, $3, make_date($4, $5, $6), current_date, $7, $8);", order.AcNdc,
 		order.AcPharmacist, order.ArQty, order.AcYear, order.AcMonth, order.AcDay, order.AcScript, order.AcType)
 
-	issue(err)
-	Log(insertString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(insertString, SQL, whereami.WhereAmI())
 
 	issue(db.QueryRow("SELECT id FROM orderdb where ndc = $1 and pharmacist = $2 and qty = $3 and date = make_date("+
 		"$4, $5, $6) and script = $7 and type = $8;", order.AcNdc, order.AcPharmacist, order.ArQty, order.AcYear,
-		order.AcMonth, order.AcDay, order.AcScript, order.AcType).Scan(&lnId))
+		order.AcMonth, order.AcDay, order.AcScript, order.AcType).Scan(&lnId), whereami.WhereAmI())
 
 	return true, lnId
 }
@@ -239,22 +240,22 @@ func alterQty(acNdc string, arQty float64) {
 
 	selectString := fmt.Sprintf("%s%s%s", "SELECT qty FROM drugdb WHERE ndc = '", acNdc, "';")
 	err = db.QueryRow("SELECT qty FROM drugdb WHERE ndc = $1;", acNdc).Scan(&lnRowQty)
-	issue(err)
-	Log(selectString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(selectString, SQL, whereami.WhereAmI())
 
 	if err != nil {
 		insertString := fmt.Sprintf("%s%s%s%f%s", "INSERT INTO drugdb (ndc, qty) VALUES ('", acNdc, "', ", arQty, ");")
 		_, err = db.Exec("INSERT INTO drugdb (ndc, qty) VALUES ($1, $2);", acNdc, arQty)
-		issue(err)
-		Log(insertString, SQL)
+		issue(err, whereami.WhereAmI())
+		Log(insertString, SQL, whereami.WhereAmI())
 		return
 	}
 
 	lnNewQty := lnRowQty - arQty
 	updateString := fmt.Sprintf("%s%.3f%s%s%s", "UPDATE drugdb SET qty = ", lnNewQty, " WHERE ndc =", acNdc, ";")
 	_, err = db.Exec("UPDATE drugdb SET qty = $1 WHERE ndc = $2", lnNewQty, acNdc)
-	issue(err)
-	Log(updateString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(updateString, SQL, whereami.WhereAmI())
 }
 
 /**
@@ -268,13 +269,13 @@ func setDrugQty(acNdc string, arQty float64) float64 {
 	var lnRowQty float64
 
 	selectString := fmt.Sprintf("%s%s%s", "SELECT qty FROM drugdb WHERE ndc = '", acNdc, "';")
-	issue(db.QueryRow("SELECT qty FROM drugdb WHERE ndc = $1;", acNdc).Scan(&lnRowQty))
-	Log(selectString, SQL)
+	issue(db.QueryRow("SELECT qty FROM drugdb WHERE ndc = $1;", acNdc).Scan(&lnRowQty), whereami.WhereAmI())
+	Log(selectString, SQL, whereami.WhereAmI())
 
 	updateString := fmt.Sprintf("%s%f%s%s%s", "UPDATE drugdb SET qty = ", arQty, " WHERE ndc ='", acNdc, "';")
 	_, err = db.Exec("UPDATE drugdb SET qty = $1 WHERE ndc = $2;", arQty, acNdc)
-	issue(err)
-	Log(updateString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(updateString, SQL, whereami.WhereAmI())
 
 	return lnRowQty - arQty
 }
@@ -314,7 +315,7 @@ func AddPrescription(prescription Prescription) (bool, int) {
  */
 func AddAudit(audit Audit) (bool, int) {
 
-	issue(err)
+	issue(err, whereami.WhereAmI())
 
 	lbCheck := true
 	order := MakeOrder(audit.mcNdc, audit.mcPharmacist, "", "Audit", audit.mnAuditQuantity,
@@ -370,8 +371,8 @@ func NewCheck(acNdc string) bool {
 	var lnCount int
 
 	selectString := fmt.Sprintf("%s%s%s", "SELECT count(ndc) FROM drugdb WHERE ndc = '", acNdc, "';")
-	issue(db.QueryRow("SELECT count(ndc) FROM drugdb WHERE ndc = $1;", acNdc).Scan(&lnCount))
-	Log(selectString, SQL)
+	issue(db.QueryRow("SELECT count(ndc) FROM drugdb WHERE ndc = $1;", acNdc).Scan(&lnCount), whereami.WhereAmI())
+	Log(selectString, SQL, whereami.WhereAmI())
 
 	return lnCount >= 1
 }
@@ -393,8 +394,8 @@ func AddDrug(acNdc string, acMonth string, acDay string, acYear string) {
 		"', make_date(", lnYear, ", ", lnMonth, ", ", lnDay, "));")
 
 	_, err = db.Exec("INSERT INTO drugdb (ndc, date) VALUES ($1, make_date($2, $3, $4));", acNdc, lnYear, lnMonth, lnDay)
-	issue(err)
-	Log(insertString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(insertString, SQL, whereami.WhereAmI())
 }
 
 /**
@@ -409,14 +410,14 @@ func AddDrug(acNdc string, acMonth string, acDay string, acYear string) {
  */
 func UpdateDrug(acSize string, acForm string, acItemNum string, acName string, acNdc string,
 	arQty float64, acOldNdc string) {
-	updateString := fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", "UPDATE drugdb SET size = '", acSize, "', form = '",
+	updateString := fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s%s%s", "UPDATE drugdb SET size = '", acSize, "', form = '",
 		acForm, "', item_num = '", acItemNum, "', name = '", acName, "', ndc = '", acNdc, "' WHERE ndc = '", acOldNdc, "';")
 
 	_, err := db.Exec("UPDATE drugdb SET size = $1, form = $2, item_num = $3, name = $4, ndc = $5, "+
 		"qty = $6 WHERE ndc = $7;",
 		acSize, acForm, acItemNum, acName, acNdc, arQty, acOldNdc)
-	issue(err)
-	Log(updateString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(updateString, SQL, whereami.WhereAmI())
 
 	if acNdc != acOldNdc {
 		_, err = db.Exec("DELETE from drugdb where ndc = $1", acOldNdc)
@@ -434,28 +435,28 @@ func UpdateOrderNdc(acId string, acNdc string) {
 	var lcNdc string
 	var lcType string
 
-	issue(db.QueryRow("SELECT ndc FROM orderdb WHERE id = $1", acId).Scan(&lcNdc))
+	issue(db.QueryRow("SELECT ndc FROM orderdb WHERE id = $1", acId).Scan(&lcNdc), whereami.WhereAmI())
 
 	if lcNdc != acNdc {
 		_, err := db.Exec("DELETE FROM drugdb WHERE ndc = $1", lcNdc)
-		issue(err)
+		issue(err, whereami.WhereAmI())
 	}
 
 	updateString := fmt.Sprintf("%s%s%s%s%s", "UPDATE orderdb set ndc = '", acNdc, "' where id = '", acId, "';")
 
 	_, err = db.Exec("UPDATE orderdb set ndc = $1 where id = $2", acNdc, acId)
-	issue(err)
-	Log(updateString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(updateString, SQL, whereami.WhereAmI())
 
-	issue(db.QueryRow("SELECT qty, type FROM orderdb WHERE id = $1;", acId).Scan(&lrQty, &lcType))
+	issue(db.QueryRow("SELECT qty, type FROM orderdb WHERE id = $1;", acId).Scan(&lrQty, &lcType), whereami.WhereAmI())
 
 	if lcType == "Purchase" {
 		lrQty *= -1
 	}
 	updateString = fmt.Sprintf("%s%f%s%s%s", "UPDATE drugdb set qty = qty - ", lrQty, " where ndc = '", acNdc, "';")
 	_, err = db.Exec("UPDATE drugdb set qty = qty - $1 where ndc = $2", lrQty, acNdc)
-	issue(err)
-	Log(updateString, SQL)
+	issue(err, whereami.WhereAmI())
+	Log(updateString, SQL, whereami.WhereAmI())
 }
 
 func GetDrugs(acName string) []DrugDB {
@@ -466,18 +467,18 @@ func GetDrugs(acName string) []DrugDB {
 
 	rows, err := db.Query("SELECT ndc, name, size, form, item_num, qty, "+
 		"date from drugdb where lower(name) like lower($1)", acName)
-	issue(err)
+	issue(err, whereami.WhereAmI())
 
 	for rows.Next() {
 		if rows.Err() != nil {
-			issue(rows.Err())
+			issue(rows.Err(), whereami.WhereAmI())
 			break
 		}
 
-		issue(rows.Scan(&ndc, &name, &size, &form, &item_num, &qty, &date))
+		issue(rows.Scan(&ndc, &name, &size, &form, &item_num, &qty, &date), whereami.WhereAmI())
 
 		lrQty, err := strconv.ParseFloat(qty, 10)
-		issue(err)
+		issue(err, whereami.WhereAmI())
 		month, day, year := ParseDateStrings(date)
 
 		lasDrugs = append(lasDrugs,
@@ -501,9 +502,9 @@ func GetDrugs(acName string) []DrugDB {
 func GetDrug(acNdc string) Drug {
 	var name, size, form, item_num, qty string
 	issue(db.QueryRow("SELECT name, size, form, item_num, qty from drugdb where ndc = $1", acNdc).Scan(&name, &size,
-		&form, &item_num, &qty))
+		&form, &item_num, &qty), whereami.WhereAmI())
 	lrQty, err := strconv.ParseFloat(qty, 10)
-	issue(err)
+	issue(err, whereami.WhereAmI())
 
 	return Drug{
 		McNdc:      acNdc,

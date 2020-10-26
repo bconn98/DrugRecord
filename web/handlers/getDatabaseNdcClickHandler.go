@@ -11,6 +11,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/jimlawless/whereami"
 
 	"github.com/bconn98/DrugRecord/utils"
 	"github.com/bconn98/DrugRecord/web/webUtils"
@@ -25,7 +26,7 @@ func GetDatabaseNdcClickHandler(acWriter http.ResponseWriter, acRequest *http.Re
 
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 	vars := mux.Vars(acRequest)
 	lcNdc := vars["ndc"]

@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/jimlawless/whereami"
+
 	"github.com/bconn98/DrugRecord/utils"
 	"github.com/bconn98/DrugRecord/web/webUtils"
 )
@@ -23,7 +25,7 @@ and executes the database template to refresh
 func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	var lcErrorString string
@@ -37,7 +39,7 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 	lcErrorString, lcYear = webUtils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
 	lrQty, err := strconv.ParseFloat(acRequest.PostForm.Get("qty"), 64)
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	lcActual := acRequest.PostForm.Get("realCount")
@@ -46,7 +48,7 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 	}
 	lrActual, err := strconv.ParseFloat(lcActual, 64)
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	if lcErrorString != "" {

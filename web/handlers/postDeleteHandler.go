@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/jimlawless/whereami"
+
 	"github.com/bconn98/DrugRecord/utils"
 )
 
@@ -20,7 +22,7 @@ Description: Sends the delete information to find the order to delete
 func PostDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	lcId := acRequest.PostForm.Get("id")

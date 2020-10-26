@@ -8,6 +8,8 @@ package handlers
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/jimlawless/whereami"
+
 	"net/http"
 	"strconv"
 
@@ -22,7 +24,7 @@ Description: Executes the delete template
 func GetDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	vars := mux.Vars(acRequest)
@@ -30,7 +32,7 @@ func GetDeleteHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lnId, err := strconv.ParseInt(vars["id"], 10, 64)
 
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	lasOrders := utils.GetOrder(lnId)

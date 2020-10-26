@@ -11,6 +11,7 @@ require (
 	github.com/go-co-op/gocron v0.3.1
 	github.com/gorilla/mux v1.7.4
 	github.com/gotk3/gotk3 v0.5.0 // indirect
+	github.com/jimlawless/whereami v0.0.0-20160417220522-aebf70d4a772
 	github.com/keighl/barkup v0.0.0-20170220130926-692ec4e5a83a
 	github.com/lib/pq v1.6.0
 	github.com/mattn/go-gtk v0.0.0-20180216084204-5a311a1830ab // indirect

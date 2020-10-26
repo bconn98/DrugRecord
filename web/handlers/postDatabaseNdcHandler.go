@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/jimlawless/whereami"
+
 	"github.com/bconn98/DrugRecord/utils"
 	"github.com/bconn98/DrugRecord/web/webUtils"
 )
@@ -29,7 +31,7 @@ in the database template
 func PostDatabaseNdcHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 	var lcErrorString string
 	lcInput := acRequest.PostForm.Get("search")
