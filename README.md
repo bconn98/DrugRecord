@@ -8,6 +8,7 @@
     <a href="https://opensource.org/licenses/MIT-License"><img src="https://img.shields.io/badge/license-bsd-orange.svg" alt="Licenses"></a> -->
 </p>
 
+[![GitHub Workflow Status](https://github.com/bconn98/DrugRecord/workflows/Build/badge.svg?branch=bconn98-patch-1))  
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # C-ll Tracking
