@@ -115,3 +115,6 @@ Reach out to me at one of the following places!
 - Facebook at <a href="https://www.facebook.com/bryan.conn.39/" target="_blank"> `bryan.conn.39` </a>
 - Instagram at <a href="https://www.instagram.com/bconn98/" target="_blank"> `bconn98` </a>
 - Github at <a href="http://github.com/bconn98" target="_blank">`bconn98`</a>
+
+## License
+This project is released under the MIT License.
