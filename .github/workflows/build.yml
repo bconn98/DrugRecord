@@ -43,10 +43,10 @@ jobs:
 #            go get -v ./...
 
       - name: Build
-          run: go build -v .
+        run: go build -v .
 
       - name: Test
-          run: cd utils; go test -v .
+        run: cd utils; go test -v .
 #
 #  deploy:
 #    name: Deploy
