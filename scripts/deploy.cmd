@@ -26,5 +26,4 @@ copy .\scripts\setup_db.cmd DrugRecord\scripts\setup_db.cmd
 copy .\scripts\restore.cmd DrugRecord\scripts\restore.cmd
 copy .\configs\configuration.ini DrugRecord\configs\configuration.ini
 del %working_dir%\DrugRecord.exe
-makensis.exe scripts\installer.nsi
 cd %scripts_dir%
