@@ -41,7 +41,9 @@ jobs:
         run: go build -v .
 
       - name: Test
-        run: cd utils; go test -v .
+        run: |
+        cd utils
+        go test -v .
 
   deploy:
     name: Deploy
@@ -58,3 +60,10 @@ jobs:
 
       - name: Deploy
         run: scripts/deploy.cmd
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: DrugRecord
+          path: DrugRecord/
+          retention-days: 5
