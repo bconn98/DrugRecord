@@ -2,12 +2,12 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/DrugRecord/src/github.com/360EntSecGroup-Skylar/excelize" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/DrugRecord/src/github.com/augustoroman/v8" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/DrugRecord/src/github.com/gorilla/mux" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/DrugRecord/src/github.com/lib/pq" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/DrugRecord/src/github.com/mohae/deepcopy" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/DrugRecord/src/golang.org/x/net" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/DrugRecord/src/golang.org/x/text" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/DrugRecord/src/github.com/360EntSecGroup-Skylar/excelize" vcs="" />
+    <mapping directory="$PROJECT_DIR$/DrugRecord/src/github.com/augustoroman/v8" vcs="" />
+    <mapping directory="$PROJECT_DIR$/DrugRecord/src/github.com/gorilla/mux" vcs="" />
+    <mapping directory="$PROJECT_DIR$/DrugRecord/src/github.com/lib/pq" vcs="" />
+    <mapping directory="$PROJECT_DIR$/DrugRecord/src/github.com/mohae/deepcopy" vcs="" />
+    <mapping directory="$PROJECT_DIR$/DrugRecord/src/golang.org/x/net" vcs="" />
+    <mapping directory="$PROJECT_DIR$/DrugRecord/src/golang.org/x/text" vcs="" />
   </component>
 </project>

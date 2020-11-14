@@ -1,6 +1,13 @@
 package webUtils
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+
+	"github.com/jimlawless/whereami"
+
+	"github.com/bconn98/DrugRecord/utils"
+)
 
 /**
 Function: ParseDate
@@ -22,4 +29,12 @@ func ParseDate(acDate string) (string, string, string) {
 	} else {
 		return "", "", ""
 	}
+}
+
+func ParseFloat(acFloatVal string) float64 {
+	lrQty, err := strconv.ParseFloat(acFloatVal, 64)
+	if err != nil {
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
+	}
+	return lrQty
 }

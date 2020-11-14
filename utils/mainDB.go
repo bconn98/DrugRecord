@@ -391,9 +391,10 @@ func AddDrug(acNdc string, acMonth string, acDay string, acYear string) {
 	lnYear, _ := strconv.Atoi(acYear)
 
 	insertString := fmt.Sprintf("%s%s%s%d%s%d%s%d%s", "INSERT INTO drugdb (ndc, date) VALUES ('", acNdc,
-		"', make_date(", lnYear, ", ", lnMonth, ", ", lnDay, "));")
+		"', make_date(", lnYear, ", ", lnMonth, ", ", lnDay, "), 0);")
 
-	_, err = db.Exec("INSERT INTO drugdb (ndc, date) VALUES ($1, make_date($2, $3, $4));", acNdc, lnYear, lnMonth, lnDay)
+	_, err = db.Exec("INSERT INTO drugdb (ndc, date, qty) VALUES ($1, make_date($2, $3, $4), $5);", acNdc, lnYear,
+		lnMonth, lnDay, 0)
 	issue(err, whereami.WhereAmI())
 	Log(insertString, SQL, whereami.WhereAmI())
 }

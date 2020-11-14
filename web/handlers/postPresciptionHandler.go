@@ -8,7 +8,6 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/jimlawless/whereami"
@@ -40,15 +39,8 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 	lnQty := acRequest.PostForm.Get("qty")
 	lnActual := acRequest.PostForm.Get("realCount")
 
-	lrQty, err := strconv.ParseFloat(lnQty, 64)
-	if err != nil {
-		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
-	}
-
-	lrActual, err := strconv.ParseFloat(lnActual, 64)
-	if err != nil {
-		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
-	}
+	lrQty := webUtils.ParseFloat(lnQty)
+	lrActual := webUtils.ParseFloat(lnActual)
 
 	if lnActual == "" {
 		lrActual = -1000
@@ -69,11 +61,9 @@ func PostPrescriptionHandler(acWriter http.ResponseWriter, acRequest *http.Reque
 
 		if !lbLogged {
 			webUtils.ExecuteTemplate(acWriter, "prescription.html", "Prescription already logged!")
-			return
+		} else {
+			GetCloseHandler(acWriter, acRequest)
 		}
-
-		GetCloseHandler(acWriter, acRequest)
-		return
 	} else {
 		utils.AddDrug(lcNdc, lcMonth, lcDay, lcYear)
 		_, id := utils.AddPrescription(prescription)
