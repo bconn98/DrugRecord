@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <title>New Drug</title>
 </head>
+<script>
+    window.onbeforeunload = function(event) {
+        event.returnValue = "Are you sure you want to leave?";
+        return Promise.resolve("Dummy response to keep the console quiet");
+    };
+</script>
 <body>
 <form action="/newDrug" method="POST">
     <label>

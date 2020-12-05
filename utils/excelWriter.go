@@ -106,7 +106,7 @@ func getSheet(acNdc string, acName string) {
 	originalDate := time.Date(1900, 1, 1, 0, 0, 0, 0, time.UTC)
 	programDate := time.Date(2019, 5, 3, 0, 0, 0, 0, time.UTC)
 
-	issue(db.QueryRow("SELECT form, item_num, date, size from drugDB where ndc = $1", acNdc).Scan(&lcForm, &lcItem,
+	issue(McDb.QueryRow("SELECT form, item_num, date, size from drugDB where ndc = $1", acNdc).Scan(&lcForm, &lcItem,
 		&lcDate, &lcSize), whereami.WhereAmI())
 
 	issue(file.SetCellValue(acName, "B1", acName), whereami.WhereAmI())
@@ -117,7 +117,7 @@ func getSheet(acNdc string, acName string) {
 		lcDate.Day())+"/"+strconv.Itoa(lcDate.Year())), whereami.WhereAmI())
 	issue(file.SetCellValue(acName, "G2", lcSize), whereami.WhereAmI())
 
-	rows, err := db.Query("SELECT pharmacist, qty, date, logdate, script, "+
+	rows, err := McDb.Query("SELECT pharmacist, qty, date, logdate, script, "+
 		"type from orderDB where ndc = $1 order by date, id", acNdc)
 	issue(err, whereami.WhereAmI())
 
@@ -295,7 +295,7 @@ func ExcelWriter(acFileName string) {
 	monthMap["November"] = 11
 	monthMap["December"] = 12
 
-	rows, err := db.Query("SELECT name, ndc from drugDB order by name")
+	rows, err := McDb.Query("SELECT name, ndc from drugDB order by name")
 	issue(err, whereami.WhereAmI())
 
 	var lnCounter int

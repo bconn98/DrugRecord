@@ -15,6 +15,7 @@ const (
 	INFO             = 2
 	WARNING          = 3
 	ERROR            = 4
+	FATAL            = 5
 )
 
 var GpcFile *os.File
@@ -55,12 +56,13 @@ func logAll(acLog string, acLogLevel string, anLogLevel LogLevel, acPath string)
 
 func updateLogStructure() {
 	var fileName string
+	var err error
 	currentDateString := time.Now().Format("01-2006")
 	currentDateString = strings.Replace(currentDateString, "-", "_", -1)
-	fileName = "../log/" + currentDateString + "_log.log"
+	fileName = "log/" + currentDateString + "_log.log"
 	if !fileExists(fileName) {
 		if GpcFile != nil {
-			if err = GpcFile.Close(); err != nil {
+			if err := GpcFile.Close(); err != nil {
 				log.Fatal(err)
 			}
 		}

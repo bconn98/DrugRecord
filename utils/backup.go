@@ -14,12 +14,12 @@ import (
 func Backup() {
 
 	postgres := &barkup.Postgres{
-		Host: "127.0.0.1",
-		Port: "5432",
-		DB:   "drugrecord",
+		Host: McHost,
+		Port: McPort,
+		DB:   McDatabase,
 
 		// Not necessary if the program runs as an authorized pg user/role
-		Username: "postgres",
+		Username: McUsername,
 
 		// Any extra pg_dump options
 		Options: []string{"--no-owner"},

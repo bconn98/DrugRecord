@@ -7,7 +7,6 @@ Description: Works with the userdb
 package utils
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/jimlawless/whereami"
@@ -25,10 +24,6 @@ func issue(err error, acPath string) {
 	}
 }
 
-// Database password needs to be changed when released
-var connStr = "postgres://postgres:Zoo123@localhost/drugrecord?sslmode=disable"
-var db, err = sql.Open("postgres", connStr)
-
 /**
 Function: GetUsers
 Description: Grabs all of the users from the database
@@ -39,7 +34,6 @@ func GetUsers() []User {
 	// 	lcUserName string
 	// 	lnPassVal  int
 	// )
-	issue(err, whereami.WhereAmI())
 
 	// rows, err := db.Query("SELECT * FROM userDB;")
 	// issue(err, whereami.WhereAmI())
@@ -73,7 +67,7 @@ Description: Adds a user to the database
 func AddUser(acUsername string, anPassVal int) {
 	insertString := fmt.Sprintf("%s%s%s%d%s", "INSERT INTO userdb (userName, passVal) VALUES ('", acUsername,
 		"', ", anPassVal, ");")
-	_, err := db.Exec(insertString)
+	_, err := McDb.Exec(insertString)
 	issue(err, whereami.WhereAmI())
 	Log(insertString, SQL, whereami.WhereAmI())
 }

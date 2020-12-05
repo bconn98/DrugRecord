@@ -26,9 +26,13 @@ InstallDir $DESKTOP\C-ll
 ; The text to prompt the user to enter a directory
 DirText "This will install C-ll on your computer. Choose a directory"
 
-
 Var Dialog
 Var TextPgDir
+Var Password
+Var Username
+Var Port
+Var Host
+Var Database
 
 ;--------------------------------
 Page Directory
@@ -39,12 +43,18 @@ Section !Required
         ; Set install path
         SetOutPath $INSTDIR
 
-        FileOpen $9 "$DESKTOP\..\.pgpass" w
-        FileWrite $9 "localhost:5432:drugrecord:postgres:Zoo123"
-        FileClose $9
-
         ; Put files there
         File /r "A:\Documents\JetBrains\GolandProjects\DrugRecord\DrugRecord\*"
+
+        ReadINIStr $Password "$INSTDIR\configs\configuration.ini" "PostgreSQL" "password"
+        ReadINIStr $Username "$INSTDIR\configs\configuration.ini" "PostgreSQL" "username"
+        ReadINIStr $Port "$INSTDIR\configs\configuration.ini" "PostgreSQL" "port"
+        ReadINIStr $Host "$INSTDIR\configs\configuration.ini" "PostgreSQL" "host"
+        ReadINIStr $Database "$INSTDIR\configs\configuration.ini" "PostgreSQL" "database"
+
+        FileOpen $9 "$DESKTOP\..\.pgpass" w
+        FileWrite $9 "$Host:$Port:$Database:$Username:$Password"
+        FileClose $9
 SectionEnd
 
 Page custom LogoPage
@@ -132,7 +142,7 @@ Section
   IfFileExists $PROGRAMFILES64\PostgreSQL endPostgreSQL beginPostgreSQL
   Goto endPostgreSQL
   beginPostgreSQL:
-    ExecWait "$INSTDIR\Prerequisites\postgresql-12.3-1-windows-x64.exe --mode unattended  --servicepassword Zoo123"
+    ExecWait "$INSTDIR\Prerequisites\postgresql-12.3-1-windows-x64.exe --mode unattended  --servicepassword $Password"
   endPostgreSQL:
 
   ; Create uninstaller
