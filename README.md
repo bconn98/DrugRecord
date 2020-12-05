@@ -14,7 +14,7 @@
 
 **Check it out!**
 
-![Recordit GIF](http://g.recordit.co/u1kQQv4K77.gif)
+![Recordit GIF](https://recordit.co/v3pVxkbKi6.gif)
 
 ---
 
