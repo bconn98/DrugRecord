@@ -8,8 +8,9 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
+
+	"github.com/jimlawless/whereami"
 
 	"github.com/bconn98/DrugRecord/utils"
 	"github.com/bconn98/DrugRecord/web/webUtils"
@@ -23,7 +24,7 @@ and executes the database template to refresh
 func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	var lcErrorString string
@@ -35,18 +36,14 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 	lcPurchaseDate := acRequest.PostForm.Get("PurchaseDate")
 	lcMonth, lcDay, lcYear := webUtils.ParseDate(lcPurchaseDate)
 	lcErrorString, lcYear = webUtils.CheckDate(lcMonth, lcDay, lcYear, lcErrorString)
-	lrQty, err := strconv.ParseFloat(acRequest.PostForm.Get("qty"), 64)
-	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
-	}
-
+	lcQty := acRequest.PostForm.Get("qty")
 	lcActual := acRequest.PostForm.Get("realCount")
+
+	lrQty := webUtils.ParseFloat(lcQty)
+	lrActual := webUtils.ParseFloat(lcActual)
+
 	if lcActual == "" {
-		lcActual = "-1000" // Set a default value that should never be seen
-	}
-	lrActual, err := strconv.ParseFloat(lcActual, 64)
-	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		lrActual = -1000
 	}
 
 	if lcErrorString != "" {
@@ -65,11 +62,9 @@ func PostPurchaseHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 
 		if !lbLogged {
 			webUtils.ExecuteTemplate(acWriter, "purchase.html", "Purchase already logged!")
-			return
+		} else {
+			GetCloseHandler(acWriter, acRequest)
 		}
-
-		GetCloseHandler(acWriter, acRequest)
-		return
 	} else {
 		utils.AddDrug(lcNdc, lcMonth, lcDay, lcYear)
 		_, id := utils.AddPurchase(purchase)

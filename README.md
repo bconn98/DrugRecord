@@ -8,6 +8,7 @@
     <a href="https://opensource.org/licenses/MIT-License"><img src="https://img.shields.io/badge/license-bsd-orange.svg" alt="Licenses"></a> -->
 </p>
 
+![GitHub Workflow Status](https://github.com/bconn98/DrugRecord/workflows/Project%20Build/badge.svg?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # C-ll Tracking
@@ -30,6 +31,7 @@
 - [Contributing](#Contributing)
 - [Team](#Team)
 - [Support](#Support)
+- [License](#License)
 
 ---
 
@@ -114,3 +116,6 @@ Reach out to me at one of the following places!
 - Facebook at <a href="https://www.facebook.com/bryan.conn.39/" target="_blank"> `bryan.conn.39` </a>
 - Instagram at <a href="https://www.instagram.com/bconn98/" target="_blank"> `bconn98` </a>
 - Github at <a href="http://github.com/bconn98" target="_blank">`bconn98`</a>
+
+## License
+This project is released under the MIT License.

@@ -9,6 +9,8 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/jimlawless/whereami"
+
 	"github.com/bconn98/DrugRecord/utils"
 	"github.com/bconn98/DrugRecord/web/webUtils"
 )
@@ -21,7 +23,7 @@ func GetSignOutHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	SetSignedOut()
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 	webUtils.ExecuteTemplate(acWriter, "home.html", nil)
 }

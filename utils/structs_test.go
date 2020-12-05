@@ -8,6 +8,7 @@ Description: Tests all the functions in structs
 */
 
 import (
+	"strconv"
 	"testing"
 	"time"
 )
@@ -20,9 +21,12 @@ func TestMakePurchase(t *testing.T) {
 	var lcNdc = "99999-9999-99"
 	var lcPharmacist = "BRC"
 	var lnQty = 10.0
+	var lcInvoice = "98034324"
 	lcDate := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
-	testPurchase := Purchase{lcNdc, lcPharmacist, lnQty, lcDate}
-	makePurchase := MakePurchase(lcNdc, lcPharmacist, lnQty, lcDate)
+	testPurchase := Purchase{lcNdc, lcPharmacist, lcInvoice, strconv.Itoa(lcDate.Year()),
+		lcDate.Month().String(), strconv.Itoa(lcDate.Day()), lnQty, lnQty}
+	makePurchase := MakePurchase(lcNdc, lcPharmacist, lcInvoice, strconv.Itoa(lcDate.Year()), lcDate.Month().String(),
+		strconv.Itoa(lcDate.Day()), lnQty, lnQty)
 	if testPurchase != makePurchase {
 		t.Error("The purchases don't match!")
 	}
@@ -35,29 +39,20 @@ Description: Checks if the audit values match and if they don't match
 func TestMakeAudit(t *testing.T) {
 	var lcNdc = "99999-9999-99"
 	var lcPharmacist = "BRC"
-	var lnQty = 110.0
-	var lnQty2 = 100.0
+	var lrQty = 110.0
+	var lrQty2 = 100.0
 	lcDate := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
-	testAudit1 := Audit{lcNdc, lcPharmacist, lnQty, lcDate}
-	makeAudit := MakeAudit(lcNdc, lcPharmacist, lnQty, lcDate)
+	testAudit1 := Audit{lcNdc, lcPharmacist, strconv.Itoa(lcDate.Year()), lcDate.Month().String(),
+		strconv.Itoa(lcDate.Day()), lrQty}
+	makeAudit := MakeAudit(lcNdc, lcPharmacist, lrQty, strconv.Itoa(lcDate.Year()), lcDate.Month().String(),
+		strconv.Itoa(lcDate.Day()))
 	if testAudit1 != makeAudit {
 		t.Error("The audits don't match!")
 	}
-	testAudit2 := Audit{lcNdc, lcPharmacist, lnQty2, lcDate}
+	testAudit2 := Audit{lcNdc, lcPharmacist, strconv.Itoa(lcDate.Year()), lcDate.Month().String(),
+		strconv.Itoa(lcDate.Day()), lrQty2}
 	if testAudit2 == makeAudit {
 		t.Error("The audits shouldn't match!")
-	}
-}
-
-/**
-Function: TestMakeDrug
-Description: Checks if the make drug function correctly returns a drug struct
-*/
-func TestMakeDrug(t *testing.T) {
-	testDrug1 := Drug{"Test", "999-9999-999", 100}
-	testDrug2 := MakeDrug("Test", "999-9999-999", 100)
-	if testDrug2 != testDrug1 {
-		t.Error("The drugs don't match!")
 	}
 }
 
@@ -83,11 +78,15 @@ func TestMakeOrder(t *testing.T) {
 	var lcScript = "99999-9999-99"
 	var lcPharmacist = "BRC"
 	var lcType = "PURCHASE"
-	var lnQty = 100.0
+	var lrQty = 100.0
+	var lnId int64
+	lnId = 1
 	lcDate := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
 
-	testOrder := Order{lcPharmacist, "June 23 2018", lcScript, lcType, lnQty}
-	makeOrder := MakeOrder(lcNdc, lcPharmacist, lcType, lnQty, lcDate)
+	testOrder := Order{lcPharmacist, lcDate.Month().String(), lcDate.Day(), lcDate.Year(), lcScript, lcType, lrQty,
+		lrQty, lcNdc, lnId}
+	makeOrder := MakeOrder(lcNdc, lcPharmacist, lcScript, lcType, lrQty, lrQty, strconv.Itoa(lcDate.Year()),
+		lcDate.Month().String(), strconv.Itoa(lcDate.Day()), lnId)
 
 	if testOrder != makeOrder {
 		t.Error("The orders don't match!")
@@ -103,26 +102,14 @@ func TestMakePrescription(t *testing.T) {
 	var lcNdc = "999-9999-999"
 	var lcPharmacist = "BRC"
 	var script = "999"
-	var lnQty = 50.0
-	lcDate := time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
-	testPrescription := Prescription{lcNdc, lcPharmacist, script, lnQty, lcDate}
-	makePrescription := MakePrescription(lcNdc, lcPharmacist, script, lnQty, lcDate)
+	var lrQty = 50.0
+	var lcDate = time.Date(2018, 6, 23, 12, 30, 0, 0, time.UTC)
+
+	testPrescription := Prescription{lcNdc, lcPharmacist, script, strconv.Itoa(lcDate.Year()),
+		lcDate.Month().String(), strconv.Itoa(lcDate.Day()), lrQty, lrQty}
+	makePrescription := MakePrescription(lcNdc, lcPharmacist, script, lrQty, strconv.Itoa(lcDate.Year()),
+		lcDate.Month().String(), strconv.Itoa(lcDate.Day()), lrQty)
 	if testPrescription != makePrescription {
 		t.Error("The prescriptions don't match!")
-	}
-}
-
-/**
-Function: TestDrug_UpdateQty
-Description: Makes sure that the quantity is correctly increased
-*/
-func TestDrug_UpdateQty(t *testing.T) {
-	testDrug1 := Drug{"Test", "999-9999-999", 110}
-	testDrug2 := Drug{"Test", "999-9999-999", 100}
-
-	testDrug2 = testDrug2.UpdateQty(10)
-
-	if testDrug1 != testDrug2 {
-		t.Error("The drug quantities don't match!")
 	}
 }

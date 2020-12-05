@@ -9,8 +9,10 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/bconn98/dialog"
+	"github.com/jimlawless/whereami"
+
 	"github.com/bconn98/DrugRecord/utils"
-	"github.com/sqweek/dialog"
 )
 
 /**
@@ -20,7 +22,7 @@ Description: Executes the excel writer
 func GetExcelWriterHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	lcFileName, err := dialog.File().Filter("Excel Workbook (*.xlsx)", "xlsx").Title("Export to XLSX").Save()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 	utils.ExcelWriter(lcFileName)
 

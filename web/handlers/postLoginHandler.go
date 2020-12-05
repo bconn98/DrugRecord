@@ -9,6 +9,8 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/jimlawless/whereami"
+
 	utils "github.com/bconn98/DrugRecord/utils"
 	webUtils "github.com/bconn98/DrugRecord/web/webUtils"
 )
@@ -20,7 +22,7 @@ Description: Sends the login information for validation, redirects depending on 
 func PostLoginHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 	lcUsername := acRequest.PostForm.Get("uName")
 	lsUser := utils.FindUser(lcUsername)

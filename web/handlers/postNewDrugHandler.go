@@ -9,6 +9,8 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/jimlawless/whereami"
+
 	"github.com/bconn98/DrugRecord/utils"
 	"github.com/bconn98/DrugRecord/web/webUtils"
 )
@@ -21,7 +23,7 @@ and executes the database template to refresh
 func PostNewDrugHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	var lcErrorString string
@@ -40,14 +42,12 @@ func PostNewDrugHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 		if utils.NewCheck(lcNdc) {
 			utils.UpdateOrderNdc(lcId, lcNdc)
 			GetCloseHandler(acWriter, acRequest)
-			return
+		} else {
+			webUtils.ExecuteTemplate(acWriter, "newDrug.html", utils.NewDrug{Error: lcErrorString, Ndc: lcNdc})
 		}
-
-		webUtils.ExecuteTemplate(acWriter, "newDrug.html", utils.NewDrug{Error: lcErrorString, Ndc: lcNdc})
-		return
+	} else {
+		utils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc, 0, lcOldNdc)
+		utils.UpdateOrderNdc(lcId, lcNdc)
+		GetCloseHandler(acWriter, acRequest)
 	}
-	utils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc, 0, lcOldNdc)
-	utils.UpdateOrderNdc(lcId, lcNdc)
-	GetCloseHandler(acWriter, acRequest)
-	return
 }

@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/jimlawless/whereami"
+
 	"github.com/bconn98/DrugRecord/utils"
 	. "github.com/bconn98/DrugRecord/web/webUtils"
 )
@@ -21,7 +23,7 @@ Description: Sends the delete information to find the order to delete
 func PostDrugEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) {
 	err := acRequest.ParseForm()
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	var lcErrorString string
@@ -35,7 +37,7 @@ func PostDrugEditHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 
 	lrQty, err := strconv.ParseFloat(lcQty, 10)
 	if err != nil {
-		utils.Log(err.Error(), utils.ERROR)
+		utils.Log(err.Error(), utils.ERROR, whereami.WhereAmI())
 	}
 
 	utils.UpdateDrug(lcPkgSize, lcForm, lcItem, lcName, lcNdc, lrQty, lcNdc)

@@ -1,0 +1,67 @@
+name: Project Build
+
+on:
+  push:
+    branches: [ master, bconn98-patch-1 ]
+  pull_request:
+    branches: [ master, bconn98-patch-1 ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+
+    - name: Set up Go 1.15.5
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.15.5
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: go build -v .
+
+  test:
+    name: Test
+    runs-on: windows-latest
+    steps:
+
+      - name: Set up Go 1.15.5
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.15.5
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: go build -v .
+
+      - name: Test
+        run: cd utils; go test -v .
+
+  deploy:
+    name: Deploy
+    runs-on: windows-latest
+    steps:
+
+      - name: Set up Go 1.15.5
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.15.5
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: Deploy
+        run: cd scripts; ./deploy.cmd
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: DrugRecord
+          path: DrugRecord/
+          retention-days: 5
