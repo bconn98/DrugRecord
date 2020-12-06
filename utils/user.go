@@ -109,7 +109,7 @@ Description: Determines if the password matches the users password
 func CheckPassword(asUser User, acPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(asUser.PassVal), []byte(acPassword))
 	if err != nil {
-		log.Println(err)
+		log.Println("Duh --- ", err)
 		return false
 	}
 
