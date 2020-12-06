@@ -218,7 +218,7 @@ User struct contains a username and a password value
 */
 type User struct {
 	UserName string
-	PassVal  int
+	PassVal  string
 }
 
 type NewDrug struct {
