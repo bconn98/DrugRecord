@@ -30,30 +30,30 @@ Description: Grabs all of the users from the database
 @return An array of User structures
 */
 func GetUsers() []User {
-	// var (
-	// 	lcUserName string
-	// 	lnPassVal  int
-	// )
+	var (
+		lcUserName string
+		lcPassVal  string
+	)
 
-	// rows, err := db.Query("SELECT * FROM userDB;")
-	// issue(err, whereami.WhereAmI())
-	//
+	rows, err := McDb.Query("SELECT * FROM userDB;")
+	issue(err, whereami.WhereAmI())
+
 	var users []User
-	var testU = User{"Bryan", 2157}
-	users = append(users, testU)
-	//
-	// for rows.Next() {
-	// 	if rows.Err() != nil {
-	// 		issue(rows.Err(), whereami.WhereAmI())
-	// 		break
-	// 	}
-	// 	issue(rows.Scan(&lcUserName, &lnPassVal), whereami.WhereAmI())
-	// 	users = append(users, User{lcUserName, lnPassVal})
-	// }
-	//
-	// defer func() {
-	// 	issue(rows.Close(), whereami.WhereAmI())
-	// }()
+	// var testU = User{"Bryan", "AAA123"}
+	// users = append(users, testU)
+
+	for rows.Next() {
+		if rows.Err() != nil {
+			issue(rows.Err(), whereami.WhereAmI())
+			break
+		}
+		issue(rows.Scan(&lcUserName, &lcPassVal), whereami.WhereAmI())
+		users = append(users, User{lcUserName, lcPassVal})
+	}
+
+	defer func() {
+		issue(rows.Close(), whereami.WhereAmI())
+	}()
 
 	return users
 }
@@ -64,9 +64,9 @@ Description: Adds a user to the database
 @param acUsername The username of the new user
 @param anPassVal The password value for the new user
 */
-func AddUser(acUsername string, anPassVal int) {
-	insertString := fmt.Sprintf("%s%s%s%d%s", "INSERT INTO userdb (userName, passVal) VALUES ('", acUsername,
-		"', ", anPassVal, ");")
+func AddUser(acUsername string, acPassVal string) {
+	insertString := fmt.Sprintf("%s%s%s%s%s", "INSERT INTO userdb (userName, passVal) VALUES ('", acUsername,
+		"', ", acPassVal, ");")
 	_, err := McDb.Exec(insertString)
 	issue(err, whereami.WhereAmI())
 	Log(insertString, SQL, whereami.WhereAmI())

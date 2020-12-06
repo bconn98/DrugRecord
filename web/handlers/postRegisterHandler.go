@@ -29,24 +29,33 @@ func PostRegisterHandler(acWriter http.ResponseWriter, acRequest *http.Request) 
 	lcUsername := acRequest.PostForm.Get("uName")
 	lcPassword := acRequest.PostForm.Get("password")
 
+	lcErrStr := "N/A"
+	lcTemplateName := "register.html"
 	leValidation := utils.MakeUser(lcUsername, lcPassword)
 	switch leValidation {
 	case utils.UE:
-		webUtils.ExecuteTemplate(acWriter, "register.html", "Username field cannot be left empty!")
-		return
+		lcErrStr = "Username field cannot be left empty!"
+		break
 	case utils.US:
-		webUtils.ExecuteTemplate(acWriter, "register.html", "Username field cannot contain spaces!")
-		return
+		lcErrStr = "Username field cannot contain spaces!"
+		break
 	case utils.PE:
-		webUtils.ExecuteTemplate(acWriter, "register.html", "Password field cannot be left empty!")
-		return
+		lcErrStr = "Password field cannot be left empty!"
+		break
 	case utils.PS:
-		webUtils.ExecuteTemplate(acWriter, "register.html", "Password field cannot contain spaces!")
-		return
+		lcErrStr = "Password field cannot contain spaces!"
+		break
+	case utils.PIV:
+		lcErrStr = "Password length must be between 10 and 72 characters"
+		break
 	case utils.TN:
-		webUtils.ExecuteTemplate(acWriter, "register.html", "This username is already in use, please try again!")
-		return
+		lcErrStr = "This username is already in use, please try again!"
+		break
 	case utils.GOOD:
 		http.Redirect(acWriter, acRequest, "/login", http.StatusFound)
+	}
+
+	if lcErrStr != "N/A" {
+		webUtils.ExecuteTemplate(acWriter, lcTemplateName, lcErrStr)
 	}
 }

@@ -6,7 +6,13 @@ Description: Implements features for an unique user including passwords
 */
 package utils
 
-import "strings"
+import (
+	"log"
+	"strings"
+
+	"github.com/jimlawless/whereami"
+	"golang.org/x/crypto/bcrypt"
+)
 
 /**
 Declares constants that determine the validity of an entered password
@@ -16,8 +22,9 @@ const (
 	US   = 1 // Username contains spaces
 	PE   = 2 // Empty Password
 	PS   = 3 // Password contains spaces
-	TN   = 4 // Taken Name
-	GOOD = 5 // No issues
+	PIV  = 4 // Password too long or short
+	TN   = 5 // Taken Name
+	GOOD = 6 // No issues
 )
 
 /**
@@ -32,13 +39,13 @@ func MakeUser(acUsername string, acPassword string) int {
 	if lcValidCheck != GOOD {
 		return lcValidCheck
 	}
-	lnPassVal := computePassVal(acPassword)
+	lcPassVal := computePassVal(acPassword)
 	// Check if the username exists
 	lsTestUser := User{}
 	if FindUser(acUsername) != lsTestUser {
 		return TN
 	}
-	AddUser(acUsername, lnPassVal)
+	AddUser(acUsername, lcPassVal)
 	return GOOD
 }
 
@@ -50,6 +57,8 @@ Description: Validates if the username and password are empty or contain spaces
 @return If the new user's information is valid
 */
 func validateInfo(acUsername string, acPassword string) int {
+	lnMaxPasswordLen := 72
+	lnMinPasswordLen := 10
 	if acUsername == "" {
 		return UE
 	} else if strings.Contains(acUsername, " ") {
@@ -58,6 +67,8 @@ func validateInfo(acUsername string, acPassword string) int {
 		return PE
 	} else if strings.Contains(acPassword, " ") {
 		return PS
+	} else if len(acPassword) < lnMinPasswordLen || len(acPassword) > lnMaxPasswordLen {
+		return PIV
 	} else {
 		return GOOD
 	}
@@ -96,21 +107,23 @@ Description: Determines if the password matches the users password
 @return If the password matches
 */
 func CheckPassword(asUser User, acPassword string) bool {
-	return asUser.PassVal == computePassVal(acPassword)
+	err := bcrypt.CompareHashAndPassword([]byte(asUser.PassVal), []byte(acPassword))
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	return true
 }
 
 /**
 Function: computePassVal
 Description: Computes the value of given password using a unique formula (will be changed when released)
 @param acPassword The password being computed
-@return The value of the password as an int
+@return The value of the password as a hash and salt
 */
-func computePassVal(acPassword string) int {
-	var i int
-	val := 0
-	passwordLength := len(acPassword)
-	for i = 0; i < passwordLength; i++ {
-		val += ((int(acPassword[i])*31 + i) / 7) - 5
-	}
-	return val
+func computePassVal(acPassword string) string {
+	hash, err := bcrypt.GenerateFromPassword([]byte(acPassword), bcrypt.MinCost)
+	issue(err, whereami.WhereAmI())
+	return string(hash)
 }
