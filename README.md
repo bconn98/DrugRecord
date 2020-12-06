@@ -9,7 +9,7 @@
 
 # C-ll Tracking
 
-> This repo contains a web based application to track orders inventory of Schedule ll substances.
+> This repo contains a web based application to track orders and inventory of Schedule ll substances.
 
 
 **Check it out!**
