@@ -71,7 +71,7 @@ func main() {
 		log.Fatal("Failed to connect to database: " + err.Error())
 	}
 
-	if utils.McDb.Ping() != nil {
+	if err = utils.McDb.Ping(); err != nil {
 		log.Fatal(err.Error())
 	}
 

@@ -461,7 +461,7 @@ func UpdateOrderNdc(acId string, acNdc string) {
 }
 
 func GetDrugs(acName string) []DrugDB {
-	var ndc, name, size, form, item_num, qty string
+	var ndc, name, size, form, itemNum, qty string
 	var date time.Time
 	var lasDrugs []DrugDB
 	acName = "%" + acName + "%"
@@ -476,7 +476,7 @@ func GetDrugs(acName string) []DrugDB {
 			break
 		}
 
-		issue(rows.Scan(&ndc, &name, &size, &form, &item_num, &qty, &date), whereami.WhereAmI())
+		issue(rows.Scan(&ndc, &name, &size, &form, &itemNum, &qty, &date), whereami.WhereAmI())
 
 		lrQty, err := strconv.ParseFloat(qty, 10)
 		issue(err, whereami.WhereAmI())
@@ -488,7 +488,7 @@ func GetDrugs(acName string) []DrugDB {
 				Ndc:      ndc,
 				Size:     size,
 				Form:     form,
-				ItemNum:  item_num,
+				ItemNum:  itemNum,
 				Quantity: lrQty,
 				Month:    month,
 				Day:      day,
@@ -501,9 +501,9 @@ func GetDrugs(acName string) []DrugDB {
 }
 
 func GetDrug(acNdc string) Drug {
-	var name, size, form, item_num, qty string
+	var name, size, form, itemNum, qty string
 	issue(McDb.QueryRow("SELECT name, size, form, item_num, qty from drugdb where ndc = $1", acNdc).Scan(&name, &size,
-		&form, &item_num, &qty), whereami.WhereAmI())
+		&form, &itemNum, &qty), whereami.WhereAmI())
 	lrQty, err := strconv.ParseFloat(qty, 10)
 	issue(err, whereami.WhereAmI())
 
@@ -514,6 +514,6 @@ func GetDrug(acNdc string) Drug {
 		McDate:     time.Time{},
 		McForm:     form,
 		McSize:     size,
-		McItemNum:  item_num,
+		McItemNum:  itemNum,
 	}
 }
