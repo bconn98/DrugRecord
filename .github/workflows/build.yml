@@ -2,9 +2,9 @@ name: Project Build
 
 on:
   push:
-    branches: [ master, bconn98-patch-1 ]
+    branches: [ master]
   pull_request:
-    branches: [ master, bconn98-patch-1 ]
+    branches: [ master ]
 
 jobs:
 
@@ -13,10 +13,10 @@ jobs:
     runs-on: windows-latest
     steps:
 
-    - name: Set up Go 1.15.5
+    - name: Set up Go 1.16.5
       uses: actions/setup-go@v2
       with:
-        go-version: ^1.15.5
+        go-version: ^1.16.5
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
@@ -29,10 +29,10 @@ jobs:
     runs-on: windows-latest
     steps:
 
-      - name: Set up Go 1.15.5
+      - name: Set up Go 1.16.5
         uses: actions/setup-go@v2
         with:
-          go-version: ^1.15.5
+          go-version: ^1.16.5
 
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
@@ -48,10 +48,10 @@ jobs:
     runs-on: windows-latest
     steps:
 
-      - name: Set up Go 1.15.5
+      - name: Set up Go 1.16.5
         uses: actions/setup-go@v2
         with:
-          go-version: ^1.15.5
+          go-version: ^1.16.5
 
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
