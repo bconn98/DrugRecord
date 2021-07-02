@@ -9,7 +9,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bconn98/dialog"
+	"github.com/sqweek/dialog"
 	"github.com/jimlawless/whereami"
 
 	"github.com/bconn98/DrugRecord/utils"
