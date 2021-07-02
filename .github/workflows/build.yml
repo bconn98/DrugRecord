@@ -46,6 +46,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: windows-latest
+    needs: build
     steps:
 
       - name: Set up Go 1.16.5
